@@ -1,0 +1,36 @@
+plugins {
+    id "java-library"
+}
+
+group = "io.github.whilein"
+version = "0.0.1-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly(libs.lombok)
+    compileOnly(libs.immutables)
+    annotationProcessor(libs.lombok)
+    annotationProcessor(libs.immutables)
+    testCompileOnly(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.fork = true
+    options.incremental = true
+    options.encoding = "UTF-8"
+    options.compilerArgs << '-parameters'
+}

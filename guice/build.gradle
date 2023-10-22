@@ -1,0 +1,8 @@
+plugins {
+    id 'library-conventions'
+}
+
+dependencies {
+    implementation project(':core')
+    implementation libs.guice
+}
