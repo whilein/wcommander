@@ -6,6 +6,8 @@ kotest = "5.7.2"
 guice = "7.0.0"
 mockk = "1.13.8"
 jetbrains-annotations = "24.0.1"
+velocity = "3.2.0-SNAPSHOT"
+adventure = "4.14.0"
 
 [libraries]
 immutables = { group = "org.immutables", name = "value", version.ref = "immutables" }
@@ -16,3 +18,5 @@ lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" 
 guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations" }
+velocity-api = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
+adventure-bom = { group = "net.kyori", name = "adventure-bom", version.ref = "adventure" }

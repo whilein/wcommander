@@ -1,0 +1,21 @@
+plugins {
+    id 'java-conventions'
+}
+
+repositories {
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    api project(':core')
+    api project(':adventure')
+
+    compileOnlyApi libs.velocity.api
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+}

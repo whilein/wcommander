@@ -6,7 +6,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import w.commander.CommandActor
 import w.commander.annotation.*
-import w.commander.error.NoopErrorResultFactory
 import w.commander.kt.CommandTemplate.withSubCommand
 import w.commander.manual.description.SimpleDescriptionFactory
 import w.commander.manual.usage.SimpleUsageFactory

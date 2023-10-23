@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.manual.usage.Usage;
 import w.commander.parameter.argument.Argument;
 import w.commander.result.FailedResult;
+import w.commander.result.Results;
 
 import java.util.Map;
 
@@ -12,21 +13,24 @@ import java.util.Map;
  */
 public interface ErrorResultFactory {
 
-    @NotNull FailedResult onInternalError(@NotNull Throwable throwable);
+    default @NotNull FailedResult onInternalError(@NotNull Throwable throwable) {
+        return Results.error();
+    }
 
-    @NotNull FailedResult onNotEnoughArguments(
-            @NotNull Usage usage
-    );
+    default @NotNull FailedResult onNotEnoughArguments(@NotNull Usage usage) {
+        return Results.error();
+    }
 
-    @NotNull FailedResult onInvalidNumber(
-            @NotNull Argument argument,
-            @NotNull String value
-    );
+    default @NotNull FailedResult onInvalidNumber(@NotNull Argument argument, @NotNull String value) {
+        return Results.error();
+    }
 
-    <E extends Enum<E>> FailedResult onInvalidEnum(
+    default <E extends Enum<E>> FailedResult onInvalidEnum(
             @NotNull Argument argument,
             @NotNull String value,
             @NotNull Map<@NotNull String, @NotNull E> enumType
-    );
+    ) {
+        return Results.error();
+    }
 
 }

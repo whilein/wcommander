@@ -13,5 +13,5 @@ class TestExecutionContext(
         actor: CommandActor,
         executor: CommandExecutor,
         rawArguments: RawArguments
-) : AbstractExecutionContext(actor, executor, rawArguments)
+) : AbstractExecutionContext<CommandActor>(actor, executor, rawArguments)
 

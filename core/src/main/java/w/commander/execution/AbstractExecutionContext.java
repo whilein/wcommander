@@ -14,9 +14,9 @@ import w.commander.RawArguments;
 @Getter
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractExecutionContext implements ExecutionContext {
+public abstract class AbstractExecutionContext<T extends CommandActor> implements ExecutionContext {
 
-    @NotNull CommandActor actor;
+    @NotNull T actor;
     @NotNull CommandExecutor executor;
     @NotNull RawArguments rawArguments;
 

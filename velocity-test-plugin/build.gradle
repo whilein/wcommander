@@ -1,0 +1,47 @@
+plugins {
+    id 'java-conventions'
+    id "xyz.jpenilla.run-velocity" version "2.2.0"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+repositories {
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+tasks {
+    shadowJar {
+        mergeServiceFiles('META-INF/spring.*')
+        mergeServiceFiles('META-INF/spring/*')
+
+        archiveFileName = project.name + ".jar"
+        destinationDirectory = new File(project.rootDir, "output")
+
+        exclude 'META-INF/*.SF'
+        exclude 'META-INF/*.DSA'
+        exclude 'META-INF/*.RSA'
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+
+    runVelocity {
+        // Configure the Velocity version for our task.
+        // This is the only required configuration besides applying the plugin.
+        // Your plugin's jar (or shadowJar if present) will be used automatically.
+        velocityVersion("3.2.0-SNAPSHOT")
+    }
+}
+
+dependencies {
+    implementation project(':velocity')
+    compileOnly libs.velocity.api
+    annotationProcessor libs.velocity.api
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}

@@ -1,0 +1,10 @@
+plugins {
+  id 'java-conventions'
+}
+
+dependencies {
+  implementation project(':core')
+
+  compileOnlyApi platform(libs.adventure.bom)
+  compileOnlyApi 'net.kyori:adventure-api'
+}
