@@ -2,6 +2,7 @@ package w.commander.parameter.argument.parser;
 
 import org.jetbrains.annotations.NotNull;
 import w.commander.error.ErrorResultFactory;
+import w.commander.parameter.argument.parser.type.EnumArgumentTransformerFactoryResolver;
 import w.commander.parameter.argument.parser.type.NumberArgumentParserFactoryResolver;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ public interface ArgumentParserFactoryResolver {
             @NotNull ErrorResultFactory errorResultFactory
     ) {
         return Collections.unmodifiableList(Arrays.asList(
+                EnumArgumentTransformerFactoryResolver.create(errorResultFactory),
                 NumberArgumentParserFactoryResolver.create(errorResultFactory)
         ));
     }

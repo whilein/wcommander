@@ -8,6 +8,8 @@ import w.commander.parameter.argument.Argument;
 import w.commander.result.Results;
 import w.commander.result.FailedResult;
 
+import java.util.Map;
+
 /**
  * @author whilein
  */
@@ -29,11 +31,12 @@ public class NoopErrorResultFactory implements ErrorResultFactory {
     }
 
     @Override
-    public <E extends Enum<E>> @NotNull FailedResult onInvalidEnum(
+    public <E extends Enum<E>> FailedResult onInvalidEnum(
             @NotNull Argument argument,
             @NotNull String value,
-            @NotNull Class<E> enumType
+            @NotNull Map<@NotNull String, @NotNull E> enumType
     ) {
         return Results.error();
     }
+
 }
