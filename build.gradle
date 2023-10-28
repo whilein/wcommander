@@ -1,0 +1,4 @@
+allprojects {
+    group 'io.github.whilein'
+    version findProperty('wcommander.version') ?: 'unknown'
+}

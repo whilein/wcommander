@@ -1,10 +1,9 @@
 plugins {
-    id 'library-conventions'
+    id 'java-conventions'
 }
 
 dependencies {
     api(libs.slf4j.api)
-    testImplementation(libs.assertj)
-    testImplementation(libs.slf4j.simple)
-    testImplementation(libs.mockito)
+
+    compileOnly(libs.jetbrains.annotations)
 }
