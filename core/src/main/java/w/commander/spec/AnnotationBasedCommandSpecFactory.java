@@ -89,6 +89,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
         return ImmutableManualSpec.builder()
                 .hasHandler(manualHandler)
                 .subCommand(manualSubCommand == null ? null : manualSubCommand.value())
+                .subcommandAliases(manualSubCommand == null ? null : manualSubCommand.aliases())
                 .build();
     }
 

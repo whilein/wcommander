@@ -14,4 +14,6 @@ public @interface WithManualSubCommand {
 
     String value();
 
+    String[] aliases() default {};
+
 }

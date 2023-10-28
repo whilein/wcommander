@@ -82,6 +82,14 @@ public final class SimpleCommandFactory implements CommandFactory {
                         Collections.singletonList(manualExecutor),
                         Collections.emptyMap()));
             }
+
+            val subcommandAliases = manual.getSubcommandAliases();
+
+            for (val alias : subcommandAliases) {
+                subCommands.putIfAbsent(alias, commandNodeFactory.create(
+                        Collections.singletonList(manualExecutor),
+                        Collections.emptyMap()));
+            }
         }
 
         return commandNodeFactory.create(

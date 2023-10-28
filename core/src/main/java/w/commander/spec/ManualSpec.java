@@ -18,6 +18,8 @@ public interface ManualSpec {
 
     @Nullable String getSubCommand();
 
+    @Nullable String[] getSubcommandAliases();
+
     default boolean isEmpty() {
         return !hasHandler() && getSubCommand() != null;
     }
