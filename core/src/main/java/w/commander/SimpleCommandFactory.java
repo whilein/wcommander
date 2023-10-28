@@ -51,7 +51,8 @@ public final class SimpleCommandFactory implements CommandFactory {
                 handler.getUsage(),
                 LOOKUP.unreflect(handler.getMethod())
                         .bindTo(command.getInstance()),
-                handler.getParameters()
+                handler.getParameters(),
+                handler.getExecutor()
         );
     }
 

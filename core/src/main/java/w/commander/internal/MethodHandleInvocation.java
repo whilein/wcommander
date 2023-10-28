@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -34,6 +35,7 @@ public final class MethodHandleInvocation {
     ExecutionContext context;
 
     Callback<Result> callback;
+    Executor executor;
 
     private void invoke(Object[] parameters) {
         Object result;
@@ -131,18 +133,19 @@ public final class MethodHandleInvocation {
 
     private static void awaitFutureCompletion(
             Queue<CompletableFuture<?>> futures,
-            Runnable completionCallback
+            Runnable completionCallback,
+            Executor executor
     ) {
         while (!futures.isEmpty()) {
             val future = futures.poll();
 
             if (!future.isDone()) {
-                future.whenComplete((v, e) -> awaitFutureCompletion(futures, completionCallback));
+                future.whenComplete((v, e) -> awaitFutureCompletion(futures, completionCallback, executor));
                 return;
             }
         }
 
-        completionCallback.run();
+        executor.execute(completionCallback);
     }
 
     public void process() {
@@ -222,12 +225,12 @@ public final class MethodHandleInvocation {
                 }
 
                 invoke(values);
-            });
+            }, executor);
 
             return;
         }
 
-        invoke(values);
+        executor.execute(() -> invoke(values));
     }
 
     @FieldDefaults(makeFinal = true)

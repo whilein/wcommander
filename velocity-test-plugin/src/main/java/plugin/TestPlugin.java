@@ -6,6 +6,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.val;
 import w.commander.SimpleCommandFactory;
 import w.commander.SimpleCommandNodeFactory;
+import w.commander.async.DefaultExecutorRegistry;
 import w.commander.error.DefaultExecutionThrowableInterceptor;
 import w.commander.manual.SimpleManualFactory;
 import w.commander.manual.description.SimpleDescriptionFactory;
@@ -50,7 +51,8 @@ public class TestPlugin {
                                 DefaultHandlerParameterResolver.create(
                                         s
                                 )
-                        )
+                        ),
+                        DefaultExecutorRegistry.create()
                 ),
                 SimpleCommandFactory.create(
                         SimpleCommandNodeFactory.create(

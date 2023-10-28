@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.annotation.*;
+import w.commander.async.ExecutorRegistry;
 import w.commander.manual.description.Description;
 import w.commander.manual.description.DescriptionFactory;
 import w.commander.manual.usage.Usage;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
  * @author whilein
@@ -34,18 +36,21 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
     UsageFactory usageFactory;
     DescriptionFactory descriptionFactory;
     Iterable<? extends HandlerParameterResolver> parameterResolvers;
+    ExecutorRegistry executorRegistry;
 
     public static @NotNull CommandSpecFactory create(
             @NotNull HandlerPathStrategy handlerPathStrategy,
             @NotNull UsageFactory usageFactory,
             @NotNull DescriptionFactory descriptionFactory,
-            @NotNull Iterable<? extends @NotNull HandlerParameterResolver> parameterResolvers
+            @NotNull Iterable<? extends @NotNull HandlerParameterResolver> parameterResolvers,
+            @NotNull ExecutorRegistry executorRegistry
     ) {
         return new AnnotationBasedCommandSpecFactory(
                 handlerPathStrategy,
                 usageFactory,
                 descriptionFactory,
-                parameterResolvers
+                parameterResolvers,
+                executorRegistry
         );
     }
 
@@ -137,6 +142,13 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
                 : "");
     }
 
+    private Executor getExecutor(Method method) {
+        val async = method.getDeclaredAnnotation(Async.class);
+        val executor = executorRegistry.get(async.value());
+
+        return executor == null ? Runnable::run : executor;
+    }
+
     private HandlerSpec createHandler(List<String> path, String name, Method method) {
         val hidden = isHidden(method);
         val parameters = getParameters(method);
@@ -146,6 +158,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
                 .usage(getUsage(path, parameters.getArguments()))
                 .description(hidden ? null : getDescription(method))
                 .path(handlerPathStrategy.getPath(path(path, name)))
+                .executor(getExecutor(method))
                 .parameters(parameters)
                 .build();
     }

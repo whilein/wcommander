@@ -4,10 +4,10 @@ import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
 import w.commander.manual.description.Description;
 import w.commander.manual.usage.Usage;
-import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.HandlerParameters;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Executor;
 
 /**
  * @author whilein
@@ -25,7 +25,7 @@ public interface HandlerSpec {
 
     @NotNull Usage getUsage();
 
-    // todo async
+    @NotNull Executor getExecutor();
 
     @NotNull Method getMethod();
 

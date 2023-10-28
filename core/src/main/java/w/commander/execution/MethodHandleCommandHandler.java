@@ -11,6 +11,7 @@ import w.commander.result.Result;
 import w.commander.util.Callback;
 
 import java.lang.invoke.MethodHandle;
+import java.util.concurrent.Executor;
 
 /**
  * @author whilein
@@ -19,29 +20,34 @@ import java.lang.invoke.MethodHandle;
 public class MethodHandleCommandHandler extends AbstractCommandHandler {
 
     MethodHandle method;
+    Executor executor;
 
     private MethodHandleCommandHandler(
             String path,
             Usage usage,
             MethodHandle method,
-            HandlerParameters parameters
+            HandlerParameters parameters,
+            Executor executor
     ) {
         super(path, parameters, usage);
 
         this.method = method;
+        this.executor = executor;
     }
 
     public static @NotNull CommandHandler create(
             @NotNull String path,
             @NotNull Usage usage,
             @NotNull MethodHandle mh,
-            @NotNull HandlerParameters parameters
+            @NotNull HandlerParameters parameters,
+            @NotNull Executor executor
     ) {
         return new MethodHandleCommandHandler(
                 path,
                 usage,
                 mh,
-                parameters
+                parameters,
+                executor
         );
     }
 
@@ -54,7 +60,8 @@ public class MethodHandleCommandHandler extends AbstractCommandHandler {
                 this,
                 method,
                 context,
-                callback
+                callback,
+                executor
         );
         invocation.process();
     }
