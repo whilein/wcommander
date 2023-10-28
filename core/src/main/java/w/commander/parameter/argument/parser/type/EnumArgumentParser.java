@@ -3,7 +3,6 @@ package w.commander.parameter.argument.parser.type;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.error.ErrorResultFactory;
@@ -34,12 +33,12 @@ public class EnumArgumentParser<E extends Enum<E>> implements ArgumentParser {
 
     @Override
     public @Nullable Object parse(@NotNull String value, @NotNull ExecutionContext context) {
-        val enumValue = enumValues.get(value.toLowerCase());
+        final E enumValue;
 
-        if (enumValue == null) {
+        if ((enumValue = enumValues.get(value.toLowerCase())) == null) {
             return errorResultFactory.onInvalidEnum(argument, value, enumValues);
         }
 
-        return enumValues.get(value.toLowerCase());
+        return enumValue;
     }
 }
