@@ -2,7 +2,6 @@ package w.commander.tests
 
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearAllMocks
-import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import w.commander.RawArguments
@@ -11,7 +10,9 @@ import w.commander.SimpleCommandNodeFactory
 import w.commander.annotation.Arg
 import w.commander.annotation.Command
 import w.commander.annotation.CommandHandler
+import w.commander.annotation.Join
 import w.commander.error.NoopErrorResultFactory
+import w.commander.kt.EmptyRawArguments
 import w.commander.manual.SimpleManualFactory
 import w.commander.manual.description.SimpleDescriptionFactory
 import w.commander.manual.usage.SimpleUsageFactory
@@ -45,6 +46,41 @@ class CommandTests : FunSpec({
 
     afterEach {
         clearAllMocks()
+    }
+
+    context("Join argument") {
+        test("Non-empty arguments joins") {
+            @Command("test")
+            class TestCommand {
+                @CommandHandler
+                fun execute(@Join value: String) {
+                }
+            }
+
+            val commandInstance = spyk<TestCommand>()
+
+            val command = commandFactory.create(commandSpecFactory.create(commandInstance))
+            command.execute(TestCommandSender, RawArguments.fromArray("1", "2", "3"))
+
+            verify { commandInstance.execute("1 2 3") }
+        }
+
+        test("Empty arguments fails") {
+            @Command("test")
+            class TestCommand {
+                @CommandHandler
+                fun execute(@Join value: String) {
+                }
+            }
+
+            val commandInstance = spyk<TestCommand>()
+
+            val command = commandFactory.create(commandSpecFactory.create(commandInstance))
+            command.execute(TestCommandSender, EmptyRawArguments)
+
+            verify { errorResultFactory.onNotEnoughArguments(any()) }
+        }
+
     }
 
     context("Number argument") {
