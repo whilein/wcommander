@@ -7,8 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.error.ErrorResultFactory;
 import w.commander.manual.usage.Usage;
 import w.commander.result.Result;
-
-import java.util.function.Consumer;
+import w.commander.util.Callback;
 
 /**
  * @author whilein
@@ -33,8 +32,8 @@ public final class NotEnoughArgumentsCommandExecutor extends AbstractCommandExec
     @Override
     protected void doExecute(
             @NotNull ExecutionContext context,
-            @NotNull Consumer<@NotNull Result> callback
+            @NotNull Callback<@NotNull Result> callback
     ) {
-        callback.accept(errorResultFactory.onNotEnoughArguments(usage));
+        callback.complete(errorResultFactory.onNotEnoughArguments(usage));
     }
 }

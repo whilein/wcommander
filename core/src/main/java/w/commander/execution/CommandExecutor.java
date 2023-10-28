@@ -2,17 +2,19 @@ package w.commander.execution;
 
 import org.jetbrains.annotations.NotNull;
 import w.commander.result.Result;
-
-import java.util.function.Consumer;
+import w.commander.util.Callback;
 
 /**
  * @author whilein
  */
 public interface CommandExecutor {
 
-    void execute(@NotNull ExecutionContext context, @NotNull Consumer<@NotNull Result> callback);
+    void execute(
+            @NotNull ExecutionContext context,
+            @NotNull Callback<@NotNull Result> callback
+    );
 
-    default boolean isAdvancing() {
+    default boolean isYielding() {
         return false;
     }
 

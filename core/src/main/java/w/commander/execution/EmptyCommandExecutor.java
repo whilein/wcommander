@@ -3,9 +3,12 @@ package w.commander.execution;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import w.commander.result.Result;
 import w.commander.result.Results;
+import w.commander.util.Callback;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -23,8 +26,8 @@ public final class EmptyCommandExecutor extends AbstractCommandExecutor {
     @Override
     protected void doExecute(
             @NotNull ExecutionContext context,
-            @NotNull Consumer<@NotNull Result> callback
+            @NotNull Callback<@NotNull Result> callback
     ) {
-        callback.accept(Results.error());
+        callback.complete(Results.error());
     }
 }

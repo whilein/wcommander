@@ -21,7 +21,7 @@ public abstract class AbstractExecutionContext implements ExecutionContext {
     @NotNull RawArguments rawArguments;
 
     @Override
-    public void answer(@NotNull String text) {
+    public void dispatch(@NotNull String text) {
         actor.sendMessage(text);
     }
 }

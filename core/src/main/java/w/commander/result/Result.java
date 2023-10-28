@@ -10,7 +10,7 @@ public interface Result {
 
     boolean isSuccess();
 
-    void answer(@NotNull ExecutionContext context);
+    void dispatch(@NotNull ExecutionContext context);
 
     default @NotNull ResultException asException() {
         return ResultException.create(this);

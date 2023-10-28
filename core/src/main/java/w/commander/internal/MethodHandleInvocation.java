@@ -2,22 +2,22 @@ package w.commander.internal;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.val;
 import w.commander.execution.CommandHandler;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.cursor.SimpleArgumentCursor;
 import w.commander.result.Result;
+import w.commander.result.Results;
+import w.commander.util.Callback;
 
+import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -25,40 +25,57 @@ import java.util.function.Supplier;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public final class InvocationParametersProcessor {
+public final class MethodHandleInvocation {
+
+    CommandHandler handler;
+
+    MethodHandle method;
 
     ExecutionContext context;
 
-    CommandHandler commandHandler;
+    Callback<Result> callback;
 
-    @Setter
-    @NonFinal
-    Consumer<Object[]> parameterCallback;
+    private void invoke(Object[] parameters) {
+        Object result;
 
-    @Setter
-    @NonFinal
-    Consumer<Result> resultCallback;
-
-    @Setter
-    @NonFinal
-    Consumer<Throwable> failureCallback;
-
-    private static <T> void done(T value, Consumer<T> callback) {
-        if (callback != null) {
-            callback.accept(value);
+        try {
+            result = method.invokeWithArguments(parameters);
+        } catch (Throwable e) {
+            callback.completeExceptionally(e);
+            return;
         }
+
+        processReturnedValue(result);
     }
 
-    private void done(Result result) {
-        done(result, resultCallback);
-    }
+    private void processReturnedValue(Object returnedValue) {
+        if (returnedValue instanceof Result) {
+            callback.complete((Result) returnedValue);
+        } else if (returnedValue instanceof CompletableFuture<?>) {
+            val future = (CompletableFuture<?>) returnedValue;
 
-    private void done(Object[] parameters) {
-        done(parameters, parameterCallback);
-    }
+            future.whenComplete((v, t) -> {
+                if (t != null) {
+                    callback.completeExceptionally(t);
+                    return;
+                }
 
-    private void done(Throwable failure) {
-        done(failure, failureCallback);
+                processReturnedValue(v);
+            });
+        } else if (returnedValue instanceof Supplier<?>) {
+            final Object result;
+
+            try {
+                result = ((Supplier<?>) returnedValue).get();
+            } catch (Throwable t) {
+                callback.completeExceptionally(t);
+                return;
+            }
+
+            processReturnedValue(result);
+        } else {
+            callback.complete(Results.ok());
+        }
     }
 
     private void extractLazy(
@@ -129,7 +146,7 @@ public final class InvocationParametersProcessor {
     }
 
     public void process() {
-        val parameters = commandHandler.getParameters();
+        val parameters = handler.getParameters();
 
         val values = new Object[parameters.size()];
 
@@ -148,7 +165,14 @@ public final class InvocationParametersProcessor {
         for (int i = 0, j = values.length; i < j; i++) {
             val parameter = parameters.get(i);
 
-            val value = parameter.extract(context, cursor);
+            Object value;
+
+            try {
+                value = parameter.extract(context, cursor);
+            } catch (Throwable t) {
+                callback.completeExceptionally(t);
+                return;
+            }
 
             if (value instanceof Supplier<?> || value instanceof CompletableFuture<?>) {
                 if (lazyParameters == null) {
@@ -157,7 +181,7 @@ public final class InvocationParametersProcessor {
 
                 lazyParameters.add(new Lazy(i, value));
             } else if (value instanceof Result) {
-                done((Result) value);
+                callback.complete((Result) value);
                 return;
             } else {
                 values[i] = value;
@@ -186,24 +210,24 @@ public final class InvocationParametersProcessor {
                 val failure = failureRef.get();
 
                 if (failure != null) {
-                    done(failure);
+                    callback.completeExceptionally(failure);
                     return;
                 }
 
                 val result = resultRef.get();
 
                 if (result != null) {
-                    done(result);
+                    callback.complete(result);
                     return;
                 }
 
-                done(values);
+                invoke(values);
             });
 
             return;
         }
 
-        done(values);
+        invoke(values);
     }
 
     @FieldDefaults(makeFinal = true)

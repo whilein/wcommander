@@ -1,8 +1,10 @@
 package w.commander;
 
 import org.jetbrains.annotations.NotNull;
+import w.commander.result.Result;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author whilein
@@ -13,6 +15,6 @@ public interface Command {
 
     @NotNull List<@NotNull String> getAliases();
 
-    void execute(@NotNull CommandActor actor, @NotNull RawArguments args);
+    @NotNull CompletableFuture<@NotNull Result> execute(@NotNull CommandActor actor, @NotNull RawArguments args);
 
 }

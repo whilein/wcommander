@@ -4,9 +4,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import w.commander.manual.Manual;
 import w.commander.result.Result;
+import w.commander.util.Callback;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -25,13 +28,13 @@ public final class ManualCommandExecutor extends AbstractCommandExecutor {
     @Override
     protected void doExecute(
             @NotNull ExecutionContext context,
-            @NotNull Consumer<@NotNull Result> callback
+            @NotNull Callback<@NotNull Result> callback
     ) {
-        callback.accept(manual.format(context));
+        callback.complete(manual.format(context));
     }
 
     @Override
-    public boolean isAdvancing() {
+    public boolean isYielding() {
         return true;
     }
 

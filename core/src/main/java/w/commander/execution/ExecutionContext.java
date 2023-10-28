@@ -15,6 +15,6 @@ public interface ExecutionContext {
 
     @NotNull CommandExecutor getExecutor();
 
-    void answer(String text);
+    void dispatch(String text);
 
 }

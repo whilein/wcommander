@@ -1,5 +1,6 @@
 package w.commander.tests
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearAllMocks
 import io.mockk.spyk
@@ -13,13 +14,22 @@ import w.commander.annotation.CommandHandler
 import w.commander.annotation.Join
 import w.commander.error.DefaultExecutionThrowableInterceptor
 import w.commander.error.NoopErrorResultFactory
+import w.commander.execution.ExecutionContext
 import w.commander.kt.EmptyRawArguments
 import w.commander.manual.SimpleManualFactory
 import w.commander.manual.description.SimpleDescriptionFactory
 import w.commander.manual.usage.SimpleUsageFactory
 import w.commander.parameter.DefaultHandlerParameterResolver
+import w.commander.parameter.HandlerParameter
+import w.commander.parameter.HandlerParameterResolver
+import w.commander.parameter.argument.cursor.ArgumentCursor
 import w.commander.spec.AnnotationBasedCommandSpecFactory
 import w.commander.spec.path.HandlerPathStrategies
+import java.lang.RuntimeException
+import java.lang.reflect.Parameter
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
+import java.util.function.Supplier
 
 /**
  * @author whilein
@@ -27,6 +37,7 @@ import w.commander.spec.path.HandlerPathStrategies
 class CommandTests : FunSpec({
 
     val errorResultFactory = spyk(NoopErrorResultFactory.create())
+    val executionThrowableInterceptor = spyk(DefaultExecutionThrowableInterceptor.create(errorResultFactory))
 
     val commandSpecFactory = AnnotationBasedCommandSpecFactory.create(
             HandlerPathStrategies.lowerSnakeCase(),
@@ -42,12 +53,118 @@ class CommandTests : FunSpec({
     val commandFactory = SimpleCommandFactory.create(
             SimpleCommandNodeFactory.create(errorResultFactory),
             TestExecutionContextFactory(),
-            DefaultExecutionThrowableInterceptor.create(errorResultFactory),
+            executionThrowableInterceptor,
             SimpleManualFactory.create(),
     )
 
     afterEach {
         clearAllMocks()
+    }
+
+    context("Errors") {
+        test("Should catch parameter exception") {
+            val exception = RuntimeException()
+
+            val errorCommandSpecFactory = AnnotationBasedCommandSpecFactory.create(
+                    HandlerPathStrategies.lowerSnakeCase(),
+                    SimpleUsageFactory.create(),
+                    SimpleDescriptionFactory.create(),
+                    listOf(
+                            object : HandlerParameterResolver {
+                                override fun isSupported(parameter: Parameter): Boolean {
+                                    return true
+                                }
+
+                                override fun resolve(parameter: Parameter): HandlerParameter {
+                                    return HandlerParameter { _, _ ->
+                                        throw exception
+                                    }
+                                }
+
+                            }
+                    )
+            )
+
+            @Command("test")
+            class TestCommand {
+                @CommandHandler
+                fun execute(param: Any) {
+                }
+            }
+
+            val command = commandFactory.create(errorCommandSpecFactory.create(TestCommand()))
+
+            shouldThrow<CompletionException> {
+                command.execute(TestCommandActor, EmptyRawArguments)
+                        .join()
+            }
+
+            verify { executionThrowableInterceptor.intercept(exception) }
+        }
+
+        test("Should catch lazy execution exception") {
+            val exception = RuntimeException()
+
+            @Command("test")
+            class TestCommand {
+                @CommandHandler
+                fun execute(): Supplier<*> {
+                    return Supplier {
+                        throw exception
+                    }
+                }
+            }
+
+            val command = commandFactory.create(commandSpecFactory.create(TestCommand()))
+
+            shouldThrow<CompletionException> {
+                command.execute(TestCommandActor, EmptyRawArguments)
+                        .join()
+            }
+
+            verify { executionThrowableInterceptor.intercept(exception) }
+        }
+
+        test("Should catch future execution exception") {
+            val exception = RuntimeException()
+
+            @Command("test")
+            class TestCommand {
+                @CommandHandler
+                fun execute(): CompletableFuture<*> {
+                    val future = CompletableFuture<Any>()
+                    future.completeExceptionally(exception)
+
+                    return future
+                }
+            }
+
+            val command = commandFactory.create(commandSpecFactory.create(TestCommand()))
+
+            shouldThrow<CompletionException> {
+                command.execute(TestCommandActor, EmptyRawArguments)
+                        .join()
+            }
+
+            verify { executionThrowableInterceptor.intercept(exception) }
+        }
+
+        test("Should catch execution exception") {
+            val exception = RuntimeException()
+
+            @Command("test")
+            class TestCommand {
+                @CommandHandler
+                fun execute() {
+                    throw exception
+                }
+            }
+
+            val command = commandFactory.create(commandSpecFactory.create(TestCommand()))
+            command.execute(TestCommandActor, EmptyRawArguments)
+
+            verify { executionThrowableInterceptor.intercept(exception) }
+        }
     }
 
     context("Join argument") {

@@ -51,8 +51,7 @@ public final class SimpleCommandFactory implements CommandFactory {
                 handler.getUsage(),
                 LOOKUP.unreflect(handler.getMethod())
                         .bindTo(command.getInstance()),
-                handler.getParameters(),
-                executionThrowableInterceptor
+                handler.getParameters()
         );
     }
 
@@ -97,7 +96,8 @@ public final class SimpleCommandFactory implements CommandFactory {
                 spec.getName(),
                 Collections.unmodifiableList(Arrays.asList(spec.getAliases())),
                 createTree(spec),
-                executionContextFactory
+                executionContextFactory,
+                executionThrowableInterceptor
         );
     }
 

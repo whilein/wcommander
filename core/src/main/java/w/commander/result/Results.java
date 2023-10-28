@@ -30,7 +30,7 @@ public class Results {
 
     private static abstract class Empty implements Result {
         @Override
-        public void answer(@NotNull ExecutionContext context) {
+        public void dispatch(@NotNull ExecutionContext context) {
         }
     }
 
@@ -70,8 +70,8 @@ public class Results {
         String text;
 
         @Override
-        public void answer(@NotNull ExecutionContext context) {
-            context.answer(text);
+        public void dispatch(@NotNull ExecutionContext context) {
+            context.dispatch(text);
         }
     }
 

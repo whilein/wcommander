@@ -40,8 +40,8 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
     ) {
         val existing = executors.get(index);
 
-        if (existing != null && !existing.isAdvancing()) {
-            if (executor.isAdvancing()) {
+        if (existing != null && !existing.isYielding()) {
+            if (executor.isYielding()) {
                 return false;
             }
 
@@ -60,15 +60,6 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
     ) {
         if (executors.isEmpty()) {
             return new CommandNodeImpl(EMPTY, subCommands);
-        }
-
-        int maxArguments = 0;
-
-        for (val executor : executors) {
-            if (executor instanceof CommandHandler) {
-                val handler = (CommandHandler) executor;
-                maxArguments = Math.max(maxArguments, handler.getParameters().getArgumentCount());
-            }
         }
 
         val executorByArgumentMap = new HashMap<Integer, CommandExecutor>();
