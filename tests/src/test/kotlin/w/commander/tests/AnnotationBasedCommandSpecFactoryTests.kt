@@ -13,7 +13,6 @@ import w.commander.manual.usage.SimpleUsageFactory
 import w.commander.parameter.DefaultHandlerParameterResolver
 import w.commander.parameter.argument.parser.type.NoopArgumentParser
 import w.commander.parameter.argument.parser.type.NumberArgumentParser
-import w.commander.parameter.argument.parser.type.NumberArgumentParserFactoryResolver
 import w.commander.parameter.argument.type.JoinArgument
 import w.commander.parameter.argument.type.OrdinaryArgument
 import w.commander.parameter.type.SenderHandlerParameter
@@ -24,21 +23,17 @@ import w.commander.spec.template.SimpleCommandTemplate
 /**
  * @author whilein
  */
-class AnnotationBasedCommandSpecFactoryTest : FunSpec({
+class AnnotationBasedCommandSpecFactoryTests : FunSpec({
 
     val commandSpecFactory = AnnotationBasedCommandSpecFactory.create(
             HandlerPathStrategies.lowerSnakeCase(),
+            SimpleUsageFactory.create(),
+            SimpleDescriptionFactory.create(),
             listOf(
                     DefaultHandlerParameterResolver.create(
-                            listOf(
-                                    NumberArgumentParserFactoryResolver.create(
-                                            NoopErrorResultFactory.create()
-                                    )
-                            )
+                            NoopErrorResultFactory.create()
                     )
-            ),
-            SimpleUsageFactory.create(),
-            SimpleDescriptionFactory.create()
+            )
     )
 
     context("Path") {

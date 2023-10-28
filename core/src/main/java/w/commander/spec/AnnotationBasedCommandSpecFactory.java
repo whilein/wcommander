@@ -32,22 +32,21 @@ import java.util.List;
 public final class AnnotationBasedCommandSpecFactory implements CommandSpecFactory {
 
     HandlerPathStrategy handlerPathStrategy;
-    Iterable<? extends HandlerParameterResolver> parameterResolvers;
-
     UsageFactory usageFactory;
     DescriptionFactory descriptionFactory;
+    Iterable<? extends HandlerParameterResolver> parameterResolvers;
 
-    public static CommandSpecFactory create(
+    public static @NotNull CommandSpecFactory create(
             @NotNull HandlerPathStrategy handlerPathStrategy,
-            @NotNull Iterable<? extends @NotNull HandlerParameterResolver> parameterResolvers,
             @NotNull UsageFactory usageFactory,
-            @NotNull DescriptionFactory descriptionFactory
+            @NotNull DescriptionFactory descriptionFactory,
+            @NotNull Iterable<? extends @NotNull HandlerParameterResolver> parameterResolvers
     ) {
         return new AnnotationBasedCommandSpecFactory(
                 handlerPathStrategy,
-                parameterResolvers,
                 usageFactory,
-                descriptionFactory
+                descriptionFactory,
+                parameterResolvers
         );
     }
 

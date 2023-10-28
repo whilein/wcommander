@@ -8,10 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.CommandSender;
 import w.commander.annotation.Arg;
 import w.commander.annotation.Join;
-import w.commander.parameter.argument.parser.ArgumentParser;
+import w.commander.error.ErrorResultFactory;
 import w.commander.parameter.argument.parser.ArgumentParserFactory;
 import w.commander.parameter.argument.parser.ArgumentParserFactoryResolver;
-import w.commander.parameter.argument.parser.type.NoopArgumentParser;
 import w.commander.parameter.argument.parser.type.NoopArgumentParserFactory;
 import w.commander.parameter.argument.type.JoinArgument;
 import w.commander.parameter.argument.type.OrdinaryArgument;
@@ -27,6 +26,10 @@ import java.lang.reflect.Parameter;
 public final class DefaultHandlerParameterResolver extends AbstractHandlerParameterResolver {
 
     Iterable<? extends ArgumentParserFactoryResolver> argumentParserFactoryResolvers;
+
+    public static @NotNull HandlerParameterResolver create(@NotNull ErrorResultFactory errorResultFactory) {
+        return create(ArgumentParserFactoryResolver.listDefaults(errorResultFactory));
+    }
 
     public static @NotNull HandlerParameterResolver create(
             @NotNull Iterable<? extends @NotNull ArgumentParserFactoryResolver> argumentParserFactoryResolvers
