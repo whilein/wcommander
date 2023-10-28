@@ -59,8 +59,8 @@ public interface RawCommandArguments {
         return joiner.toString();
     }
 
-    default String join(String delimiter, int start) {
-        return join(delimiter, start, size());
+    default String join(String delimiter, int fromIndex) {
+        return join(delimiter, fromIndex, size());
     }
 
     default String join(String delimiter) {
@@ -91,7 +91,7 @@ public interface RawCommandArguments {
 
         @Override
         public String value(int index) {
-            if (index < 0) {
+            if (index < 0 || index >= length) {
                 throw new IndexOutOfBoundsException(String.valueOf(index));
             }
 
