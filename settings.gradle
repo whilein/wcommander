@@ -3,6 +3,7 @@ rootProject.name = "wcommander"
 include ':core'
 include ':guice'
 include ':tests'
+include ':kotlin'
 // todo include ':spring-starter'
 // todo include ':bukkit'
 // todo include ':velocity'
