@@ -11,6 +11,7 @@ import w.commander.annotation.Arg
 import w.commander.annotation.Command
 import w.commander.annotation.CommandHandler
 import w.commander.annotation.Join
+import w.commander.error.DefaultExecutionThrowableInterceptor
 import w.commander.error.NoopErrorResultFactory
 import w.commander.kt.EmptyRawArguments
 import w.commander.manual.SimpleManualFactory
@@ -41,7 +42,8 @@ class CommandTests : FunSpec({
     val commandFactory = SimpleCommandFactory.create(
             SimpleCommandNodeFactory.create(errorResultFactory),
             TestExecutionContextFactory(),
-            SimpleManualFactory.create()
+            DefaultExecutionThrowableInterceptor.create(errorResultFactory),
+            SimpleManualFactory.create(),
     )
 
     afterEach {

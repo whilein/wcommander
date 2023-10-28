@@ -6,10 +6,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.execution.ExecutionContextFactory;
-import w.commander.execution.CommandExecutor;
-import w.commander.execution.ManualCommandExecutor;
-import w.commander.execution.MethodHandleCommandHandler;
+import w.commander.execution.*;
 import w.commander.manual.ManualFactory;
 import w.commander.spec.CommandSpec;
 import w.commander.spec.HandlerSpec;
@@ -30,16 +27,19 @@ public final class SimpleCommandFactory implements CommandFactory {
 
     CommandNodeFactory commandNodeFactory;
     ExecutionContextFactory executionContextFactory;
+    ExecutionThrowableInterceptor executionThrowableInterceptor;
     ManualFactory manualFactory;
 
     public static @NotNull CommandFactory create(
             @NotNull CommandNodeFactory commandNodeFactory,
             @NotNull ExecutionContextFactory executionContextFactory,
+            @NotNull ExecutionThrowableInterceptor executionThrowableInterceptor,
             @NotNull ManualFactory manualFactory
     ) {
         return new SimpleCommandFactory(
                 commandNodeFactory,
                 executionContextFactory,
+                executionThrowableInterceptor,
                 manualFactory
         );
     }
@@ -51,7 +51,8 @@ public final class SimpleCommandFactory implements CommandFactory {
                 handler.getUsage(),
                 LOOKUP.unreflect(handler.getMethod())
                         .bindTo(command.getInstance()),
-                handler.getParameters()
+                handler.getParameters(),
+                executionThrowableInterceptor
         );
     }
 

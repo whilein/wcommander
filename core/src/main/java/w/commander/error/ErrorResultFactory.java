@@ -12,6 +12,8 @@ import java.util.Map;
  */
 public interface ErrorResultFactory {
 
+    @NotNull FailedResult onInternalError(@NotNull Throwable throwable);
+
     @NotNull FailedResult onNotEnoughArguments(
             @NotNull Usage usage
     );

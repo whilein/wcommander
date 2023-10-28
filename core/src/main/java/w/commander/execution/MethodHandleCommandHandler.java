@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import w.commander.error.ErrorResultFactory;
 import w.commander.internal.InvocationParametersProcessor;
 import w.commander.manual.usage.Usage;
 import w.commander.parameter.HandlerParameters;
@@ -22,33 +23,42 @@ import java.util.function.Supplier;
 public class MethodHandleCommandHandler extends AbstractCommandHandler {
 
     MethodHandle method;
+    ExecutionThrowableInterceptor executionThrowableInterceptor;
 
     private MethodHandleCommandHandler(
             String path,
             Usage usage,
             MethodHandle method,
-            HandlerParameters parameters
+            HandlerParameters parameters,
+            ExecutionThrowableInterceptor executionThrowableInterceptor
     ) {
         super(path, parameters, usage);
 
         this.method = method;
+        this.executionThrowableInterceptor = executionThrowableInterceptor;
     }
 
-    public static CommandHandler create(
+    public static @NotNull CommandHandler create(
             @NotNull String path,
             @NotNull Usage usage,
             @NotNull MethodHandle mh,
-            @NotNull HandlerParameters parameters
+            @NotNull HandlerParameters parameters,
+            @NotNull ExecutionThrowableInterceptor executionThrowableInterceptor
     ) {
         return new MethodHandleCommandHandler(
                 path,
                 usage,
                 mh,
-                parameters
+                parameters,
+                executionThrowableInterceptor
         );
     }
 
-    private void processReturnedValue(Object returnedValue, Consumer<Result> callback) {
+    private void processReturnedValue(
+            Object returnedValue,
+            Consumer<Result> callback,
+            Consumer<Throwable> failureCallback
+    ) {
         if (returnedValue instanceof Result) {
             callback.accept((Result) returnedValue);
         } else if (returnedValue instanceof CompletableFuture<?>) {
@@ -56,17 +66,29 @@ public class MethodHandleCommandHandler extends AbstractCommandHandler {
 
             future.whenComplete((v, t) -> {
                 if (t != null) {
-                    // TODO
+                    failureCallback.accept(t);
                     return;
                 }
 
-                processReturnedValue(v, callback);
+                processReturnedValue(v, callback, failureCallback);
             });
         } else if (returnedValue instanceof Supplier<?>) {
-            processReturnedValue(((Supplier<?>) returnedValue).get(), callback);
+            processReturnedValue(((Supplier<?>) returnedValue).get(), callback, failureCallback);
         } else {
             callback.accept(Results.ok());
         }
+    }
+
+    private Result processThrowable(Throwable t) {
+        if (t instanceof Result) {
+            return (Result) t;
+        }
+
+        return executionThrowableInterceptor.intercept(t);
+    }
+
+    private Consumer<Throwable> throwableToResultMapper(Consumer<Result> callback) {
+        return t -> callback.accept(processThrowable(t));
     }
 
     @Override
@@ -74,14 +96,24 @@ public class MethodHandleCommandHandler extends AbstractCommandHandler {
             @NotNull ExecutionContext context,
             @NotNull Consumer<@NotNull Result> callback
     ) {
+        val failureCallback = throwableToResultMapper(callback);
+
         val commandParameterExtractor = new InvocationParametersProcessor(context, this);
+
         commandParameterExtractor.setResultCallback(callback);
+        commandParameterExtractor.setFailureCallback(failureCallback);
+
         commandParameterExtractor.setParameterCallback(parameters -> {
+            Object result;
+
             try {
-                processReturnedValue(method.invokeWithArguments(parameters), callback);
+                result = method.invokeWithArguments(parameters);
             } catch (Throwable e) {
-                throw new RuntimeException(e);
+                failureCallback.accept(e);
+                return;
             }
+
+            processReturnedValue(result, callback, failureCallback);
         });
 
         commandParameterExtractor.process();

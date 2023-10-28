@@ -21,6 +21,11 @@ public class NoopErrorResultFactory implements ErrorResultFactory {
     }
 
     @Override
+    public @NotNull FailedResult onInternalError(@NotNull Throwable throwable) {
+        return Results.error();
+    }
+
+    @Override
     public @NotNull FailedResult onNotEnoughArguments(@NotNull Usage usage) {
         return Results.error();
     }
