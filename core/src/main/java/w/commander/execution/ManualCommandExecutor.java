@@ -14,9 +14,9 @@ import java.util.function.Consumer;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ManualCommandExecutor extends AbstractCommandExecutor {
+public final class ManualCommandExecutor extends AbstractCommandExecutor {
 
-    @NotNull Manual manual;
+    Manual manual;
 
     public static @NotNull CommandExecutor create(@NotNull Manual manual) {
         return new ManualCommandExecutor(manual);
@@ -31,7 +31,7 @@ public class ManualCommandExecutor extends AbstractCommandExecutor {
     }
 
     @Override
-    public boolean isOverrideable() {
+    public boolean isAdvancing() {
         return true;
     }
 

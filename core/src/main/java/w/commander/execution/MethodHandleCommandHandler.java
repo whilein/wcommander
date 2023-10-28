@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import w.commander.internal.InvocationParametersProcessor;
 import w.commander.manual.usage.Usage;
-import w.commander.parameter.HandlerParameter;
-import w.commander.parameter.argument.Argument;
+import w.commander.parameter.HandlerParameters;
 import w.commander.result.Result;
 import w.commander.result.Results;
 
@@ -22,49 +22,26 @@ import java.util.function.Supplier;
 public class MethodHandleCommandHandler extends AbstractCommandHandler {
 
     MethodHandle method;
-    HandlerParameter[] parameters;
 
     private MethodHandleCommandHandler(
             String path,
-            int argumentCount,
-            int requiredArgumentCount,
             Usage usage,
             MethodHandle method,
-            HandlerParameter[] parameters
+            HandlerParameters parameters
     ) {
-        super(path, argumentCount, requiredArgumentCount, usage);
+        super(path, parameters, usage);
 
         this.method = method;
-        this.parameters = parameters;
     }
 
     public static CommandHandler create(
             @NotNull String path,
             @NotNull Usage usage,
             @NotNull MethodHandle mh,
-            @NotNull HandlerParameter @NotNull  [] parameters
+            @NotNull HandlerParameters parameters
     ) {
-        int argumentCount = 0;
-        int requiredArgumentCount = 0;
-
-        for (val parameter : parameters) {
-            if (!(parameter instanceof Argument)) {
-                continue;
-            }
-
-            argumentCount++;
-
-            val argument = (Argument) parameter;
-
-            if (argument.isRequired()) {
-                requiredArgumentCount += argument.getMinLength();
-            }
-        }
-
         return new MethodHandleCommandHandler(
                 path,
-                argumentCount,
-                requiredArgumentCount,
                 usage,
                 mh,
                 parameters
@@ -97,17 +74,16 @@ public class MethodHandleCommandHandler extends AbstractCommandHandler {
             @NotNull ExecutionContext context,
             @NotNull Consumer<@NotNull Result> callback
     ) {
-        val commandParameterExtractor = new InvocationParameterExtractor(context, this, parameters);
+        val commandParameterExtractor = new InvocationParametersProcessor(context, this);
+        commandParameterExtractor.setResultCallback(callback);
+        commandParameterExtractor.setParameterCallback(parameters -> {
+            try {
+                processReturnedValue(method.invokeWithArguments(parameters), callback);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        commandParameterExtractor.extract(
-                parameters -> {
-                    try {
-                        processReturnedValue(method.invokeWithArguments(parameters), callback);
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                },
-                callback
-        );
+        commandParameterExtractor.process();
     }
 }

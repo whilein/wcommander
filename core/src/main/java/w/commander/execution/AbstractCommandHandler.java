@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.manual.usage.Usage;
+import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.HandlerParameters;
 
 /**
  * @author whilein
@@ -18,9 +20,8 @@ public abstract class AbstractCommandHandler extends AbstractCommandExecutor imp
 
     @NotNull String path;
 
-    int argumentCount;
-    int requiredArgumentCount;
+    @NotNull HandlerParameters parameters;
 
-    @Nullable Usage usage;
+    @NotNull Usage usage;
 
 }

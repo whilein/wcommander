@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class NotEnoughArgumentsCommandExecutor extends AbstractCommandExecutor {
+public final class NotEnoughArgumentsCommandExecutor extends AbstractCommandExecutor {
 
     Usage usage;
     ErrorResultFactory errorResultFactory;

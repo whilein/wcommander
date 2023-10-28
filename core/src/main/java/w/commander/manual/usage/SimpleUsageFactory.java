@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.Argument;
 
+import java.util.List;
+
 /**
  * @author whilein
  */
@@ -27,7 +29,7 @@ public final class SimpleUsageFactory implements UsageFactory {
     }
 
     @Override
-    public @NotNull Usage create(@NotNull String command, @NotNull Argument @NotNull [] arguments) {
+    public @NotNull Usage create(@NotNull String command, @NotNull List<? extends @NotNull Argument> arguments) {
         val builder = new StringBuilder(prefix).append(command);
 
         for (val argument : arguments) {

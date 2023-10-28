@@ -10,8 +10,7 @@ import w.commander.manual.description.Description;
 import w.commander.manual.description.DescriptionFactory;
 import w.commander.manual.usage.Usage;
 import w.commander.manual.usage.UsageFactory;
-import w.commander.parameter.HandlerParameter;
-import w.commander.parameter.HandlerParameterResolver;
+import w.commander.parameter.*;
 import w.commander.parameter.argument.Argument;
 import w.commander.spec.path.HandlerPathStrategy;
 import w.commander.spec.template.CommandTemplate;
@@ -103,15 +102,20 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
         throw new UnsupportedOperationException("There are no available parameter resolvers for " + parameter);
     }
 
-    private HandlerParameter[] getParameters(Method method) {
+    private HandlerParameters getParameters(Method method) {
         val methodParameters = method.getParameters();
+
+        if (methodParameters.length == 0) {
+            return EmptyHandlerParameters.getInstance();
+        }
+
         val parameters = new HandlerParameter[methodParameters.length];
 
         for (int i = 0, j = methodParameters.length; i < j; i++) {
             parameters[i] = resolveParameter(methodParameters[i]);
         }
 
-        return parameters;
+        return SimpleHandlerParameters.create(parameters);
     }
 
     private static List<String> path(List<String> parentPath, String name) {
@@ -121,7 +125,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
         return path;
     }
 
-    private Usage getUsage(List<String> path, Argument[] arguments) {
+    private Usage getUsage(List<String> path, List<? extends Argument> arguments) {
         return usageFactory.create(String.join(" ", path), arguments);
     }
 
@@ -133,20 +137,13 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
                 : "");
     }
 
-    private static Argument[] getArguments(HandlerParameter[] parameters) {
-        return Arrays.stream(parameters)
-                .filter(Argument.class::isInstance)
-                .map(Argument.class::cast)
-                .toArray(Argument[]::new);
-    }
-
     private HandlerSpec createHandler(List<String> path, String name, Method method) {
         val hidden = isHidden(method);
         val parameters = getParameters(method);
 
         return ImmutableHandlerSpec.builder()
                 .method(method)
-                .usage(getUsage(path, getArguments(parameters)))
+                .usage(getUsage(path, parameters.getArguments()))
                 .description(hidden ? null : getDescription(method))
                 .path(handlerPathStrategy.getPath(path(path, name)))
                 .parameters(parameters)

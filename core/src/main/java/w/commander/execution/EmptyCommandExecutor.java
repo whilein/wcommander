@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * @author whilein
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EmptyCommandExecutor extends AbstractCommandExecutor {
+public final class EmptyCommandExecutor extends AbstractCommandExecutor {
 
     private static final CommandExecutor INSTANCE = new EmptyCommandExecutor();
 

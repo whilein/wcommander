@@ -11,7 +11,6 @@ import w.commander.execution.CommandExecutor;
 import w.commander.execution.CommandHandler;
 import w.commander.execution.EmptyCommandExecutor;
 import w.commander.execution.NotEnoughArgumentsCommandExecutor;
-import w.commander.manual.usage.Usage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +40,8 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
     ) {
         val existing = executors.get(index);
 
-        if (existing != null && !existing.isOverrideable()) {
-            if (executor.isOverrideable()) {
+        if (existing != null && !existing.isAdvancing()) {
+            if (executor.isAdvancing()) {
                 return false;
             }
 
@@ -68,7 +67,7 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
         for (val executor : executors) {
             if (executor instanceof CommandHandler) {
                 val handler = (CommandHandler) executor;
-                maxArguments = Math.max(maxArguments, handler.getArgumentCount());
+                maxArguments = Math.max(maxArguments, handler.getParameters().getArgumentCount());
             }
         }
 
@@ -77,8 +76,9 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
         for (val executor : executors) {
             if (executor instanceof CommandHandler) {
                 val handler = (CommandHandler) executor;
+                val parameters = handler.getParameters();
 
-                for (int i = handler.getRequiredArgumentCount(), j = handler.getArgumentCount(); i <= j; i++) {
+                for (int i = parameters.getRequiredArgumentCount(), j = parameters.getArgumentCount(); i <= j; i++) {
                     trySetExecutor(executorByArgumentMap, executor, i);
                 }
             } else {
@@ -112,11 +112,9 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
 
                 continue;
             }
-
-            Usage usage;
-
-            executorByArgument[i] = nextHandler != null && (usage = nextHandler.getUsage()) != null
-                    ? NotEnoughArgumentsCommandExecutor.create(usage, errorResultFactory)
+            
+            executorByArgument[i] = nextHandler != null
+                    ? NotEnoughArgumentsCommandExecutor.create(nextHandler.getUsage(), errorResultFactory)
                     : EmptyCommandExecutor.getInstance();
         }
 

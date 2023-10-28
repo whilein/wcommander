@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.manual.description.Description;
 import w.commander.manual.usage.Usage;
 import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.HandlerParameters;
 
 import java.lang.reflect.Method;
 
@@ -16,7 +17,7 @@ public interface HandlerSpec {
 
     @NotNull String getPath();
 
-    @NotNull HandlerParameter @NotNull [] getParameters();
+    @NotNull HandlerParameters getParameters();
 
     // todo conditions
 

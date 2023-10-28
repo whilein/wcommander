@@ -1,10 +1,13 @@
-package w.commander.execution;
+package w.commander.internal;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.val;
-import w.commander.parameter.HandlerParameter;
+import w.commander.execution.CommandHandler;
+import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.cursor.SimpleArgumentCursor;
 import w.commander.result.Result;
 
@@ -22,35 +25,77 @@ import java.util.function.Supplier;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-final class InvocationParameterExtractor {
+public final class InvocationParametersProcessor {
 
     ExecutionContext context;
+
     CommandHandler commandHandler;
-    HandlerParameter[] handlerParameters;
+
+    @Setter
+    @NonFinal
+    Consumer<Object[]> parameterCallback;
+
+    @Setter
+    @NonFinal
+    Consumer<Result> resultCallback;
+
+    @Setter
+    @NonFinal
+    Consumer<Throwable> failureCallback;
+
+    private static <T> void done(T value, Consumer<T> callback) {
+        if (callback != null) {
+            callback.accept(value);
+        }
+    }
+
+    private void done(Result result) {
+        done(result, resultCallback);
+    }
+
+    private void done(Object[] parameters) {
+        done(parameters, parameterCallback);
+    }
+
+    private void done(Throwable failure) {
+        done(failure, failureCallback);
+    }
 
     private void extractLazy(
             int index,
             Object value,
             Queue<CompletableFuture<?>> futures,
             AtomicReference<Result> result,
+            AtomicReference<Throwable> failure,
             Object[] parameters
     ) {
         // already completed with error
-        if (result.get() != null) {
+        if (result.get() != null || failure.get() != null) {
             return;
         }
 
         if (value instanceof Supplier<?>) {
-            extractLazy(index, ((Supplier<?>) value).get(), futures, result, parameters);
+            Object newValue;
+
+            try {
+                newValue = ((Supplier<?>) value).get();
+            } catch (Throwable t) {
+                failure.set(t);
+                return;
+            }
+
+            extractLazy(index, newValue, futures, result, failure, parameters);
             return;
         }
 
         if (value instanceof CompletableFuture<?>) {
             val future = (CompletableFuture<?>) value;
 
-            futures.add(future.whenComplete((v, e) -> {
-                if (e == null) {
-                    extractLazy(index, value, futures, result, parameters);
+            futures.add(future.whenComplete((v, t) -> {
+                if (t == null) {
+                    extractLazy(index, v, futures, result, failure, parameters);
+                } else {
+                    failure.set(t);
                 }
             }));
 
@@ -67,7 +112,7 @@ final class InvocationParameterExtractor {
         // todo validation
     }
 
-    private void awaitFutureCompletion(
+    private static void awaitFutureCompletion(
             Queue<CompletableFuture<?>> futures,
             Runnable completionCallback
     ) {
@@ -83,14 +128,15 @@ final class InvocationParameterExtractor {
         completionCallback.run();
     }
 
-    public void extract(Consumer<Object[]> parameterCallback, Consumer<Result> resultCallback) {
-        val commandParameters = this.handlerParameters;
-        val parameters = new Object[commandParameters.length];
+    public void process() {
+        val parameters = commandHandler.getParameters();
+
+        val values = new Object[parameters.size()];
 
         val rawArguments = context.getRawArguments();
 
         val argumentCount = rawArguments.size();
-        val requiredArgumentCount = commandHandler.getRequiredArgumentCount();
+        val requiredArgumentCount = parameters.getRequiredArgumentCount();
 
         val cursor = SimpleArgumentCursor.create(
                 argumentCount,
@@ -99,8 +145,8 @@ final class InvocationParameterExtractor {
 
         List<Lazy> lazyParameters = null;
 
-        for (int i = 0, j = parameters.length; i < j; i++) {
-            val parameter = commandParameters[i];
+        for (int i = 0, j = values.length; i < j; i++) {
+            val parameter = parameters.get(i);
 
             val value = parameter.extract(context, cursor);
 
@@ -111,10 +157,10 @@ final class InvocationParameterExtractor {
 
                 lazyParameters.add(new Lazy(i, value));
             } else if (value instanceof Result) {
-                resultCallback.accept((Result) value);
+                done((Result) value);
                 return;
             } else {
-                parameters[i] = value;
+                values[i] = value;
 
                 // todo validation
             }
@@ -123,6 +169,7 @@ final class InvocationParameterExtractor {
         if (lazyParameters != null) {
             val futures = new ConcurrentLinkedQueue<CompletableFuture<?>>();
             val resultRef = new AtomicReference<Result>();
+            val failureRef = new AtomicReference<Throwable>();
 
             for (val lazyParameter : lazyParameters) {
                 extractLazy(
@@ -130,25 +177,33 @@ final class InvocationParameterExtractor {
                         lazyParameter.value,
                         futures,
                         resultRef,
-                        parameters
+                        failureRef,
+                        values
                 );
             }
 
             awaitFutureCompletion(futures, () -> {
-                val result = resultRef.get();
+                val failure = failureRef.get();
 
-                if (result != null) {
-                    resultCallback.accept(result);
+                if (failure != null) {
+                    done(failure);
                     return;
                 }
 
-                parameterCallback.accept(parameters);
+                val result = resultRef.get();
+
+                if (result != null) {
+                    done(result);
+                    return;
+                }
+
+                done(values);
             });
 
             return;
         }
 
-        parameterCallback.accept(parameters);
+        done(values);
     }
 
     @FieldDefaults(makeFinal = true)

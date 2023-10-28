@@ -12,7 +12,7 @@ public interface CommandExecutor {
 
     void execute(@NotNull ExecutionContext context, @NotNull Consumer<@NotNull Result> callback);
 
-    default boolean isOverrideable() {
+    default boolean isAdvancing() {
         return false;
     }
 
