@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import w.commander.util.ArrayUtils;
+import w.commander.util.Preconditions;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -43,7 +43,7 @@ public interface RawCommandArguments {
     String value(int index);
 
     default String join(String delimiter, int fromIndex, int toIndex) {
-        ArrayUtils.checkRange(fromIndex, toIndex, size());
+        Preconditions.checkRange(fromIndex, toIndex, size());
 
         val joiner = new StringJoiner(delimiter);
 
@@ -99,7 +99,7 @@ public interface RawCommandArguments {
                 return this;
             }
 
-            ArrayUtils.checkRange(fromIndex, toIndex, length);
+            Preconditions.checkRange(fromIndex, toIndex, length);
 
             return new OfArray(arguments, this.offset + fromIndex, toIndex - fromIndex);
         }

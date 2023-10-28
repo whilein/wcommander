@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
  * @author whilein
  */
 @UtilityClass
-public class ArrayUtils {
+public class Preconditions {
 
     public void checkRange(int fromIndex, int toIndex, int size) {
         if (fromIndex < 0) {
