@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import w.commander.util.Preconditions;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -32,6 +33,10 @@ public interface RawCommandArguments {
         }
 
         return new OfArray(arguments, offset, length);
+    }
+
+    static RawCommandArguments empty() {
+        return OfList.EMPTY;
     }
 
     default boolean isEmpty() {
@@ -109,6 +114,7 @@ public interface RawCommandArguments {
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     final class OfList implements RawCommandArguments {
+        private static final RawCommandArguments EMPTY = new OfList(Collections.emptyList());
 
         List<String> arguments;
 
