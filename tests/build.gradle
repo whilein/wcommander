@@ -8,7 +8,7 @@ dependencies {
 
     testImplementation libs.slf4j.simple
     testImplementation libs.kotest
-    testImplementation libs.mockito
+    testImplementation libs.mockk
 }
 
 test {
