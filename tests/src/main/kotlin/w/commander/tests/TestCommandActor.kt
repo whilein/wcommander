@@ -1,11 +1,11 @@
 package w.commander.tests
 
-import w.commander.CommandSender
+import w.commander.CommandActor
 
 /**
  * @author whilein
  */
-object TestCommandSender : CommandSender {
+object TestCommandActor : CommandActor {
     override fun getName(): String = "test"
 
     override fun sendMessage(text: String) {

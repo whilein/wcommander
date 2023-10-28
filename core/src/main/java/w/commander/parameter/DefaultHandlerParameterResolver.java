@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandSender;
+import w.commander.CommandActor;
 import w.commander.annotation.Arg;
 import w.commander.annotation.Join;
 import w.commander.error.ErrorResultFactory;
@@ -14,7 +14,7 @@ import w.commander.parameter.argument.parser.ArgumentParserFactoryResolver;
 import w.commander.parameter.argument.parser.type.NoopArgumentParserFactory;
 import w.commander.parameter.argument.type.JoinArgument;
 import w.commander.parameter.argument.type.OrdinaryArgument;
-import w.commander.parameter.type.SenderHandlerParameter;
+import w.commander.parameter.type.ActorHandlerParameter;
 
 import java.lang.reflect.Parameter;
 
@@ -41,7 +41,7 @@ public final class DefaultHandlerParameterResolver extends AbstractHandlerParame
     public boolean isSupported(@NotNull Parameter parameter) {
         return parameter.isAnnotationPresent(Arg.class)
                || parameter.isAnnotationPresent(Join.class)
-               || CommandSender.class.isAssignableFrom(parameter.getType());
+               || CommandActor.class.isAssignableFrom(parameter.getType());
     }
 
     private ArgumentParserFactory resolveParserFactory(Class<?> type) {
@@ -87,8 +87,8 @@ public final class DefaultHandlerParameterResolver extends AbstractHandlerParame
             );
         }
 
-        if (CommandSender.class.isAssignableFrom(type)) {
-            return SenderHandlerParameter.getInstance();
+        if (CommandActor.class.isAssignableFrom(type)) {
+            return ActorHandlerParameter.getInstance();
         }
 
         throw new IllegalArgumentException("Unsupported parameter: " + parameter);

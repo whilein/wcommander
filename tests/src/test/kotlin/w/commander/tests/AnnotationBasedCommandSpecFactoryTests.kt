@@ -4,7 +4,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
-import w.commander.CommandSender
+import w.commander.CommandActor
 import w.commander.annotation.*
 import w.commander.error.NoopErrorResultFactory
 import w.commander.kt.CommandTemplate.withSubCommand
@@ -15,7 +15,7 @@ import w.commander.parameter.argument.parser.type.NoopArgumentParser
 import w.commander.parameter.argument.parser.type.NumberArgumentParser
 import w.commander.parameter.argument.type.JoinArgument
 import w.commander.parameter.argument.type.OrdinaryArgument
-import w.commander.parameter.type.SenderHandlerParameter
+import w.commander.parameter.type.ActorHandlerParameter
 import w.commander.spec.AnnotationBasedCommandSpecFactory
 import w.commander.spec.path.HandlerPathStrategies
 import w.commander.spec.template.SimpleCommandTemplate
@@ -322,11 +322,11 @@ class AnnotationBasedCommandSpecFactoryTests : FunSpec({
     }
 
     context("Parameters") {
-        test("CommandSender") {
+        test("CommandActor") {
             @Command("test")
             class TestCommand {
                 @CommandHandler
-                fun exec(sender: CommandSender?) {
+                fun exec(actor: CommandActor) {
                 }
             }
 
@@ -335,7 +335,7 @@ class AnnotationBasedCommandSpecFactoryTests : FunSpec({
             command
                     .handlers.single()
                     .parameters.single()
-                    .shouldBeTypeOf<SenderHandlerParameter>()
+                    .shouldBeTypeOf<ActorHandlerParameter>()
         }
 
         test("Int") {

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandSender;
+import w.commander.CommandActor;
 import w.commander.RawArguments;
 
 /**
@@ -16,12 +16,12 @@ import w.commander.RawArguments;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractExecutionContext implements ExecutionContext {
 
-    @NotNull CommandSender sender;
+    @NotNull CommandActor actor;
     @NotNull CommandExecutor executor;
     @NotNull RawArguments rawArguments;
 
     @Override
     public void answer(@NotNull String text) {
-        sender.sendMessage(text);
+        actor.sendMessage(text);
     }
 }

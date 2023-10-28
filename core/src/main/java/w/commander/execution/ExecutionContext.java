@@ -1,7 +1,7 @@
 package w.commander.execution;
 
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandSender;
+import w.commander.CommandActor;
 import w.commander.RawArguments;
 
 /**
@@ -9,7 +9,7 @@ import w.commander.RawArguments;
  */
 public interface ExecutionContext {
 
-    @NotNull CommandSender getSender();
+    @NotNull CommandActor getActor();
 
     @NotNull RawArguments getRawArguments();
 

@@ -42,7 +42,7 @@ public class SimpleCommand implements Command {
     }
 
     @Override
-    public void execute(@NotNull CommandSender sender, @NotNull RawArguments arguments) {
+    public void execute(@NotNull CommandActor actor, @NotNull RawArguments arguments) {
         CommandNode tree = this.tree;
         int offset = 0;
 
@@ -60,7 +60,7 @@ public class SimpleCommand implements Command {
         val newArguments = arguments.withOffset(offset);
 
         val executor = tree.executor(newArguments.size());
-        val context = executionContextFactory.create(sender, executor, newArguments);
+        val context = executionContextFactory.create(actor, executor, newArguments);
         executor.execute(context, result -> result.answer(context));
     }
 

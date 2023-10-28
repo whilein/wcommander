@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author whilein
  */
-public interface CommandSender {
+public interface CommandActor {
 
     @NotNull String getName();
 

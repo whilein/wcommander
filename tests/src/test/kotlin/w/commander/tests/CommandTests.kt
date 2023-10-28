@@ -60,7 +60,7 @@ class CommandTests : FunSpec({
             val commandInstance = spyk<TestCommand>()
 
             val command = commandFactory.create(commandSpecFactory.create(commandInstance))
-            command.execute(TestCommandSender, RawArguments.fromArray("1", "2", "3"))
+            command.execute(TestCommandActor, RawArguments.fromArray("1", "2", "3"))
 
             verify { commandInstance.execute("1 2 3") }
         }
@@ -76,7 +76,7 @@ class CommandTests : FunSpec({
             val commandInstance = spyk<TestCommand>()
 
             val command = commandFactory.create(commandSpecFactory.create(commandInstance))
-            command.execute(TestCommandSender, EmptyRawArguments)
+            command.execute(TestCommandActor, EmptyRawArguments)
 
             verify { errorResultFactory.onNotEnoughArguments(any()) }
         }
@@ -95,7 +95,7 @@ class CommandTests : FunSpec({
             val commandInstance = spyk<TestCommand>()
 
             val command = commandFactory.create(commandSpecFactory.create(commandInstance))
-            command.execute(TestCommandSender, RawArguments.fromArray("123"))
+            command.execute(TestCommandActor, RawArguments.fromArray("123"))
 
             verify { commandInstance.execute(123) }
         }
@@ -111,7 +111,7 @@ class CommandTests : FunSpec({
             val commandInstance = spyk<TestCommand>()
 
             val command = commandFactory.create(commandSpecFactory.create(commandInstance))
-            command.execute(TestCommandSender, RawArguments.fromArray("abc"))
+            command.execute(TestCommandActor, RawArguments.fromArray("abc"))
 
             verify { errorResultFactory.onInvalidNumber(any(), any()) }
         }
@@ -129,7 +129,7 @@ class CommandTests : FunSpec({
             val commandInstance = spyk<TestCommand>()
 
             val command = commandFactory.create(commandSpecFactory.create(commandInstance))
-            command.execute(TestCommandSender, RawArguments.fromArray("rectangle"))
+            command.execute(TestCommandActor, RawArguments.fromArray("rectangle"))
 
             verify { commandInstance.execute(Shape.RECTANGLE) }
         }
@@ -145,7 +145,7 @@ class CommandTests : FunSpec({
             val commandInstance = spyk<TestCommand>()
 
             val command = commandFactory.create(commandSpecFactory.create(commandInstance))
-            command.execute(TestCommandSender, RawArguments.fromArray("rectt"))
+            command.execute(TestCommandActor, RawArguments.fromArray("rectt"))
 
             verify { errorResultFactory.onInvalidEnum(any(), any(), any<Map<String, Shape>>()) }
         }

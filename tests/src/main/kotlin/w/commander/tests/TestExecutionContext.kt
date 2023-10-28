@@ -1,6 +1,6 @@
 package w.commander.tests
 
-import w.commander.CommandSender
+import w.commander.CommandActor
 import w.commander.RawArguments
 import w.commander.execution.AbstractExecutionContext
 import w.commander.execution.CommandExecutor
@@ -10,8 +10,8 @@ import w.commander.execution.CommandExecutor
  */
 
 class TestExecutionContext(
-        sender: CommandSender,
+        actor: CommandActor,
         executor: CommandExecutor,
         rawArguments: RawArguments
-) : AbstractExecutionContext(sender, executor, rawArguments)
+) : AbstractExecutionContext(actor, executor, rawArguments)
 

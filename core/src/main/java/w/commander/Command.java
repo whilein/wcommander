@@ -13,6 +13,6 @@ public interface Command {
 
     @NotNull List<@NotNull String> getAliases();
 
-    void execute(@NotNull CommandSender sender, @NotNull RawArguments args);
+    void execute(@NotNull CommandActor actor, @NotNull RawArguments args);
 
 }
