@@ -47,6 +47,40 @@ class CommandTests : FunSpec({
         clearAllMocks()
     }
 
+    context("Number argument") {
+        test("Valid number does not fail") {
+            @Command("test")
+            class TestCommand {
+                @CommandHandler
+                fun execute(@Arg value: Int) {
+                }
+            }
+
+            val commandInstance = spyk<TestCommand>()
+
+            val command = commandFactory.create(commandSpecFactory.create(commandInstance))
+            command.execute(TestCommandSender, RawArguments.fromArray("123"))
+
+            verify { commandInstance.execute(123) }
+        }
+
+        test("Invalid number fails") {
+            @Command("test")
+            class TestCommand {
+                @CommandHandler
+                fun execute(@Arg value: Int) {
+                }
+            }
+
+            val commandInstance = spyk<TestCommand>()
+
+            val command = commandFactory.create(commandSpecFactory.create(commandInstance))
+            command.execute(TestCommandSender, RawArguments.fromArray("abc"))
+
+            verify { errorResultFactory.onInvalidNumber(any(), any()) }
+        }
+    }
+
     context("Enum argument") {
         test("Known enum does not fail") {
             @Command("test")
