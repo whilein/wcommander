@@ -13,6 +13,7 @@ import w.commander.annotation.Command
 import w.commander.annotation.CommandHandler
 import w.commander.annotation.Join
 import w.commander.error.DefaultExecutionThrowableInterceptor
+import w.commander.error.ErrorResultFactory
 import w.commander.kt.EmptyRawArguments
 import w.commander.manual.SimpleManualFactory
 import w.commander.manual.description.SimpleDescriptionFactory
@@ -33,7 +34,7 @@ import java.util.function.Supplier
  */
 class CommandTests : FunSpec({
 
-    val errorResultFactory = spyk(NoopErrorResultFactory.create())
+    val errorResultFactory = spyk(object : ErrorResultFactory {})
     val executionThrowableInterceptor = spyk(DefaultExecutionThrowableInterceptor.create(errorResultFactory))
 
     val commandSpecFactory = AnnotationBasedCommandSpecFactory.create(
