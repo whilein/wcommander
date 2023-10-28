@@ -3,7 +3,6 @@ package w.commander.parameter.argument.type;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.val;
@@ -17,7 +16,6 @@ import w.commander.parameter.argument.transformer.CommandArgumentTransformerFact
  * @author whilein
  */
 @Getter
-@Accessors(fluent = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrdinaryCommandArgument implements CommandArgument {
@@ -42,7 +40,7 @@ public class OrdinaryCommandArgument implements CommandArgument {
     @Override
     public Object extract(CommandExecutionContext context, CommandArgumentCursor cursor) {
         if (cursor.hasNext(required)) {
-            return argumentTransformer.transform(context.rawArguments().value(cursor.next()), context);
+            return argumentTransformer.transform(context.getRawArguments().value(cursor.next()), context);
         }
 
         return null;

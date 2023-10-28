@@ -32,10 +32,10 @@ public final class SimpleCommandUsageFactory implements CommandUsageFactory {
         for (val argument : arguments) {
             builder.append(' ');
 
-            val required = argument.required();
+            val required = argument.isRequired();
 
             builder.append(required ? '<' : '(');
-            builder.append(argument.name());
+            builder.append(argument.getName());
             builder.append(required ? '>' : ')');
         }
 

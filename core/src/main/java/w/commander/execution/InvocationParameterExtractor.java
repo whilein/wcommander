@@ -87,7 +87,7 @@ final class InvocationParameterExtractor {
         val commandParameters = this.commandParameters;
         val parameters = new Object[commandParameters.length];
 
-        val rawArguments = context.rawArguments();
+        val rawArguments = context.getRawArguments();
 
         val argumentCount = rawArguments.size();
         val requiredArgumentCount = commandHandler.requiredArgumentCount();

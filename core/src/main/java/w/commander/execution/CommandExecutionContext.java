@@ -8,11 +8,11 @@ import w.commander.RawCommandArguments;
  */
 public interface CommandExecutionContext {
 
-    CommandSender sender();
+    CommandSender getSender();
 
-    RawCommandArguments rawArguments();
+    RawCommandArguments getRawArguments();
 
-    CommandExecutor executor();
+    CommandExecutor getExecutor();
 
     void answer(String text);
 

@@ -13,18 +13,18 @@ import java.lang.reflect.Method;
 @Value.Immutable
 public interface HandlerSpec {
 
-    String path();
+    String getPath();
 
-    CommandParameter[] parameters();
+    CommandParameter[] getParameters();
 
     // todo conditions
 
-    CommandDescription description();
+    CommandDescription getDescription();
 
-    CommandUsage usage();
+    CommandUsage getUsage();
 
     // todo async
 
-    Method method();
+    Method getMethod();
 
 }

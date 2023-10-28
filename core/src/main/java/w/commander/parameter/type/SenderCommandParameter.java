@@ -22,6 +22,6 @@ public class SenderCommandParameter implements CommandParameter {
 
     @Override
     public Object extract(CommandExecutionContext context, CommandArgumentCursor cursor) {
-        return context.sender();
+        return context.getSender();
     }
 }

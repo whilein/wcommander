@@ -6,6 +6,7 @@ immutables = "2.9.2"
 assertj = "3.24.2"
 guice = "7.0.0"
 mockito = "3.12.4"
+jetbrains-annotations = "24.0.1"
 
 [libraries]
 immutables = { group = "org.immutables", name = "value", version.ref = "immutables"}
@@ -17,3 +18,4 @@ assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok"}
 guice = { group = "com.google.inject", name = "guice", version.ref = "guice"}
 mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations" }

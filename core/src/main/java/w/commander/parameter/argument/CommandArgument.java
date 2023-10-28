@@ -4,16 +4,16 @@ import w.commander.parameter.CommandParameter;
 
 public interface CommandArgument extends CommandParameter {
 
-    String name();
+    String getName();
 
-    default int minLength() {
+    default int getMinLength() {
         return 1;
     }
 
-    default int maxLength() {
+    default int getMaxLength() {
         return 1;
     }
 
-    boolean required();
+    boolean isRequired();
 
 }

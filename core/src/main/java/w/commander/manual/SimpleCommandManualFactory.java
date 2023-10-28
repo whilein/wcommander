@@ -25,9 +25,9 @@ public final class SimpleCommandManualFactory implements CommandManualFactory {
     }
 
     private void listEntries(CommandSpec spec, List<HandlerSpec> result) {
-        result.addAll(spec.handlers());
+        result.addAll(spec.getHandlers());
 
-        for (val subCommand : spec.subCommands()) {
+        for (val subCommand : spec.getSubCommands()) {
             listEntries(subCommand, result);
         }
     }
@@ -35,12 +35,12 @@ public final class SimpleCommandManualFactory implements CommandManualFactory {
 
     @Override
     public CommandManual create(CommandSpec spec) {
-        val name = spec.name();
+        val name = spec.getName();
 
         val entries = new ArrayList<HandlerSpec>();
         listEntries(spec, entries);
 
-        entries.sort(Comparator.comparing(HandlerSpec::path));
+        entries.sort(Comparator.comparing(HandlerSpec::getPath));
 
         return new CommandManualImpl(name, entries);
     }
@@ -54,13 +54,13 @@ public final class SimpleCommandManualFactory implements CommandManualFactory {
 
         private void append(HandlerSpec spec, CommandExecutionContext context, StringBuilder out) {
             out.append('\n')
-                    .append(spec.usage().format(context))
-                    .append(" - ").append(spec.description().format(context));
+                    .append(spec.getUsage().format(context))
+                    .append(" - ").append(spec.getDescription().format(context));
         }
 
         @Override
         public SuccessCommandResult format(CommandExecutionContext context) {
-            val builder = new StringBuilder("Command m").append(name).append(':');
+            val builder = new StringBuilder("Command ").append(name).append(':');
 
             for (val entry : entries) {
                 append(entry, context, builder);

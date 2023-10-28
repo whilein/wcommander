@@ -1,8 +1,8 @@
 package w.commander.spec;
 
 import org.immutables.value.Value;
-
-import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author whilein
@@ -10,12 +10,16 @@ import java.util.Optional;
 @Value.Immutable
 public interface ManualSpec {
 
-    ManualSpec EMPTY = ImmutableManualSpec.builder()
+    @NotNull ManualSpec EMPTY = ImmutableManualSpec.builder()
             .hasHandler(false)
             .build();
 
     boolean hasHandler();
 
-    Optional<String> getSubCommand();
+    @Nullable String getSubCommand();
+
+    default boolean isEmpty() {
+        return !hasHandler() && getSubCommand() != null;
+    }
 
 }

@@ -22,7 +22,7 @@ public abstract class AbstractCommandTemplateFactory implements CommandTemplateF
 
     private CommandTemplate createTemplate(Object instance) {
         val subCommands = instance.getClass().getDeclaredAnnotation(SubCommandTypes.class);
-        val builder = CommandTemplate.builder(instance);
+        val builder = SimpleCommandTemplate.builder(instance);
 
         for (val subCommand : subCommands.value()) {
             builder.subCommand(create(subCommand));

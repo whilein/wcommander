@@ -17,7 +17,10 @@ import w.commander.spec.template.CommandTemplate;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author whilein
@@ -86,8 +89,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
 
         return ImmutableManualSpec.builder()
                 .hasHandler(manualHandler)
-                .subCommand(Optional.ofNullable(manualSubCommand)
-                        .map(WithManualSubCommand::value))
+                .subCommand(manualSubCommand == null ? null : manualSubCommand.value())
                 .build();
     }
 
@@ -148,7 +150,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
     ) {
         CommandSpecValidation.checkCommandName(name);
 
-        val commandInstance = template.instance();
+        val commandInstance = template.getInstance();
         val commandType = commandInstance.getClass();
 
         val path = path(parentPath, name);
@@ -181,7 +183,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
             }
         }
 
-        for (val subCommand : template.subCommands()) {
+        for (val subCommand : template.getSubCommands()) {
             subCommands.add(createSubCommand(path, subCommand));
         }
 
@@ -198,7 +200,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
     }
 
     private CommandSpec createSubCommand(List<String> path, CommandTemplate template) {
-        val subCommand = template.instance().getClass().getDeclaredAnnotation(SubCommand.class);
+        val subCommand = template.getInstance().getClass().getDeclaredAnnotation(SubCommand.class);
 
         if (subCommand == null) {
             throw new IllegalArgumentException("Sub command must be annotated with @SubCommand");
@@ -208,7 +210,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
     }
 
     private CommandSpec createCommand(List<String> path, CommandTemplate template) {
-        val command = template.instance().getClass().getDeclaredAnnotation(Command.class);
+        val command = template.getInstance().getClass().getDeclaredAnnotation(Command.class);
 
         if (command == null) {
             throw new IllegalArgumentException("Command must be annotated with @Command");

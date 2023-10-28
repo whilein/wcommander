@@ -46,37 +46,41 @@ public final class SimpleCommandFactory implements CommandFactory {
     @SneakyThrows
     private CommandExecutor createExecutor(HandlerSpec handler, CommandSpec command) {
         return MethodHandleCommandHandler.create(
-                handler.path(),
-                handler.usage(),
-                LOOKUP.unreflect(handler.method())
-                        .bindTo(command.instance()),
-                handler.parameters()
+                handler.getPath(),
+                handler.getUsage(),
+                LOOKUP.unreflect(handler.getMethod())
+                        .bindTo(command.getInstance()),
+                handler.getParameters()
         );
     }
 
     private CommandNode createTree(CommandSpec spec) {
-        val subCommands = spec.subCommands().stream()
+        val subCommands = spec.getSubCommands().stream()
                 .collect(Collectors.toMap(
-                        CommandSpec::name,
+                        CommandSpec::getName,
                         this::createTree
                 ));
 
-        val commandExecutors = spec.handlers().stream()
+        val commandExecutors = spec.getHandlers().stream()
                 .map(handler -> createExecutor(handler, spec))
                 .collect(Collectors.toList());
 
-        val manual = spec.manual();
+        val manual = spec.getManual();
 
-        if (manual.hasHandler() || manual.getSubCommand().isPresent()) {
+        if (manual.hasHandler() || manual.getSubCommand() != null) {
             val manualExecutor = ManualCommandExecutor.create(commandManualFactory.create(spec));
 
             if (manual.hasHandler()) {
                 commandExecutors.add(manualExecutor);
             }
 
-            manual.getSubCommand().ifPresent(name -> subCommands.putIfAbsent(name, commandNodeFactory.create(
-                    Collections.singletonList(manualExecutor),
-                    Collections.emptyMap())));
+            val subCommand = manual.getSubCommand();
+
+            if (subCommand != null) {
+                subCommands.putIfAbsent(subCommand, commandNodeFactory.create(
+                        Collections.singletonList(manualExecutor),
+                        Collections.emptyMap()));
+            }
         }
 
         return commandNodeFactory.create(
@@ -88,8 +92,8 @@ public final class SimpleCommandFactory implements CommandFactory {
     @Override
     public Command create(CommandSpec spec) {
         return SimpleCommand.create(
-                spec.name(),
-                Collections.unmodifiableList(Arrays.asList(spec.aliases())),
+                spec.getName(),
+                Collections.unmodifiableList(Arrays.asList(spec.getAliases())),
                 createTree(spec),
                 commandExecutionContextFactory
         );

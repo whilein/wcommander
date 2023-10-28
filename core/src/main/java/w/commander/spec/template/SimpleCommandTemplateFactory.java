@@ -20,6 +20,6 @@ public class SimpleCommandTemplateFactory implements CommandTemplateFactory {
 
     @Override
     public CommandTemplate create(Object instance) {
-        return CommandTemplate.from(instance);
+        return SimpleCommandTemplate.create(instance);
     }
 }

@@ -55,7 +55,7 @@ public class MethodHandleCommandHandler extends AbstractCommandHandler {
 
             val argument = (CommandArgument) parameter;
 
-            if (argument.required()) {
+            if (argument.isRequired()) {
                 requiredArgumentCount++;
             }
         }

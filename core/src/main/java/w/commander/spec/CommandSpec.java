@@ -1,9 +1,9 @@
 package w.commander.spec;
 
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author whilein
@@ -11,20 +11,20 @@ import java.util.Map;
 @Value.Immutable
 public interface CommandSpec {
 
-    Object instance();
+    @NotNull Object getInstance();
 
-    Class<?> type();
+    @NotNull Class<?> getType();
 
-    String name();
+    @NotNull String getName();
 
-    String path();
+    @NotNull String getPath();
 
-    String[] aliases();
+    @NotNull String @NotNull [] getAliases();
 
-    ManualSpec manual();
+    @NotNull ManualSpec getManual();
 
-    List<HandlerSpec> handlers();
+    @NotNull List<@NotNull HandlerSpec> getHandlers();
 
-    List<CommandSpec> subCommands();
+    @NotNull List<@NotNull CommandSpec> getSubCommands();
 
 }
