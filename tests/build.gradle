@@ -1,0 +1,16 @@
+plugins {
+    id 'kotlin-conventions'
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':kotlin')
+
+    testImplementation libs.slf4j.simple
+    testImplementation libs.kotest
+    testImplementation libs.mockito
+}
+
+test {
+    useJUnitPlatform()
+}
