@@ -1,16 +1,17 @@
 package w.commander.execution;
 
-import w.commander.manual.usage.CommandUsage;
+import org.jetbrains.annotations.NotNull;
+import w.commander.manual.usage.Usage;
 
 /**
  * @author whilein
  */
 public interface CommandHandler extends CommandExecutor {
-    String path();
+    @NotNull String getPath();
 
-    int argumentCount();
+    int getArgumentCount();
 
-    int requiredArgumentCount();
+    int getRequiredArgumentCount();
 
-    CommandUsage usage();
+    @NotNull Usage getUsage();
 }

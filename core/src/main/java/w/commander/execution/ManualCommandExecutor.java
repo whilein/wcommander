@@ -3,8 +3,9 @@ package w.commander.execution;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import w.commander.manual.CommandManual;
-import w.commander.result.CommandResult;
+import org.jetbrains.annotations.NotNull;
+import w.commander.manual.Manual;
+import w.commander.result.Result;
 
 import java.util.function.Consumer;
 
@@ -15,15 +16,18 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ManualCommandExecutor extends AbstractCommandExecutor {
 
-    CommandManual commandManual;
+    @NotNull Manual manual;
 
-    public static CommandExecutor create(CommandManual commandManual) {
-        return new ManualCommandExecutor(commandManual);
+    public static @NotNull CommandExecutor create(@NotNull Manual manual) {
+        return new ManualCommandExecutor(manual);
     }
 
     @Override
-    protected void doExecute(CommandExecutionContext context, Consumer<CommandResult> callback) {
-        callback.accept(commandManual.format(context));
+    protected void doExecute(
+            @NotNull ExecutionContext context,
+            @NotNull Consumer<@NotNull Result> callback
+    ) {
+        callback.accept(manual.format(context));
     }
 
     @Override

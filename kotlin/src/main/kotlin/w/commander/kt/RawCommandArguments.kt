@@ -1,19 +1,19 @@
 package w.commander.kt
 
-import w.commander.RawCommandArguments
+import w.commander.RawArguments
 
 /**
  * @author whilein
  */
 object RawCommandArguments {
     @JvmStatic
-    inline val RawCommandArguments.size: Int
+    inline val RawArguments.size: Int
         get() = size()
 
     @JvmStatic
-    operator fun RawCommandArguments.get(index: Int): String = value(index)
+    operator fun RawArguments.get(index: Int): String = value(index)
 
     @JvmStatic
-    operator fun RawCommandArguments.get(range: IntRange): RawCommandArguments = subArguments(range.first, range.last + 1)
+    operator fun RawArguments.get(range: IntRange): RawArguments = subArguments(range.first, range.last + 1)
 
 }

@@ -6,20 +6,19 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import w.commander.CommandSender
 import w.commander.annotation.*
-import w.commander.error.NoopCommandErrorFactory
+import w.commander.error.NoopErrorResultFactory
 import w.commander.kt.CommandTemplate.withSubCommand
-import w.commander.manual.description.SimpleCommandDescriptionFactory
-import w.commander.manual.usage.SimpleCommandUsageFactory
-import w.commander.parameter.DefaultCommandParameterResolver
-import w.commander.parameter.OfIterableCommandParameterResolvers
-import w.commander.parameter.argument.transformer.type.NoopCommandArgumentTransformer
-import w.commander.parameter.argument.transformer.type.NumberCommandArgumentTransformer
-import w.commander.parameter.argument.transformer.type.NumberCommandArgumentTransformerFactoryResolver
-import w.commander.parameter.argument.type.JoinCommandArgument
-import w.commander.parameter.argument.type.OrdinaryCommandArgument
-import w.commander.parameter.type.SenderCommandParameter
+import w.commander.manual.description.SimpleDescriptionFactory
+import w.commander.manual.usage.SimpleUsageFactory
+import w.commander.parameter.DefaultHandlerParameterResolver
+import w.commander.parameter.argument.parser.type.NoopArgumentParser
+import w.commander.parameter.argument.parser.type.NumberArgumentParser
+import w.commander.parameter.argument.parser.type.NumberArgumentParserFactoryResolver
+import w.commander.parameter.argument.type.JoinArgument
+import w.commander.parameter.argument.type.OrdinaryArgument
+import w.commander.parameter.type.SenderHandlerParameter
 import w.commander.spec.AnnotationBasedCommandSpecFactory
-import w.commander.spec.path.CommandHandlerPathStrategies
+import w.commander.spec.path.HandlerPathStrategies
 import w.commander.spec.template.SimpleCommandTemplate
 
 /**
@@ -28,16 +27,18 @@ import w.commander.spec.template.SimpleCommandTemplate
 class AnnotationBasedCommandSpecFactoryTest : FunSpec({
 
     val commandSpecFactory = AnnotationBasedCommandSpecFactory.create(
-            CommandHandlerPathStrategies.lowerSnakeCase(),
-            OfIterableCommandParameterResolvers.from(
-                    DefaultCommandParameterResolver.create(
-                            NumberCommandArgumentTransformerFactoryResolver.create(
-                                    NoopCommandErrorFactory.create()
+            HandlerPathStrategies.lowerSnakeCase(),
+            listOf(
+                    DefaultHandlerParameterResolver.create(
+                            listOf(
+                                    NumberArgumentParserFactoryResolver.create(
+                                            NoopErrorResultFactory.create()
+                                    )
                             )
                     )
             ),
-            SimpleCommandUsageFactory.create(),
-            SimpleCommandDescriptionFactory.create()
+            SimpleUsageFactory.create(),
+            SimpleDescriptionFactory.create()
     )
 
     context("Path") {
@@ -178,7 +179,7 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
                 }
             }
 
-            shouldThrow<IllegalArgumentException> { commandSpecFactory.create(TestCommand())  }
+            shouldThrow<IllegalArgumentException> { commandSpecFactory.create(TestCommand()) }
         }
 
         test("Name with space fails") {
@@ -189,7 +190,7 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
                 }
             }
 
-            shouldThrow<IllegalArgumentException> { commandSpecFactory.create(TestCommand())  }
+            shouldThrow<IllegalArgumentException> { commandSpecFactory.create(TestCommand()) }
         }
     }
 
@@ -199,8 +200,10 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             class TestCommand
             class TestSubCommand
 
-            shouldThrow<IllegalArgumentException> { commandSpecFactory.create(TestCommand()
-                    .withSubCommand(TestSubCommand()))  }
+            shouldThrow<IllegalArgumentException> {
+                commandSpecFactory.create(TestCommand()
+                        .withSubCommand(TestSubCommand()))
+            }
         }
 
         test("Correct name does not fails") {
@@ -223,8 +226,10 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             @SubCommand("")
             class TestSubCommand
 
-            shouldThrow<IllegalArgumentException> { commandSpecFactory.create(TestCommand()
-                    .withSubCommand(TestSubCommand()))  }
+            shouldThrow<IllegalArgumentException> {
+                commandSpecFactory.create(TestCommand()
+                        .withSubCommand(TestSubCommand()))
+            }
         }
 
         test("Name with space fails") {
@@ -234,8 +239,10 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             @SubCommand("sub ")
             class TestSubCommand
 
-            shouldThrow<IllegalArgumentException> { commandSpecFactory.create(TestCommand()
-                    .withSubCommand(TestSubCommand()))  }
+            shouldThrow<IllegalArgumentException> {
+                commandSpecFactory.create(TestCommand()
+                        .withSubCommand(TestSubCommand()))
+            }
         }
     }
 
@@ -276,7 +283,7 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             manual.subCommand shouldBe null
         }
 
-        test("With handler and sub command") {
+        test("With sub command") {
             @Command("test")
             @WithManualSubCommand("help")
             class TestCommand
@@ -333,7 +340,7 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             command
                     .handlers.single()
                     .parameters.single()
-                    .shouldBeTypeOf<SenderCommandParameter>()
+                    .shouldBeTypeOf<SenderHandlerParameter>()
         }
 
         test("Int") {
@@ -349,10 +356,10 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             val argument = command
                     .handlers.single()
                     .parameters.single()
-                    as OrdinaryCommandArgument
+                    as OrdinaryArgument
 
             argument.isRequired shouldBe true
-            argument.argumentTransformer.shouldBeTypeOf<NumberCommandArgumentTransformer>()
+            argument.parser.shouldBeTypeOf<NumberArgumentParser>()
         }
 
         test("Optional string") {
@@ -368,10 +375,10 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             val argument = command
                     .handlers.single()
                     .parameters.single()
-                    as OrdinaryCommandArgument
+                    as OrdinaryArgument
 
             argument.isRequired shouldBe false
-            argument.argumentTransformer.shouldBeTypeOf<NoopCommandArgumentTransformer>()
+            argument.parser.shouldBeTypeOf<NoopArgumentParser>()
         }
 
         test("Joined string") {
@@ -387,7 +394,7 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             val argument = command
                     .handlers.single()
                     .parameters.single()
-                    as JoinCommandArgument
+                    as JoinArgument
 
             argument.isRequired shouldBe true
         }
@@ -405,10 +412,10 @@ class AnnotationBasedCommandSpecFactoryTest : FunSpec({
             val argument = command
                     .handlers.single()
                     .parameters.single()
-                    as OrdinaryCommandArgument
+                    as OrdinaryArgument
 
             argument.isRequired shouldBe true
-            argument.argumentTransformer.shouldBeTypeOf<NoopCommandArgumentTransformer>()
+            argument.parser.shouldBeTypeOf<NoopArgumentParser>()
         }
     }
 

@@ -3,9 +3,10 @@ package w.commander.execution;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import w.commander.error.CommandErrorFactory;
-import w.commander.manual.usage.CommandUsage;
-import w.commander.result.CommandResult;
+import org.jetbrains.annotations.NotNull;
+import w.commander.error.ErrorResultFactory;
+import w.commander.manual.usage.Usage;
+import w.commander.result.Result;
 
 import java.util.function.Consumer;
 
@@ -16,21 +17,24 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class NotEnoughArgumentsCommandExecutor extends AbstractCommandExecutor {
 
-    CommandUsage commandUsage;
-    CommandErrorFactory commandErrorFactory;
+    Usage usage;
+    ErrorResultFactory errorResultFactory;
 
-    public static CommandExecutor create(
-            CommandUsage commandUsage,
-            CommandErrorFactory commandErrorFactory
+    public static @NotNull CommandExecutor create(
+            @NotNull Usage usage,
+            @NotNull ErrorResultFactory errorResultFactory
     ) {
         return new NotEnoughArgumentsCommandExecutor(
-                commandUsage,
-                commandErrorFactory
+                usage,
+                errorResultFactory
         );
     }
 
     @Override
-    protected void doExecute(CommandExecutionContext context, Consumer<CommandResult> callback) {
-        callback.accept(commandErrorFactory.onNotEnoughArguments(commandUsage));
+    protected void doExecute(
+            @NotNull ExecutionContext context,
+            @NotNull Consumer<@NotNull Result> callback
+    ) {
+        callback.accept(errorResultFactory.onNotEnoughArguments(usage));
     }
 }

@@ -1,6 +1,7 @@
 package w.commander.execution;
 
-import w.commander.result.CommandResult;
+import org.jetbrains.annotations.NotNull;
+import w.commander.result.Result;
 
 import java.util.function.Consumer;
 
@@ -9,12 +10,18 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractCommandExecutor implements CommandExecutor {
 
-    public final void execute(CommandExecutionContext context, Consumer<CommandResult> callback) {
+    public final void execute(
+            @NotNull ExecutionContext context,
+            @NotNull Consumer<@NotNull Result> callback
+    ) {
         // todo conditions
 
         doExecute(context, callback);
     }
 
-    protected abstract void doExecute(CommandExecutionContext context, Consumer<CommandResult> callback);
+    protected abstract void doExecute(
+            @NotNull ExecutionContext context,
+            @NotNull Consumer<@NotNull Result> callback
+    );
 
 }

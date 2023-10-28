@@ -3,6 +3,7 @@ package w.commander.spec.template;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author whilein
@@ -16,7 +17,7 @@ public class ReflectiveCommandTemplateFactory extends AbstractCommandTemplateFac
 
     @Override
     @SneakyThrows
-    protected Object getInstance(Class<?> type) {
+    protected @NotNull Object getInstance(Class<?> type) {
         return type.newInstance();
     }
 

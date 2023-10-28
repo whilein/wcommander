@@ -5,11 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import w.commander.execution.CommandExecutionContextFactory;
+import org.jetbrains.annotations.NotNull;
+import w.commander.execution.ExecutionContextFactory;
 import w.commander.execution.CommandExecutor;
 import w.commander.execution.ManualCommandExecutor;
 import w.commander.execution.MethodHandleCommandHandler;
-import w.commander.manual.CommandManualFactory;
+import w.commander.manual.ManualFactory;
 import w.commander.spec.CommandSpec;
 import w.commander.spec.HandlerSpec;
 
@@ -28,18 +29,18 @@ public final class SimpleCommandFactory implements CommandFactory {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     CommandNodeFactory commandNodeFactory;
-    CommandExecutionContextFactory commandExecutionContextFactory;
-    CommandManualFactory commandManualFactory;
+    ExecutionContextFactory executionContextFactory;
+    ManualFactory manualFactory;
 
-    public static CommandFactory create(
-            CommandNodeFactory commandNodeFactory,
-            CommandExecutionContextFactory commandExecutionContextFactory,
-            CommandManualFactory commandManualFactory
+    public static @NotNull CommandFactory create(
+            @NotNull CommandNodeFactory commandNodeFactory,
+            @NotNull ExecutionContextFactory executionContextFactory,
+            @NotNull ManualFactory manualFactory
     ) {
         return new SimpleCommandFactory(
                 commandNodeFactory,
-                commandExecutionContextFactory,
-                commandManualFactory
+                executionContextFactory,
+                manualFactory
         );
     }
 
@@ -68,7 +69,7 @@ public final class SimpleCommandFactory implements CommandFactory {
         val manual = spec.getManual();
 
         if (manual.hasHandler() || manual.getSubCommand() != null) {
-            val manualExecutor = ManualCommandExecutor.create(commandManualFactory.create(spec));
+            val manualExecutor = ManualCommandExecutor.create(manualFactory.create(spec));
 
             if (manual.hasHandler()) {
                 commandExecutors.add(manualExecutor);
@@ -90,12 +91,12 @@ public final class SimpleCommandFactory implements CommandFactory {
     }
 
     @Override
-    public Command create(CommandSpec spec) {
+    public @NotNull Command create(@NotNull CommandSpec spec) {
         return SimpleCommand.create(
                 spec.getName(),
                 Collections.unmodifiableList(Arrays.asList(spec.getAliases())),
                 createTree(spec),
-                commandExecutionContextFactory
+                executionContextFactory
         );
     }
 

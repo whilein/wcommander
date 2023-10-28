@@ -1,5 +1,6 @@
 package w.commander.spec;
 
+import org.jetbrains.annotations.NotNull;
 import w.commander.spec.template.CommandTemplate;
 import w.commander.spec.template.SimpleCommandTemplate;
 
@@ -8,9 +9,9 @@ import w.commander.spec.template.SimpleCommandTemplate;
  */
 public interface CommandSpecFactory {
 
-    CommandSpec create(CommandTemplate template);
+    @NotNull CommandSpec create(@NotNull CommandTemplate template);
 
-    default CommandSpec create(Object instance) {
+    default @NotNull CommandSpec create(@NotNull Object instance) {
         return create(SimpleCommandTemplate.create(instance));
     }
 

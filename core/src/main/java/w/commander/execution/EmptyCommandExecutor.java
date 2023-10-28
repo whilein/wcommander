@@ -2,8 +2,9 @@ package w.commander.execution;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import w.commander.result.CommandResult;
-import w.commander.result.CommandResults;
+import org.jetbrains.annotations.NotNull;
+import w.commander.result.Result;
+import w.commander.result.Results;
 
 import java.util.function.Consumer;
 
@@ -15,12 +16,15 @@ public class EmptyCommandExecutor extends AbstractCommandExecutor {
 
     private static final CommandExecutor INSTANCE = new EmptyCommandExecutor();
 
-    public static CommandExecutor getInstance() {
+    public static @NotNull CommandExecutor getInstance() {
         return INSTANCE;
     }
 
     @Override
-    protected void doExecute(CommandExecutionContext context, Consumer<CommandResult> callback) {
-        callback.accept(CommandResults.error());
+    protected void doExecute(
+            @NotNull ExecutionContext context,
+            @NotNull Consumer<@NotNull Result> callback
+    ) {
+        callback.accept(Results.error());
     }
 }

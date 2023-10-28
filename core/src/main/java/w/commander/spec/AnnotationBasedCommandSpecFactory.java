@@ -4,19 +4,21 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import w.commander.annotation.*;
-import w.commander.manual.description.CommandDescription;
-import w.commander.manual.description.CommandDescriptionFactory;
-import w.commander.manual.usage.CommandUsage;
-import w.commander.manual.usage.CommandUsageFactory;
-import w.commander.parameter.CommandParameter;
-import w.commander.parameter.CommandParameterResolvers;
-import w.commander.parameter.argument.CommandArgument;
-import w.commander.spec.path.CommandHandlerPathStrategy;
+import w.commander.manual.description.Description;
+import w.commander.manual.description.DescriptionFactory;
+import w.commander.manual.usage.Usage;
+import w.commander.manual.usage.UsageFactory;
+import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.HandlerParameterResolver;
+import w.commander.parameter.argument.Argument;
+import w.commander.spec.path.HandlerPathStrategy;
 import w.commander.spec.template.CommandTemplate;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,24 +31,23 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AnnotationBasedCommandSpecFactory implements CommandSpecFactory {
 
-    CommandHandlerPathStrategy commandHandlerPathStrategy;
-    CommandParameterResolvers commandParameterResolvers;
+    HandlerPathStrategy handlerPathStrategy;
+    Iterable<? extends HandlerParameterResolver> parameterResolvers;
 
-    CommandUsageFactory commandUsageFactory;
-    CommandDescriptionFactory commandDescriptionFactory;
+    UsageFactory usageFactory;
+    DescriptionFactory descriptionFactory;
 
     public static CommandSpecFactory create(
-            CommandHandlerPathStrategy commandHandlerPathStrategy,
-            CommandParameterResolvers commandParameterResolvers,
-            CommandUsageFactory commandUsageFactory,
-            CommandDescriptionFactory commandDescriptionFactory
-
+            @NotNull HandlerPathStrategy handlerPathStrategy,
+            @NotNull Iterable<? extends @NotNull HandlerParameterResolver> parameterResolvers,
+            @NotNull UsageFactory usageFactory,
+            @NotNull DescriptionFactory descriptionFactory
     ) {
         return new AnnotationBasedCommandSpecFactory(
-                commandHandlerPathStrategy,
-                commandParameterResolvers,
-                commandUsageFactory,
-                commandDescriptionFactory
+                handlerPathStrategy,
+                parameterResolvers,
+                usageFactory,
+                descriptionFactory
         );
     }
 
@@ -93,12 +94,22 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
                 .build();
     }
 
-    private CommandParameter[] getParameters(Method method) {
+    private HandlerParameter resolveParameter(Parameter parameter) {
+        for (val resolver : parameterResolvers) {
+            if (resolver.isSupported(parameter)) {
+                return resolver.resolve(parameter);
+            }
+        }
+
+        throw new UnsupportedOperationException("There are no available parameter resolvers for " + parameter);
+    }
+
+    private HandlerParameter[] getParameters(Method method) {
         val methodParameters = method.getParameters();
-        val parameters = new CommandParameter[methodParameters.length];
+        val parameters = new HandlerParameter[methodParameters.length];
 
         for (int i = 0, j = methodParameters.length; i < j; i++) {
-            parameters[i] = commandParameterResolvers.getParameter(methodParameters[i]);
+            parameters[i] = resolveParameter(methodParameters[i]);
         }
 
         return parameters;
@@ -111,23 +122,23 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
         return path;
     }
 
-    private CommandUsage getUsage(List<String> path, CommandArgument[] arguments) {
-        return commandUsageFactory.create(String.join(" ", path), arguments);
+    private Usage getUsage(List<String> path, Argument[] arguments) {
+        return usageFactory.create(String.join(" ", path), arguments);
     }
 
-    private CommandDescription getDescription(Method method) {
+    private Description getDescription(Method method) {
         val description = method.getDeclaredAnnotation(WithDescription.class);
 
-        return commandDescriptionFactory.create(description != null
+        return descriptionFactory.create(description != null
                 ? description.value()
                 : "");
     }
 
-    private static CommandArgument[] getArguments(CommandParameter[] parameters) {
+    private static Argument[] getArguments(HandlerParameter[] parameters) {
         return Arrays.stream(parameters)
-                .filter(CommandArgument.class::isInstance)
-                .map(CommandArgument.class::cast)
-                .toArray(CommandArgument[]::new);
+                .filter(Argument.class::isInstance)
+                .map(Argument.class::cast)
+                .toArray(Argument[]::new);
     }
 
     private HandlerSpec createHandler(List<String> path, String name, Method method) {
@@ -138,7 +149,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
                 .method(method)
                 .usage(getUsage(path, getArguments(parameters)))
                 .description(hidden ? null : getDescription(method))
-                .path(commandHandlerPathStrategy.getPath(path(path, name)))
+                .path(handlerPathStrategy.getPath(path(path, name)))
                 .parameters(parameters)
                 .build();
     }
@@ -173,7 +184,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
 
                 subCommands.add(ImmutableCommandSpec.builder()
                         .name(subCommandHandler.value())
-                        .path(commandHandlerPathStrategy.getPath(path(path, subCommandName)))
+                        .path(handlerPathStrategy.getPath(path(path, subCommandName)))
                         .type(commandType)
                         .instance(commandInstance)
                         .aliases(getAliases(method))
@@ -189,7 +200,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
 
         return ImmutableCommandSpec.builder()
                 .name(name)
-                .path(commandHandlerPathStrategy.getPath(path))
+                .path(handlerPathStrategy.getPath(path))
                 .type(commandType)
                 .instance(commandInstance)
                 .aliases(getAliases(commandType))
@@ -220,7 +231,7 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
     }
 
     @Override
-    public CommandSpec create(CommandTemplate template) {
+    public @NotNull CommandSpec create(@NotNull CommandTemplate template) {
         return createCommand(new ArrayList<>(), template);
     }
 

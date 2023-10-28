@@ -3,17 +3,16 @@ package w.commander;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import w.commander.execution.CommandExecutionContextFactory;
+import org.jetbrains.annotations.NotNull;
+import w.commander.execution.ExecutionContextFactory;
 
 import java.util.List;
 
 /**
  * @author whilein
  */
-@Accessors(fluent = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class SimpleCommand implements Command {
@@ -26,24 +25,24 @@ public class SimpleCommand implements Command {
 
     CommandNode tree;
 
-    CommandExecutionContextFactory commandExecutionContextFactory;
+    ExecutionContextFactory executionContextFactory;
 
-    public static Command create(
-            String name,
-            List<String> aliases,
-            CommandNode tree,
-            CommandExecutionContextFactory commandExecutionContextFactory
+    public static @NotNull Command create(
+            @NotNull String name,
+            @NotNull List<@NotNull String> aliases,
+            @NotNull CommandNode tree,
+            @NotNull ExecutionContextFactory executionContextFactory
     ) {
         return new SimpleCommand(
                 name,
                 aliases,
                 tree,
-                commandExecutionContextFactory
+                executionContextFactory
         );
     }
 
     @Override
-    public void execute(CommandSender sender, RawCommandArguments arguments) {
+    public void execute(@NotNull CommandSender sender, @NotNull RawArguments arguments) {
         CommandNode tree = this.tree;
         int offset = 0;
 
@@ -61,7 +60,7 @@ public class SimpleCommand implements Command {
         val newArguments = arguments.withOffset(offset);
 
         val executor = tree.executor(newArguments.size());
-        val context = commandExecutionContextFactory.create(sender, executor, newArguments);
+        val context = executionContextFactory.create(sender, executor, newArguments);
         executor.execute(context, result -> result.answer(context));
     }
 

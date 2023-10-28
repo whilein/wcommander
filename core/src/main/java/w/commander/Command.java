@@ -1,5 +1,7 @@
 package w.commander;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 /**
@@ -7,10 +9,10 @@ import java.util.List;
  */
 public interface Command {
 
-    String name();
+    @NotNull String getName();
 
-    List<String> aliases();
+    @NotNull List<@NotNull String> getAliases();
 
-    void execute(CommandSender sender, RawCommandArguments args);
+    void execute(@NotNull CommandSender sender, @NotNull RawArguments args);
 
 }

@@ -1,6 +1,7 @@
 package w.commander.execution;
 
-import w.commander.result.CommandResult;
+import org.jetbrains.annotations.NotNull;
+import w.commander.result.Result;
 
 import java.util.function.Consumer;
 
@@ -9,7 +10,7 @@ import java.util.function.Consumer;
  */
 public interface CommandExecutor {
 
-    void execute(CommandExecutionContext context, Consumer<CommandResult> callback);
+    void execute(@NotNull ExecutionContext context, @NotNull Consumer<@NotNull Result> callback);
 
     default boolean isOverrideable() {
         return false;

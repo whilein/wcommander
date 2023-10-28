@@ -3,11 +3,12 @@ package w.commander.execution;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import w.commander.manual.usage.CommandUsage;
-import w.commander.parameter.CommandParameter;
-import w.commander.parameter.argument.CommandArgument;
-import w.commander.result.CommandResult;
-import w.commander.result.CommandResults;
+import org.jetbrains.annotations.NotNull;
+import w.commander.manual.usage.Usage;
+import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.argument.Argument;
+import w.commander.result.Result;
+import w.commander.result.Results;
 
 import java.lang.invoke.MethodHandle;
 import java.util.concurrent.CompletableFuture;
@@ -21,15 +22,15 @@ import java.util.function.Supplier;
 public class MethodHandleCommandHandler extends AbstractCommandHandler {
 
     MethodHandle method;
-    CommandParameter[] parameters;
+    HandlerParameter[] parameters;
 
     private MethodHandleCommandHandler(
             String path,
             int argumentCount,
             int requiredArgumentCount,
-            CommandUsage usage,
+            Usage usage,
             MethodHandle method,
-            CommandParameter[] parameters
+            HandlerParameter[] parameters
     ) {
         super(path, argumentCount, requiredArgumentCount, usage);
 
@@ -38,25 +39,25 @@ public class MethodHandleCommandHandler extends AbstractCommandHandler {
     }
 
     public static CommandHandler create(
-            String path,
-            CommandUsage usage,
-            MethodHandle mh,
-            CommandParameter[] parameters
+            @NotNull String path,
+            @NotNull Usage usage,
+            @NotNull MethodHandle mh,
+            @NotNull HandlerParameter @NotNull  [] parameters
     ) {
         int argumentCount = 0;
         int requiredArgumentCount = 0;
 
         for (val parameter : parameters) {
-            if (!(parameter instanceof CommandArgument)) {
+            if (!(parameter instanceof Argument)) {
                 continue;
             }
 
             argumentCount++;
 
-            val argument = (CommandArgument) parameter;
+            val argument = (Argument) parameter;
 
             if (argument.isRequired()) {
-                requiredArgumentCount++;
+                requiredArgumentCount += argument.getMinLength();
             }
         }
 
@@ -70,9 +71,9 @@ public class MethodHandleCommandHandler extends AbstractCommandHandler {
         );
     }
 
-    private void processReturnedValue(Object returnedValue, Consumer<CommandResult> callback) {
-        if (returnedValue instanceof CommandResult) {
-            callback.accept((CommandResult) returnedValue);
+    private void processReturnedValue(Object returnedValue, Consumer<Result> callback) {
+        if (returnedValue instanceof Result) {
+            callback.accept((Result) returnedValue);
         } else if (returnedValue instanceof CompletableFuture<?>) {
             val future = (CompletableFuture<?>) returnedValue;
 
@@ -87,12 +88,15 @@ public class MethodHandleCommandHandler extends AbstractCommandHandler {
         } else if (returnedValue instanceof Supplier<?>) {
             processReturnedValue(((Supplier<?>) returnedValue).get(), callback);
         } else {
-            callback.accept(CommandResults.ok());
+            callback.accept(Results.ok());
         }
     }
 
     @Override
-    protected void doExecute(CommandExecutionContext context, Consumer<CommandResult> callback) {
+    protected void doExecute(
+            @NotNull ExecutionContext context,
+            @NotNull Consumer<@NotNull Result> callback
+    ) {
         val commandParameterExtractor = new InvocationParameterExtractor(context, this, parameters);
 
         commandParameterExtractor.extract(

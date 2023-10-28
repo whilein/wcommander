@@ -2,6 +2,7 @@ package w.commander.spec.template;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 /***
  * @author whilein
@@ -14,12 +15,12 @@ public class SimpleCommandTemplateFactory implements CommandTemplateFactory {
     }
 
     @Override
-    public CommandTemplate create(Class<?> type) {
+    public @NotNull CommandTemplate create(@NotNull Class<?> type) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public CommandTemplate create(Object instance) {
+    public @NotNull CommandTemplate create(@NotNull Object instance) {
         return SimpleCommandTemplate.create(instance);
     }
 }

@@ -1,5 +1,7 @@
 package w.commander.spec.template;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 
 /**
@@ -7,12 +9,15 @@ import java.util.function.Consumer;
  */
 public interface CommandTemplateBuilder {
 
-    CommandTemplateBuilder subCommand(CommandTemplate template);
+    @NotNull CommandTemplateBuilder subCommand(@NotNull CommandTemplate template);
 
-    CommandTemplateBuilder subCommand(Object instance);
+    @NotNull CommandTemplateBuilder subCommand(@NotNull Object instance);
 
-    CommandTemplateBuilder subCommand(Object instance, Consumer<CommandTemplateBuilder> build);
+    @NotNull CommandTemplateBuilder subCommand(
+            @NotNull Object instance,
+            @NotNull Consumer<@NotNull CommandTemplateBuilder> build
+    );
 
-    CommandTemplate build();
+    @NotNull CommandTemplate build();
 
 }

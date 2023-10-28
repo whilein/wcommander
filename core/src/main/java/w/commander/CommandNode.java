@@ -1,5 +1,7 @@
 package w.commander;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import w.commander.execution.CommandExecutor;
 
 /**
@@ -7,8 +9,8 @@ import w.commander.execution.CommandExecutor;
  */
 public interface CommandNode {
 
-    CommandNode subCommand(String name);
+    @Nullable CommandNode subCommand(@NotNull String name);
 
-    CommandExecutor executor(int arguments);
+    @NotNull CommandExecutor executor(int arguments);
 
 }

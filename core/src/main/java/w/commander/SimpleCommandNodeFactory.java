@@ -4,12 +4,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import w.commander.error.CommandErrorFactory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import w.commander.error.ErrorResultFactory;
 import w.commander.execution.CommandExecutor;
 import w.commander.execution.CommandHandler;
 import w.commander.execution.EmptyCommandExecutor;
 import w.commander.execution.NotEnoughArgumentsCommandExecutor;
-import w.commander.manual.usage.CommandUsage;
+import w.commander.manual.usage.Usage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +26,12 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
 
     private static final CommandExecutor[] EMPTY = new CommandExecutor[]{EmptyCommandExecutor.getInstance()};
 
-    CommandErrorFactory commandErrorFactory;
+    ErrorResultFactory errorResultFactory;
 
-    public static CommandNodeFactory create(
-            CommandErrorFactory commandErrorFactory
+    public static @NotNull CommandNodeFactory create(
+            @NotNull ErrorResultFactory errorResultFactory
     ) {
-        return new SimpleCommandNodeFactory(commandErrorFactory);
+        return new SimpleCommandNodeFactory(errorResultFactory);
     }
 
     private static boolean trySetExecutor(
@@ -53,7 +55,10 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
     }
 
     @Override
-    public CommandNode create(List<CommandExecutor> executors, Map<String, CommandNode> subCommands) {
+    public @NotNull CommandNode create(
+            @NotNull List<@NotNull CommandExecutor> executors,
+            @NotNull Map<@NotNull String, @NotNull CommandNode> subCommands
+    ) {
         if (executors.isEmpty()) {
             return new CommandNodeImpl(EMPTY, subCommands);
         }
@@ -63,7 +68,7 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
         for (val executor : executors) {
             if (executor instanceof CommandHandler) {
                 val handler = (CommandHandler) executor;
-                maxArguments = Math.max(maxArguments, handler.argumentCount());
+                maxArguments = Math.max(maxArguments, handler.getArgumentCount());
             }
         }
 
@@ -73,7 +78,7 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
             if (executor instanceof CommandHandler) {
                 val handler = (CommandHandler) executor;
 
-                for (int i = handler.requiredArgumentCount(), j = handler.argumentCount(); i <= j; i++) {
+                for (int i = handler.getRequiredArgumentCount(), j = handler.getArgumentCount(); i <= j; i++) {
                     trySetExecutor(executorByArgumentMap, executor, i);
                 }
             } else {
@@ -108,10 +113,10 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
                 continue;
             }
 
-            CommandUsage usage;
+            Usage usage;
 
-            executorByArgument[i] = nextHandler != null && (usage = nextHandler.usage()) != null
-                    ? NotEnoughArgumentsCommandExecutor.create(usage, commandErrorFactory)
+            executorByArgument[i] = nextHandler != null && (usage = nextHandler.getUsage()) != null
+                    ? NotEnoughArgumentsCommandExecutor.create(usage, errorResultFactory)
                     : EmptyCommandExecutor.getInstance();
         }
 
@@ -126,12 +131,12 @@ public final class SimpleCommandNodeFactory implements CommandNodeFactory {
         Map<String, CommandNode> subCommands;
 
         @Override
-        public CommandNode subCommand(String name) {
+        public @Nullable CommandNode subCommand(@NotNull String name) {
             return subCommands.get(name);
         }
 
         @Override
-        public CommandExecutor executor(int arguments) {
+        public @NotNull CommandExecutor executor(int arguments) {
             val executors = this.executors;
             val maxArguments = executors.length;
 

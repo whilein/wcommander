@@ -1,12 +1,14 @@
 package w.commander;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author whilein
  */
 public interface CommandSender {
 
-    String name();
+    @NotNull String getName();
 
-    void sendMessage(String text);
+    void sendMessage(@NotNull String text);
 
 }

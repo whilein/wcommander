@@ -6,10 +6,12 @@ import com.google.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import w.commander.manual.description.CommandDescriptionFactory;
-import w.commander.manual.usage.CommandUsageFactory;
-import w.commander.parameter.CommandParameterResolvers;
-import w.commander.spec.path.CommandHandlerPathStrategy;
+import w.commander.manual.description.DescriptionFactory;
+import w.commander.manual.usage.UsageFactory;
+import w.commander.parameter.HandlerParameterResolver;
+import w.commander.spec.path.HandlerPathStrategy;
+
+import java.util.Set;
 
 /**
  * @author whilein
@@ -19,18 +21,18 @@ import w.commander.spec.path.CommandHandlerPathStrategy;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class AnnotationBasedCommandSpecFactoryProvider implements Provider<CommandSpecFactory> {
 
-    CommandHandlerPathStrategy commandHandlerPathStrategy;
-    CommandParameterResolvers commandParameterResolvers;
-    CommandUsageFactory commandUsageFactory;
-    CommandDescriptionFactory commandDescriptionFactory;
+    HandlerPathStrategy handlerPathStrategy;
+    Set<? extends HandlerParameterResolver> handlerResolverSet;
+    UsageFactory usageFactory;
+    DescriptionFactory descriptionFactory;
 
     @Override
     public CommandSpecFactory get() {
         return AnnotationBasedCommandSpecFactory.create(
-                commandHandlerPathStrategy,
-                commandParameterResolvers,
-                commandUsageFactory,
-                commandDescriptionFactory
+                handlerPathStrategy,
+                handlerResolverSet,
+                usageFactory,
+                descriptionFactory
         );
     }
 

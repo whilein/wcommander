@@ -1,5 +1,6 @@
 package w.commander;
 
+import org.jetbrains.annotations.NotNull;
 import w.commander.execution.CommandExecutor;
 
 import java.util.List;
@@ -10,6 +11,9 @@ import java.util.Map;
  */
 public interface CommandNodeFactory {
 
-    CommandNode create(List<CommandExecutor> executors, Map<String, CommandNode> subCommands);
+    @NotNull CommandNode create(
+            @NotNull List<@NotNull CommandExecutor> executors,
+            @NotNull Map<@NotNull String, @NotNull CommandNode> subCommands
+    );
 
 }

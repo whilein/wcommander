@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import w.commander.parameter.CommandParameter;
-import w.commander.parameter.argument.cursor.SimpleCommandArgumentCursor;
-import w.commander.result.CommandResult;
+import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.argument.cursor.SimpleArgumentCursor;
+import w.commander.result.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +24,15 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 final class InvocationParameterExtractor {
 
-    CommandExecutionContext context;
+    ExecutionContext context;
     CommandHandler commandHandler;
-    CommandParameter[] commandParameters;
+    HandlerParameter[] handlerParameters;
 
     private void extractLazy(
             int index,
             Object value,
             Queue<CompletableFuture<?>> futures,
-            AtomicReference<CommandResult> result,
+            AtomicReference<Result> result,
             Object[] parameters
     ) {
         // already completed with error
@@ -57,8 +57,8 @@ final class InvocationParameterExtractor {
             return;
         }
 
-        if (value instanceof CommandResult) {
-            result.set((CommandResult) value);
+        if (value instanceof Result) {
+            result.set((Result) value);
             return;
         }
 
@@ -83,16 +83,16 @@ final class InvocationParameterExtractor {
         completionCallback.run();
     }
 
-    public void extract(Consumer<Object[]> parameterCallback, Consumer<CommandResult> resultCallback) {
-        val commandParameters = this.commandParameters;
+    public void extract(Consumer<Object[]> parameterCallback, Consumer<Result> resultCallback) {
+        val commandParameters = this.handlerParameters;
         val parameters = new Object[commandParameters.length];
 
         val rawArguments = context.getRawArguments();
 
         val argumentCount = rawArguments.size();
-        val requiredArgumentCount = commandHandler.requiredArgumentCount();
+        val requiredArgumentCount = commandHandler.getRequiredArgumentCount();
 
-        val cursor = SimpleCommandArgumentCursor.create(
+        val cursor = SimpleArgumentCursor.create(
                 argumentCount,
                 requiredArgumentCount
         );
@@ -110,8 +110,8 @@ final class InvocationParameterExtractor {
                 }
 
                 lazyParameters.add(new Lazy(i, value));
-            } else if (value instanceof CommandResult) {
-                resultCallback.accept((CommandResult) value);
+            } else if (value instanceof Result) {
+                resultCallback.accept((Result) value);
                 return;
             } else {
                 parameters[i] = value;
@@ -122,7 +122,7 @@ final class InvocationParameterExtractor {
 
         if (lazyParameters != null) {
             val futures = new ConcurrentLinkedQueue<CompletableFuture<?>>();
-            val resultRef = new AtomicReference<CommandResult>();
+            val resultRef = new AtomicReference<Result>();
 
             for (val lazyParameter : lazyParameters) {
                 extractLazy(

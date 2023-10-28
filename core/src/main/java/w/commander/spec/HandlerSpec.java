@@ -1,9 +1,10 @@
 package w.commander.spec;
 
 import org.immutables.value.Value;
-import w.commander.manual.description.CommandDescription;
-import w.commander.manual.usage.CommandUsage;
-import w.commander.parameter.CommandParameter;
+import org.jetbrains.annotations.NotNull;
+import w.commander.manual.description.Description;
+import w.commander.manual.usage.Usage;
+import w.commander.parameter.HandlerParameter;
 
 import java.lang.reflect.Method;
 
@@ -13,18 +14,18 @@ import java.lang.reflect.Method;
 @Value.Immutable
 public interface HandlerSpec {
 
-    String getPath();
+    @NotNull String getPath();
 
-    CommandParameter[] getParameters();
+    @NotNull HandlerParameter @NotNull [] getParameters();
 
     // todo conditions
 
-    CommandDescription getDescription();
+    @NotNull Description getDescription();
 
-    CommandUsage getUsage();
+    @NotNull Usage getUsage();
 
     // todo async
 
-    Method getMethod();
+    @NotNull Method getMethod();
 
 }

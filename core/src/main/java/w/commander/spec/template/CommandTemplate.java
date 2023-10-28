@@ -1,5 +1,7 @@
 package w.commander.spec.template;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 /**
@@ -7,8 +9,8 @@ import java.util.List;
  */
 public interface CommandTemplate {
 
-    Object getInstance();
+    @NotNull Object getInstance();
 
-    List<CommandTemplate> getSubCommands();
+    @NotNull List<@NotNull CommandTemplate> getSubCommands();
 
 }

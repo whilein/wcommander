@@ -1,12 +1,14 @@
 package w.commander.spec.template;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author whilein
  */
 public interface CommandTemplateFactory {
 
-    CommandTemplate create(Class<?> type);
+    @NotNull CommandTemplate create(@NotNull Class<?> type);
 
-    CommandTemplate create(Object instance);
+    @NotNull CommandTemplate create(@NotNull Object instance);
 
 }

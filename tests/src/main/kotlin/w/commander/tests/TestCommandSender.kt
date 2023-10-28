@@ -6,9 +6,9 @@ import w.commander.CommandSender
  * @author whilein
  */
 object TestCommandSender : CommandSender {
-    override fun name(): String = "test"
+    override fun getName(): String = "test"
 
-    override fun sendMessage(text: String?) {
+    override fun sendMessage(text: String) {
         // no-op
     }
 }

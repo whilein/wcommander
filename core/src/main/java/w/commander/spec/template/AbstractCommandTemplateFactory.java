@@ -1,6 +1,7 @@
 package w.commander.spec.template;
 
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import w.commander.annotation.SubCommandTypes;
 
 /**
@@ -8,15 +9,15 @@ import w.commander.annotation.SubCommandTypes;
  */
 public abstract class AbstractCommandTemplateFactory implements CommandTemplateFactory {
 
-    protected abstract Object getInstance(Class<?> type);
+    protected abstract @NotNull Object getInstance(@NotNull Class<?> type);
 
     @Override
-    public final CommandTemplate create(Class<?> type) {
+    public final @NotNull CommandTemplate create(@NotNull Class<?> type) {
         return createTemplate(getInstance(type));
     }
 
     @Override
-    public final CommandTemplate create(Object instance) {
+    public final @NotNull CommandTemplate create(@NotNull Object instance) {
         return createTemplate(instance);
     }
 

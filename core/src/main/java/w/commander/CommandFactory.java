@@ -1,5 +1,6 @@
 package w.commander;
 
+import org.jetbrains.annotations.NotNull;
 import w.commander.spec.CommandSpec;
 
 /**
@@ -7,6 +8,6 @@ import w.commander.spec.CommandSpec;
  */
 public interface CommandFactory {
 
-    Command create(CommandSpec spec);
+    @NotNull Command create(@NotNull CommandSpec spec);
 
 }
