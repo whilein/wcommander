@@ -30,9 +30,9 @@ public final class AnnotationBasedCommandSpecFactoryProvider implements Provider
     public CommandSpecFactory get() {
         return AnnotationBasedCommandSpecFactory.create(
                 handlerPathStrategy,
-                handlerResolverSet,
                 usageFactory,
-                descriptionFactory
+                descriptionFactory,
+                handlerResolverSet
         );
     }
 
