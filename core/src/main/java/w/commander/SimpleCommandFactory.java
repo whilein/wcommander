@@ -12,8 +12,8 @@ import w.commander.spec.CommandSpec;
 import w.commander.spec.HandlerSpec;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -56,11 +56,13 @@ public final class SimpleCommandFactory implements CommandFactory {
     }
 
     private CommandNode createTree(CommandSpec spec) {
-        val subCommands = spec.getSubCommands().stream()
-                .collect(Collectors.toMap(
-                        CommandSpec::getName,
-                        this::createTree
-                ));
+        val subCommands = new HashMap<String, CommandNode>();
+
+        for (val subCommand : spec.getSubCommands()) {
+            for (val name : subCommand.getNames()) {
+                subCommands.put(name.toLowerCase(), createTree(subCommand));
+            }
+        }
 
         val commandExecutors = spec.getHandlers().stream()
                 .map(handler -> createExecutor(handler, spec))
@@ -78,17 +80,14 @@ public final class SimpleCommandFactory implements CommandFactory {
             val subCommand = manual.getSubCommand();
 
             if (subCommand != null) {
-                subCommands.putIfAbsent(subCommand, commandNodeFactory.create(
+                val manualNode = commandNodeFactory.create(
                         Collections.singletonList(manualExecutor),
-                        Collections.emptyMap()));
-            }
+                        Collections.emptyMap()
+                );
 
-            val subcommandAliases = manual.getSubcommandAliases();
-
-            for (val alias : subcommandAliases) {
-                subCommands.putIfAbsent(alias, commandNodeFactory.create(
-                        Collections.singletonList(manualExecutor),
-                        Collections.emptyMap()));
+                for (val name : subCommand.getNames()) {
+                    subCommands.putIfAbsent(name.toLowerCase(), manualNode);
+                }
             }
         }
 
@@ -102,7 +101,7 @@ public final class SimpleCommandFactory implements CommandFactory {
     public @NotNull Command create(@NotNull CommandSpec spec) {
         return SimpleCommand.create(
                 spec.getName(),
-                Collections.unmodifiableList(Arrays.asList(spec.getAliases())),
+                spec.getAliases(),
                 createTree(spec),
                 executionContextFactory,
                 executionThrowableInterceptor

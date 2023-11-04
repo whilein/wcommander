@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author whilein
@@ -49,14 +50,14 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
         );
     }
 
-    private static String[] getAliases(AnnotatedElement element) {
+    private static List<String> getAliases(AnnotatedElement element) {
         val alias = element.getDeclaredAnnotation(WithAlias.class);
 
         if (alias != null) {
             val aliasValue = alias.value();
             CommandSpecValidation.checkCommandName(aliasValue);
 
-            return new String[]{aliasValue};
+            return Collections.singletonList(aliasValue);
         }
 
         val aliases = element.getDeclaredAnnotation(WithAliases.class);
@@ -64,18 +65,25 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
         if (aliases != null) {
             val aliasesValues = Arrays.stream(aliases.value())
                     .map(WithAlias::value)
-                    .toArray(String[]::new);
+                    .collect(Collectors.toList());
 
             CommandSpecValidation.checkCommandNames(aliasesValues);
 
             return aliasesValues;
         }
 
-        return new String[0];
+        return Collections.emptyList();
     }
 
     private static boolean isHidden(Method method) {
         return method.isAnnotationPresent(Hidden.class);
+    }
+
+    private static ManualSubCommandSpec getManualSubCommand(WithManualSubCommand subCommand) {
+        return ImmutableManualSubCommandSpec.builder()
+                .name(subCommand.value())
+                .addAliases(subCommand.aliases())
+                .build();
     }
 
     private static ManualSpec getManual(Class<?> commandType) {
@@ -88,8 +96,9 @@ public final class AnnotationBasedCommandSpecFactory implements CommandSpecFacto
 
         return ImmutableManualSpec.builder()
                 .hasHandler(manualHandler)
-                .subCommand(manualSubCommand == null ? null : manualSubCommand.value())
-                .subcommandAliases(manualSubCommand == null ? null : manualSubCommand.aliases())
+                .subCommand(manualSubCommand != null
+                        ? getManualSubCommand(manualSubCommand)
+                        : null)
                 .build();
     }
 

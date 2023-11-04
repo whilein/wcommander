@@ -14,7 +14,7 @@ public class CommandSpecValidation {
 
     private final Pattern VALID_COMMAND_NAME = Pattern.compile("^[^ ]+$");
 
-    public void checkCommandNames(@NotNull String @NotNull  ... names) {
+    public void checkCommandNames(@NotNull Iterable<@NotNull String> names) {
         for (val name : names) {
             checkCommandName(name);
         }

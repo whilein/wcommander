@@ -16,9 +16,7 @@ public interface ManualSpec {
 
     boolean hasHandler();
 
-    @Nullable String getSubCommand();
-
-    @Nullable String[] getSubcommandAliases();
+    @Nullable ManualSubCommandSpec getSubCommand();
 
     default boolean isEmpty() {
         return !hasHandler() && getSubCommand() != null;

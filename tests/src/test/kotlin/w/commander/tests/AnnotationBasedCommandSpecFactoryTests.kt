@@ -263,7 +263,8 @@ class AnnotationBasedCommandSpecFactoryTests : FunSpec({
 
             val manual = command.manual
             manual.hasHandler() shouldBe true
-            manual.subCommand shouldBe "help"
+            manual.subCommand!!.name shouldBe "help"
+            manual.subCommand!!.aliases.isEmpty() shouldBe true
         }
 
         test("With handler") {
@@ -287,7 +288,8 @@ class AnnotationBasedCommandSpecFactoryTests : FunSpec({
 
             val manual = command.manual
             manual.hasHandler() shouldBe false
-            manual.subCommand shouldBe "help"
+            manual.subCommand!!.name shouldBe "help"
+            manual.subCommand!!.aliases.isEmpty() shouldBe true
         }
     }
 

@@ -9,17 +9,11 @@ import java.util.List;
  * @author whilein
  */
 @Value.Immutable
-public interface CommandSpec {
+public interface CommandSpec extends NameAwareSpec, PathAwareSpec {
 
     @NotNull Object getInstance();
 
     @NotNull Class<?> getType();
-
-    @NotNull String getName();
-
-    @NotNull String getPath();
-
-    @NotNull String @NotNull [] getAliases();
 
     @NotNull ManualSpec getManual();
 

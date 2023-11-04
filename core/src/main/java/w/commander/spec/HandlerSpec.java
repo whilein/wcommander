@@ -13,9 +13,7 @@ import java.lang.reflect.Method;
  * @author whilein
  */
 @Value.Immutable
-public interface HandlerSpec {
-
-    @NotNull String getPath();
+public interface HandlerSpec extends PathAwareSpec {
 
     @NotNull HandlerParameters getParameters();
 
