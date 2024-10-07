@@ -26,16 +26,18 @@ repositories {
 dependencies {
     compileOnly libs.jetbrains.annotations
     compileOnly libs.spotbugs.annotations
-    annotationProcessor libs.jetbrains.annotations
     compileOnly libs.lombok
     annotationProcessor libs.lombok
+
+    testCompileOnly libs.jetbrains.annotations
+    testCompileOnly libs.spotbugs.annotations
+    testCompileOnly libs.lombok
+    testAnnotationProcessor libs.lombok
 
     testImplementation platform(libs.junit.bom)
     testImplementation libs.junit.api
     testRuntimeOnly libs.junit.engine
     testImplementation libs.mockito
-    testCompileOnly libs.lombok
-    testAnnotationProcessor libs.lombok
 }
 
 java {
