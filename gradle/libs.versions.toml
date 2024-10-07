@@ -8,7 +8,9 @@ velocity = "3.2.0-SNAPSHOT"
 paper = "1.16.5-R0.1-SNAPSHOT"
 spigot = "1.8.8-R0.1-SNAPSHOT"
 junit = "5.11.2"
-mockito = "5.14.1"
+
+# don't bump due to java versions incompatibility
+mockito = "4.11.0"
 
 [libraries]
 # region testing
