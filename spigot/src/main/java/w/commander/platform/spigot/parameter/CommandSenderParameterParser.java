@@ -14,19 +14,27 @@
  *    limitations under the License.
  */
 
-package w.commander.parameter;
+package w.commander.platform.spigot.parameter;
 
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.TypedParameterParser;
+import w.commander.platform.spigot.SpigotExecutionContext;
 
 import java.lang.reflect.Parameter;
 
 /**
  * @author whilein
  */
-public interface ParameterParser {
+public class CommandSenderParameterParser extends TypedParameterParser<CommandSender> {
+    public CommandSenderParameterParser() {
+        super(CommandSender.class);
+    }
 
-    boolean matches(@NotNull Parameter parameter);
-
-    @NotNull HandlerParameter parse(@NotNull Parameter parameter);
-
+    @Override
+    public @NotNull HandlerParameter parse(@NotNull Parameter parameter) {
+        return (context, cursor) -> ((SpigotExecutionContext) context).getActor().getSender();
+    }
+    
 }

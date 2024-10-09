@@ -34,13 +34,11 @@ import w.commander.platform.velocity.VelocityCommanderConfig;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class PlayerArgument extends AbstractArgument {
 
-    ProxyServer server;
     VelocityCommanderConfig config;
 
-    public PlayerArgument(@NotNull String name, ProxyServer server, VelocityCommanderConfig config) {
+    public PlayerArgument(@NotNull String name, VelocityCommanderConfig config) {
         super(name);
 
-        this.server = server;
         this.config = config;
     }
 
@@ -49,7 +47,7 @@ public final class PlayerArgument extends AbstractArgument {
         if (cursor.hasNext(isRequired())) {
             val name = context.getRawArguments().value(cursor.next());
 
-            return server.getPlayer(name)
+            return config.getServer().getPlayer(name)
                     .map(Object.class::cast)
                     .orElseGet(() -> config.getVelocityErrorResultFactory().onOfflinePlayer(context, name));
         }

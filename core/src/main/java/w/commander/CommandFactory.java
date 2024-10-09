@@ -24,16 +24,22 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.executor.CommandExecutor;
 import w.commander.executor.CommandHandler;
+import w.commander.executor.CommandSetupHandler;
+import w.commander.executor.CommandSetupHandlers;
 import w.commander.executor.ManualCommandExecutor;
 import w.commander.executor.MethodCommandHandler;
+import w.commander.executor.MethodCommandSetupHandler;
+import w.commander.executor.MethodExecutor;
 import w.commander.executor.MethodHandleExecutor;
 import w.commander.executor.NotEnoughArgumentsCommandHandler;
 import w.commander.manual.Manual;
 import w.commander.spec.CommandSpec;
 import w.commander.spec.HandlerSpec;
+import w.commander.spec.SetupHandlerSpec;
 import w.commander.util.Immutables;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +61,24 @@ public final class CommandFactory {
     CommanderConfig config;
 
     @SneakyThrows
-    private CommandExecutor createExecutor(HandlerSpec handler, CommandSpec command) {
-        val executor = new MethodHandleExecutor(LOOKUP.unreflect(handler.getMethod())
-                .bindTo(command.getInstance()));
+    private MethodExecutor createExecutor(Method method, Object instance) {
+        return new MethodHandleExecutor(LOOKUP.unreflect(method)
+                .bindTo(instance));
+    }
 
+    @SneakyThrows
+    private CommandSetupHandler createSetupHandler(SetupHandlerSpec handler, CommandSpec command) {
+        val executor = createExecutor(handler.getMethod(), command.getInstance());
+
+        return new MethodCommandSetupHandler(
+                handler.getParameters(),
+                executor
+        );
+    }
+
+    @SneakyThrows
+    private CommandExecutor createExecutor(HandlerSpec handler, CommandSpec command) {
+        val executor = createExecutor(handler.getMethod(), command.getInstance());
         val wrappedExecutor = handler.getDecorators().wrap(handler, executor);
 
         return new MethodCommandHandler(
@@ -70,15 +90,14 @@ public final class CommandFactory {
         );
     }
 
-    private CommandExecutor[] createExecutors(
-            List<CommandExecutor> executors
-    ) {
-        if (executors.isEmpty()) {
-            return EMPTY;
-        }
+    private static CommandSetupHandlers createSetupHandlers(List<CommandSetupHandler> handlers) {
+        return CommandSetupHandlers.of(handlers);
+    }
+
+    private CommandExecutor[] createExecutors(List<CommandExecutor> executors) {
+        if (executors.isEmpty()) return EMPTY;
 
         val executorByArgumentMap = new HashMap<Integer, CommandExecutor>();
-
         for (val executor : executors) {
             if (executor instanceof CommandHandler) {
                 val handler = (CommandHandler) executor;
@@ -155,6 +174,10 @@ public final class CommandFactory {
             }
         }
 
+        val setupHandlerExecutors = spec.getSetupHandlers().stream()
+                .map(handler -> createSetupHandler(handler, spec))
+                .collect(Collectors.toList());
+
         val commandExecutors = spec.getHandlers().stream()
                 .map(handler -> createExecutor(handler, spec))
                 .collect(Collectors.toList());
@@ -183,6 +206,7 @@ public final class CommandFactory {
 
         return new CommandNode(
                 createExecutors(commandExecutors),
+                createSetupHandlers(setupHandlerExecutors),
                 Immutables.immutableMap(subCommands),
                 manual
         );

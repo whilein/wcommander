@@ -16,17 +16,33 @@
 
 package w.commander.parameter;
 
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import w.commander.annotation.Join;
+import w.commander.parameter.argument.type.JoinArgument;
 
 import java.lang.reflect.Parameter;
 
 /**
  * @author whilein
  */
-public interface ParameterParser {
+public class JoinArgumentParameterParser extends AnnotatedParameterParser<Join> {
 
-    boolean matches(@NotNull Parameter parameter);
+    public JoinArgumentParameterParser() {
+        super(Join.class);
+    }
 
-    @NotNull HandlerParameter parse(@NotNull Parameter parameter);
+    @Override
+    protected @NotNull HandlerParameter parse(@NotNull Parameter parameter, @NotNull Join annotation) {
+        val type = parameter.getType();
+        if (type != String.class) {
+            throw new IllegalArgumentException("@Join annotation is not allowed on " + type.getName());
+        }
+
+        return new JoinArgument(
+                annotation.value(),
+                annotation.delimiter()
+        );
+    }
 
 }

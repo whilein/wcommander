@@ -16,30 +16,25 @@
 
 package w.commander.platform.velocity.parameter;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.velocitypowered.api.command.CommandSource;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import w.commander.execution.ExecutionContext;
 import w.commander.parameter.HandlerParameter;
-import w.commander.parameter.argument.cursor.ArgumentCursor;
+import w.commander.parameter.TypedParameterParser;
 import w.commander.platform.velocity.VelocityExecutionContext;
+
+import java.lang.reflect.Parameter;
 
 /**
  * @author whilein
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommandSourceHandlerParameter implements HandlerParameter {
-
-    private static final HandlerParameter INSTANCE = new CommandSourceHandlerParameter();
-
-    public static @NotNull HandlerParameter getInstance() {
-        return INSTANCE;
+public class CommandSourceParameterParser extends TypedParameterParser<CommandSource> {
+    public CommandSourceParameterParser() {
+        super(CommandSource.class);
     }
 
     @Override
-    public @Nullable Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        return ((VelocityExecutionContext) context).getActor().getSource();
+    public @NotNull HandlerParameter parse(@NotNull Parameter parameter) {
+        return (context, cursor) -> ((VelocityExecutionContext) context).getActor().getSource();
     }
-
+    
 }

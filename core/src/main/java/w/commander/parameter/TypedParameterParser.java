@@ -14,31 +14,27 @@
  *    limitations under the License.
  */
 
-package w.commander.parameter.type;
+package w.commander.parameter;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.execution.ExecutionContext;
-import w.commander.parameter.HandlerParameter;
-import w.commander.parameter.argument.cursor.ArgumentCursor;
+
+import java.lang.reflect.Parameter;
 
 /**
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ActorHandlerParameter implements HandlerParameter {
+@RequiredArgsConstructor
+public abstract class TypedParameterParser<T> implements ParameterParser {
 
-    private static final HandlerParameter INSTANCE = new ActorHandlerParameter();
-
-    public static @NotNull HandlerParameter getInstance() {
-        return INSTANCE;
-    }
+    Class<? extends T> type;
 
     @Override
-    public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        return context.getActor();
+    public final boolean matches(@NotNull Parameter parameter) {
+        return type.isAssignableFrom(parameter.getType());
     }
+
 }

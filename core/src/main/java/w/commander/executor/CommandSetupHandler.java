@@ -14,21 +14,29 @@
  *    limitations under the License.
  */
 
-package w.commander.parameter;
+package w.commander.executor;
 
 import org.jetbrains.annotations.NotNull;
-import w.commander.annotation.NonRequired;
-
-import java.lang.reflect.Parameter;
+import w.commander.condition.Conditions;
+import w.commander.execution.ExecutionContext;
+import w.commander.manual.ManualEntry;
+import w.commander.parameter.HandlerParameters;
+import w.commander.result.Result;
+import w.commander.util.Callback;
 
 /**
  * @author whilein
  */
-public abstract class AbstractParameterParser implements ParameterParser {
+public interface CommandSetupHandler extends CommandExecutor {
+    @NotNull
+    HandlerParameters getParameters();
 
-    protected static boolean isRequired(@NotNull Parameter parameter) {
-        return !parameter.isAnnotationPresent(NonRequired.class);
+    @Override
+    default void test(
+            @NotNull ExecutionContext context,
+            @NotNull Callback<@NotNull Result> callback
+    ) {
+        throw new UnsupportedOperationException();
     }
-
 
 }

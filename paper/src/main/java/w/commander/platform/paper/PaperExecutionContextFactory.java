@@ -19,6 +19,7 @@ package w.commander.platform.paper;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 import w.commander.RawArguments;
+import w.commander.attribute.AttributeStore;
 import w.commander.execution.ExecutionContext;
 import w.commander.platform.spigot.SpigotExecutionContextFactory;
 
@@ -30,11 +31,12 @@ public class PaperExecutionContextFactory extends SpigotExecutionContextFactory 
     @Override
     public @NotNull ExecutionContext create(
             @NotNull CommandActor actor,
-            @NotNull RawArguments arguments
-    ) {
+            @NotNull RawArguments arguments,
+            @NotNull AttributeStore attributeStore) {
         return new PaperExecutionContext(
                 (PaperCommandActor) actor,
-                arguments
+                arguments,
+                attributeStore
         );
     }
 

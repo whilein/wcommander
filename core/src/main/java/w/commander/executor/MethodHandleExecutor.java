@@ -17,7 +17,6 @@
 package w.commander.executor;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import w.commander.execution.ExecutionContext;
@@ -26,6 +25,8 @@ import w.commander.result.Results;
 import w.commander.util.Callback;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -33,16 +34,23 @@ import java.util.function.Supplier;
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public class MethodHandleExecutor implements MethodExecutor {
 
-    MethodHandle mh;
+    MethodHandle invoker;
+    MethodHandle spreadInvoker;
+
+    public MethodHandleExecutor(MethodHandle invoker) {
+        val invocationType = MethodType.genericMethodType(invoker.type().parameterCount());
+
+        this.invoker = invoker.asType(invocationType);
+        this.spreadInvoker = MethodHandles.spreadInvoker(invocationType, 0);
+    }
 
     @Override
     public void execute(ExecutionContext context, Callback<Result> callback, Object[] args) {
         Object result;
         try {
-            result = mh.invokeWithArguments(args);
+            result = spreadInvoker.invokeExact(invoker, args);
         } catch (Throwable e) {
             callback.completeExceptionally(e);
             return;

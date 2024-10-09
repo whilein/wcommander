@@ -14,34 +14,35 @@
  *    limitations under the License.
  */
 
-package w.commander.execution;
+package w.commander.parameter;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
-import w.commander.RawArguments;
-import w.commander.attribute.AttributeStore;
 
-import javax.annotation.concurrent.Immutable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Parameter;
 
 /**
  * @author whilein
  */
-@Getter
-@Immutable
-@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SimpleExecutionContext implements ExecutionContext {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+public abstract class AnnotatedParameterParser<A extends Annotation> implements ParameterParser {
 
-    @NotNull CommandActor actor;
-    @NotNull RawArguments rawArguments;
-    @NotNull AttributeStore attributeStore;
+    Class<? extends A> annotationType;
 
     @Override
-    public void sendMessage(@NotNull String text) {
-        actor.sendMessage(text);
+    public final boolean matches(@NotNull Parameter parameter) {
+        return parameter.isAnnotationPresent(annotationType);
     }
+
+    @Override
+    public final @NotNull HandlerParameter parse(@NotNull Parameter parameter) {
+        return parse(parameter, parameter.getAnnotation(annotationType));
+    }
+
+    protected abstract @NotNull HandlerParameter parse(@NotNull Parameter parameter, @NotNull A annotation);
+
 }

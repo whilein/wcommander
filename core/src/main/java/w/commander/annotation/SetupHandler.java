@@ -14,19 +14,20 @@
  *    limitations under the License.
  */
 
-package w.commander.parameter;
+package w.commander.annotation;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Parameter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author whilein
  */
-public interface ParameterParser {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SetupHandler {
 
-    boolean matches(@NotNull Parameter parameter);
-
-    @NotNull HandlerParameter parse(@NotNull Parameter parameter);
+    String value() default "";
 
 }

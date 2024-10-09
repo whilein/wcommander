@@ -23,10 +23,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import w.commander.attribute.LazyAttributeStore;
 import w.commander.execution.ExecutionContext;
 import w.commander.executor.CommandExecutor;
 import w.commander.executor.CommandHandler;
-import w.commander.executor.ManualCommandExecutor;
 import w.commander.manual.Manual;
 import w.commander.result.Result;
 import w.commander.result.Results;
@@ -81,7 +81,9 @@ final class CommandImpl implements Command {
         val executor = subCommand.executor(0);
         executor.test(context, Callback.of((result, cause) -> {
             try {
-                if (result != null && result.isSuccess()) {
+                if (cause != null) {
+                    suggestions.exceptionCaught(cause);
+                } else if (result != null && result.isSuccess()) {
                     suggestions.next(subCommandName);
                 }
             } finally {
@@ -103,9 +105,11 @@ final class CommandImpl implements Command {
             if (argument < arguments.size()) {
                 suggestions.retain();
 
-                handler.getConditions().testVisibility(context, Callback.of((result, cause) -> {
+                handler.test(context, Callback.of((result, cause) -> {
                     try {
-                        if (result != null && result.isSuccess()) {
+                        if (cause != null) {
+                            suggestions.exceptionCaught(cause);
+                        } else if (result != null && result.isSuccess()) {
                             val tabCompleter = arguments.get(argument)
                                     .getTabCompleter();
 
@@ -127,7 +131,7 @@ final class CommandImpl implements Command {
             return CompletableFuture.completedFuture(Collections.emptyList());
         }
 
-        val context = config.getExecutionContextFactory().create(actor, arguments);
+        val context = createContext(actor, arguments);
 
         CommandNode tree = this.tree;
         int offset = 0;
@@ -146,25 +150,43 @@ final class CommandImpl implements Command {
         val lastIndex = arguments.size() - 1;
         val lastValue = arguments.value(lastIndex);
 
-        val future = new CompletableFuture<List<String>>();
-        val suggestions = new Suggestions(future);
+        val finalTree = tree;
+        val finalOffset = offset;
 
-        if (executor instanceof CommandHandler && lastIndex >= offset) {
-            val handler = (CommandHandler) executor;
+        val hasHandler = executor instanceof CommandHandler && lastIndex >= finalOffset;
+        val hasSubCommands = lastIndex <= finalOffset;
 
-            addHandlerToSuggestions(context, handler,
-                    lastIndex - offset,
-                    lastValue,
-                    suggestions);
+        if (hasHandler || hasSubCommands) {
+            val future = new CompletableFuture<List<String>>();
+            val suggestions = new Suggestions(future);
+
+            finalTree.getSetupHandlers().setup(context, Callback.of((result, cause) -> {
+                try {
+                    if (cause != null) {
+                        suggestions.exceptionCaught(cause);
+                    } else if (result != null && result.isSuccess()) {
+                        if (hasHandler) {
+                            val handler = (CommandHandler) executor;
+
+                            addHandlerToSuggestions(context, handler,
+                                    lastIndex - finalOffset,
+                                    lastValue, suggestions);
+                        }
+
+                        if (hasSubCommands) {
+                            finalTree.forEach((key, value) -> addSubCommandToSuggestions(context, key, value,
+                                    lastValue, suggestions));
+                        }
+                    }
+                } finally {
+                    suggestions.release();
+                }
+            }));
+
+            return future;
         }
 
-        if (lastIndex <= offset) {
-            tree.forEach((key, value) -> addSubCommandToSuggestions(context, key, value, lastValue, suggestions));
-        }
-
-        suggestions.release();
-
-        return future;
+        return CompletableFuture.completedFuture(Collections.emptyList());
     }
 
 
@@ -189,31 +211,43 @@ final class CommandImpl implements Command {
         val newArguments = arguments.withOffset(offset);
 
         val executor = tree.executor(newArguments.size());
-        val context = config.getExecutionContextFactory().create(actor, newArguments);
+        val context = createContext(actor, newArguments);
 
         val future = new CompletableFuture<Result>();
 
-        executor.execute(context, Callback.of((result, cause) -> {
-            if (cause != null) {
-                if (cause instanceof Result) {
-                    result = (Result) cause;
-                } else {
-                    result = config.getErrorResultFactory().onInternalError(context, cause);
-                }
-            }
+        tree.getSetupHandlers().setup(context, Callback.mappingException(
+                sr -> {
+                    if (!sr.isSuccess()) {
+                        dispatch(context, sr, future);
+                        return;
+                    }
 
-            if (result != null) {
-                try {
-                    result.dispatch(context);
-
-                    future.complete(result);
-                } catch (Throwable t) {
-                    future.completeExceptionally(t);
-                }
-            }
-        }));
+                    executor.execute(context, Callback.mappingException(
+                            er -> dispatch(context, er, future),
+                            cause -> fromCause(context, cause)));
+                },
+                cause -> fromCause(context, cause)
+        ));
 
         return future;
+    }
+
+    private static void dispatch(ExecutionContext context, Result result, CompletableFuture<Result> future) {
+        try {
+            result.dispatch(context);
+
+            future.complete(result);
+        } catch (Throwable t) {
+            future.completeExceptionally(t);
+        }
+    }
+
+    private Result fromCause(ExecutionContext context, Throwable cause) {
+        if (cause instanceof Result) {
+            return (Result) cause;
+        } else {
+            return config.getErrorResultFactory().onInternalError(context, cause);
+        }
     }
 
     private void addExecutors(CommandNode node, List<CommandExecutor> executors) {
@@ -224,7 +258,7 @@ final class CommandImpl implements Command {
 
     @Override
     public @NotNull CompletableFuture<@NotNull Result> test(@NotNull CommandActor actor) {
-        val context = config.getExecutionContextFactory().create(actor, RawArguments.empty());
+        val context = createContext(actor, RawArguments.empty());
 
         val executors = new ArrayList<CommandExecutor>();
         addExecutors(tree, executors);
@@ -258,6 +292,11 @@ final class CommandImpl implements Command {
     @Override
     public @Nullable Manual getManual() {
         return tree.getManual();
+    }
+
+    private ExecutionContext createContext(CommandActor actor, RawArguments args) {
+        return config.getExecutionContextFactory().create(actor, args,
+                new LazyAttributeStore(config.getAttributeStoreFactory()));
     }
 
 }

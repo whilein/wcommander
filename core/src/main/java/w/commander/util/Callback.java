@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -44,6 +43,19 @@ public interface Callback<T> {
             @NotNull BiConsumer<@Nullable T, @Nullable Throwable> callback
     ) {
         return new OfBiConsumer<>(callback);
+    }
+
+    static <T> @NotNull Callback<@NotNull T> mappingException(
+            @NotNull Consumer<T> callback,
+            @NotNull Function<Throwable, T> causeMapper
+    ) {
+        return Callback.of((result, cause) -> {
+            if (cause != null) {
+                callback.accept(causeMapper.apply(cause));
+            } else if (result != null) {
+                callback.accept(result);
+            }
+        });
     }
 
     static <T> @NotNull Callback<T> ofFuture(@NotNull CompletableFuture<T> future) {
@@ -108,26 +120,14 @@ public interface Callback<T> {
         Consumer<T> successCallback;
         Consumer<Throwable> failureCallback;
 
-        AtomicBoolean completed = new AtomicBoolean();
-
         @Override
         public void complete(@NotNull T value) {
-            if (completed.compareAndSet(false, true)) {
-                successCallback.accept(value);
-                return;
-            }
-
-            throw new IllegalStateException("Already completed");
+            successCallback.accept(value);
         }
 
         @Override
         public void completeExceptionally(@NotNull Throwable cause) {
-            if (completed.compareAndSet(false, true)) {
-                failureCallback.accept(null);
-                return;
-            }
-
-            throw new IllegalStateException("Already completed");
+            failureCallback.accept(null);
         }
     }
 
@@ -136,26 +136,14 @@ public interface Callback<T> {
     class OfBiConsumer<T> implements Callback<T> {
         BiConsumer<T, Throwable> callback;
 
-        AtomicBoolean completed = new AtomicBoolean();
-
         @Override
         public void complete(@NotNull T value) {
-            if (completed.compareAndSet(false, true)) {
-                callback.accept(value, null);
-                return;
-            }
-
-            throw new IllegalStateException("Already completed");
+            callback.accept(value, null);
         }
 
         @Override
         public void completeExceptionally(@NotNull Throwable cause) {
-            if (completed.compareAndSet(false, true)) {
-                callback.accept(null, cause);
-                return;
-            }
-
-            throw new IllegalStateException("Already completed");
+            callback.accept(null, cause);
         }
 
     }

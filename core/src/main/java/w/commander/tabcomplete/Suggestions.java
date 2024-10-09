@@ -59,6 +59,12 @@ public final class Suggestions {
         }
     }
 
+    public void exceptionCaught(Throwable cause) {
+        if (REF_COUNT_UPDATER.getAndSet(this, 0) != 0) {
+            completion.completeExceptionally(cause);
+        }
+    }
+
     private synchronized List<String> getSuggestions() {
         return new ArrayList<>(suggestions);
     }

@@ -35,6 +35,7 @@ import w.commander.manual.FormattingText;
 import w.commander.manual.ManualEntry;
 import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.HandlerParameters;
+import w.commander.parameter.ParameterParser;
 import w.commander.parameter.argument.Argument;
 
 import java.lang.annotation.Annotation;
@@ -79,20 +80,26 @@ public final class CommandSpecFactory {
         return ManualSpec.of(manualHandler, getManualSubCommand(manualSubCommand));
     }
 
-    private HandlerParameter parseParameter(Parameter parameter) {
-        for (val parser : config.getParameterParsers()) {
-            if (parser.isSupported(parameter)) {
+    private HandlerParameter parseParameter(List<? extends ParameterParser> parsers, Parameter parameter) {
+        for (val parser : parsers) {
+            if (parser.matches(parameter)) {
                 HandlerParameter handlerParameter = parser.parse(parameter);
-
                 for (val parameterPostProcessor : config.getParameterPostProcessors()) {
                     handlerParameter = parameterPostProcessor.process(parameter, handlerParameter);
                 }
-
                 return handlerParameter;
             }
         }
+        return null;
+    }
 
-        throw new UnsupportedOperationException("There are no available parameters for " + parameter);
+    private HandlerParameter parseParameter(Parameter parameter) {
+        HandlerParameter hp;
+        if ((hp = parseParameter(config.getAnnotatedParameterParsers(), parameter)) == null
+            && (hp = parseParameter(config.getTypedParameterParsers(), parameter)) == null) {
+            throw new UnsupportedOperationException("There are no available parameter parsers for " + parameter);
+        }
+        return hp;
     }
 
     private HandlerParameters getParameters(Method method) {
@@ -166,6 +173,16 @@ public final class CommandSpecFactory {
         return Conditions.from(result.toArray(new Condition[0]));
     }
 
+    private SetupHandlerSpec createSetupHandler(CommandSpec commandSpec, Method method) {
+        val parameters = getParameters(method);
+
+        return SetupHandlerSpec.builder()
+                .command(commandSpec)
+                .parameters(parameters)
+                .method(method)
+                .build();
+    }
+
     private HandlerSpec createHandler(CommandSpec commandSpec, HandlerPath path, Method method) {
         val parameters = getParameters(method);
         val conditions = createConditions(method);
@@ -215,15 +232,22 @@ public final class CommandSpecFactory {
                 .build();
 
         val handlers = new ArrayList<HandlerSpec>();
+        val setupHandlers = new ArrayList<SetupHandlerSpec>();
         val subCommands = new ArrayList<CommandSpec>();
 
+        val annotationScanner = config.getAnnotationScanner();
+
         for (val method : commandType.getMethods()) {
-            val commandHandler = config.getAnnotationScanner().getCommandHandlerName(method);
+            if (annotationScanner.isSetupHandler(method)) {
+                setupHandlers.add(createSetupHandler(commandSpec, method));
+            }
+
+            val commandHandler = annotationScanner.getCommandHandlerName(method);
             if (commandHandler != null) {
                 handlers.add(createHandler(commandSpec, path.resolve(commandHandler), method));
             }
 
-            val subCommandHandlerName = config.getAnnotationScanner().getSubCommandHandlerName(method);
+            val subCommandHandlerName = annotationScanner.getSubCommandHandlerName(method);
             if (subCommandHandlerName != null) {
                 CommandSpecValidation.checkCommandName(subCommandHandlerName);
 
@@ -241,6 +265,7 @@ public final class CommandSpecFactory {
 
                 val subCommandHandlerSpec = createHandler(subCommandSpec, subCommandPath, method);
                 subCommandSpec.setSubCommands(Collections.emptyList());
+                subCommandSpec.setSetupHandlers(setupHandlers);
                 subCommandSpec.setHandlers(Collections.singletonList(subCommandHandlerSpec));
 
                 subCommands.add(subCommandSpec);
@@ -251,6 +276,7 @@ public final class CommandSpecFactory {
             subCommands.add(createSubCommand(commandSpec, subCommand));
         }
 
+        commandSpec.setSetupHandlers(setupHandlers);
         commandSpec.setHandlers(handlers);
         commandSpec.setSubCommands(subCommands);
         return commandSpec;

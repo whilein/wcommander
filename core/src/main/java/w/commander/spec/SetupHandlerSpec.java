@@ -17,59 +17,32 @@
 package w.commander.spec;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
-import lombok.experimental.NonFinal;
-import w.commander.CommandInfo;
+import w.commander.condition.Conditions;
+import w.commander.decorator.Decorators;
 import w.commander.executor.HandlerPath;
+import w.commander.manual.ManualEntry;
+import w.commander.parameter.HandlerParameters;
 
-import java.util.List;
+import java.lang.reflect.Method;
 
 /**
  * @author whilein
  */
 @Value
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CommandSpec implements NameAwareSpec, PathAwareSpec {
-    String fullName;
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class SetupHandlerSpec {
 
-    // NameAwareSpec
-    String name;
-    List<String> aliases;
-
-    // PathAwareSpec
-    HandlerPath path;
-
-    CommandSpec parent;
-    CommandInfo info;
-
-    ManualSpec manual;
-
-    @Setter
-    @NonFinal
-    List<SetupHandlerSpec> setupHandlers;
-
-    @Setter
-    @NonFinal
-    List<HandlerSpec> handlers;
-
-    @Setter
-    @NonFinal
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    List<CommandSpec> subCommands;
+    CommandSpec command;
 
-    public Object getInstance() {
-        return info.getInstance();
-    }
-
-    public Class<?> getType() {
-        return info.getInstanceType();
-    }
+    HandlerParameters parameters;
+    Method method;
 
 }

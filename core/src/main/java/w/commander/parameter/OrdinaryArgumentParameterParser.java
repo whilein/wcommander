@@ -17,19 +17,14 @@
 package w.commander.parameter;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
 import w.commander.CommanderConfig;
 import w.commander.annotation.Arg;
-import w.commander.annotation.Join;
 import w.commander.parameter.argument.parser.ArgumentParser;
 import w.commander.parameter.argument.parser.type.NoopArgumentParser;
-import w.commander.parameter.argument.type.JoinArgument;
 import w.commander.parameter.argument.type.OrdinaryArgument;
-import w.commander.parameter.type.ActorHandlerParameter;
 
 import java.lang.reflect.Parameter;
 
@@ -37,16 +32,14 @@ import java.lang.reflect.Parameter;
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
-public class ArgumentParameterParser implements ParameterParser {
+public class OrdinaryArgumentParameterParser extends AnnotatedParameterParser<Arg> {
 
     CommanderConfig config;
 
-    @Override
-    public boolean isSupported(@NotNull Parameter parameter) {
-        return parameter.isAnnotationPresent(Arg.class)
-               || parameter.isAnnotationPresent(Join.class)
-               || CommandActor.class.isAssignableFrom(parameter.getType());
+    public OrdinaryArgumentParameterParser(CommanderConfig config) {
+        super(Arg.class);
+
+        this.config = config;
     }
 
     private ArgumentParser findParser(Class<?> type) {
@@ -64,36 +57,14 @@ public class ArgumentParameterParser implements ParameterParser {
     }
 
     @Override
-    public @NotNull HandlerParameter parse(@NotNull Parameter parameter) {
-        val type = parameter.getType();
-        val join = parameter.getDeclaredAnnotation(Join.class);
-        if (join != null) {
-            if (type != String.class) {
-                throw new IllegalArgumentException("@Join annotation is not allowed on " + type.getName());
-            }
-
-            return new JoinArgument(
-                    join.value(),
-                    join.delimiter()
-            );
-        }
-
-        val arg = parameter.getDeclaredAnnotation(Arg.class);
-        if (arg != null) {
-            val parser = findParser(type);
-            val argument = new OrdinaryArgument(
-                    arg.value(),
-                    parser
-            );
-            argument.getInfo().setTabCompleter(parser.getDefaultTabCompleter());
-            return argument;
-        }
-
-        if (CommandActor.class.isAssignableFrom(type)) {
-            return ActorHandlerParameter.getInstance();
-        }
-
-        throw new IllegalArgumentException("Unsupported parameter: " + parameter);
+    protected @NotNull HandlerParameter parse(@NotNull Parameter parameter, @NotNull Arg annotation) {
+        val parser = findParser(parameter.getType());
+        val argument = new OrdinaryArgument(
+                annotation.value(),
+                parser
+        );
+        argument.getInfo().setTabCompleter(parser.getDefaultTabCompleter());
+        return argument;
     }
 
 }

@@ -19,9 +19,11 @@ package w.commander.executor;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.val;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.HandlerParameters;
 import w.commander.parameter.argument.Argument;
 import w.commander.parameter.argument.cursor.SimpleArgumentCursor;
 import w.commander.result.Result;
@@ -32,7 +34,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Supplier;
 
 /**
@@ -42,13 +43,38 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public final class MethodInvocation {
 
-    CommandHandler handler;
+    HandlerParameters handlerParameters;
 
     MethodExecutor methodExecutor;
 
     ExecutionContext context;
 
     Callback<Result> callback;
+
+    @NonFinal
+    volatile Result result;
+
+    @NonFinal
+    volatile Throwable failure;
+
+    @NonFinal
+    Object[] parameters;
+
+    private synchronized void setParameters(Object[] parameters) {
+        this.parameters = parameters;
+    }
+
+    private synchronized void setParameter(int index, Object parameter) {
+        this.parameters[index] = parameter;
+    }
+
+    private void invokeFast(Object[] parameters) {
+        methodExecutor.execute(context, callback, parameters);
+    }
+
+    private synchronized void invoke() {
+        invokeFast(parameters);
+    }
 
     private static Result validate(ExecutionContext context, Object value, HandlerParameter parameter) {
         if (parameter instanceof Argument) {
@@ -64,27 +90,14 @@ public final class MethodInvocation {
         return null;
     }
 
-    private void invoke(AtomicReferenceArray<Object> parameters) {
-        val parameterCount = parameters.length();
-
-        val parametersCopy = new Object[parameterCount];
-        for (int i = 0, j = parametersCopy.length; i < j; i++) {
-            parametersCopy[i] = parameters.get(i); // read volatile
-        }
-
-        methodExecutor.execute(context, callback, parametersCopy);
-    }
-
     private void extractLazy(
             int index,
             Object value,
             HandlerParameter parameter,
-            Queue<CompletableFuture<?>> futures,
-            Invocation invocation,
-            AtomicReferenceArray<Object> values
+            Queue<CompletableFuture<?>> futures
     ) {
         // already completed with error
-        if (invocation.result != null || invocation.failure != null) {
+        if (result != null || failure != null) {
             return;
         }
 
@@ -94,11 +107,11 @@ public final class MethodInvocation {
             try {
                 newValue = ((Supplier<?>) value).get();
             } catch (Throwable t) {
-                invocation.failure = t;
+                failure = t;
                 return;
             }
 
-            extractLazy(index, newValue, parameter, futures, invocation, values);
+            extractLazy(index, newValue, parameter, futures);
             return;
         }
 
@@ -107,9 +120,9 @@ public final class MethodInvocation {
 
             futures.add(future.whenComplete((v, t) -> {
                 if (t == null) {
-                    extractLazy(index, v, parameter, futures, invocation, values);
+                    extractLazy(index, v, parameter, futures);
                 } else {
-                    invocation.failure = t;
+                    failure = t;
                 }
             }));
 
@@ -117,17 +130,17 @@ public final class MethodInvocation {
         }
 
         if (value instanceof Result) {
-            invocation.result = (Result) value;
+            result = (Result) value;
             return;
         }
 
         val validateResult = validate(context, value, parameter);
         if (validateResult != null) {
-            invocation.result = validateResult;
+            result = validateResult;
             return;
         }
 
-        values.set(index, value);
+        setParameter(index, value);
     }
 
     private void awaitFutureCompletion(
@@ -146,12 +159,12 @@ public final class MethodInvocation {
     }
 
     public void process() {
-        val handlerParameters = handler.getParameters();
+        val handlerParameters = this.handlerParameters;
         val parameters = handlerParameters.getParameters();
 
         val parameterCount = parameters.size();
 
-        val values = new AtomicReferenceArray<>(parameterCount);
+        val values = new Object[parameterCount];
 
         val rawArguments = context.getRawArguments();
 
@@ -192,46 +205,44 @@ public final class MethodInvocation {
                     return;
                 }
 
-                values.set(i, value);
+                values[i] = value;
             }
         }
 
         if (lazyParameters != null) {
-            val futures = new ConcurrentLinkedQueue<CompletableFuture<?>>();
+            setParameters(values);
 
-            val invocation = new Invocation();
+            val futures = new ConcurrentLinkedQueue<CompletableFuture<?>>();
 
             for (val lazyParameter : lazyParameters) {
                 extractLazy(
                         lazyParameter.index,
                         lazyParameter.value,
                         lazyParameter.parameter,
-                        futures,
-                        invocation,
-                        values
+                        futures
                 );
             }
 
             awaitFutureCompletion(futures, () -> {
-                val failure = invocation.failure;
+                val failure = this.failure;
                 if (failure != null) {
                     callback.completeExceptionally(failure);
                     return;
                 }
 
-                val result = invocation.result;
+                val result = this.result;
                 if (result != null) {
                     callback.complete(result);
                     return;
                 }
 
-                invoke(values);
+                invoke();
             });
 
             return;
         }
 
-        invoke(values);
+        invokeFast(values);
     }
 
     @FieldDefaults(makeFinal = true)
@@ -240,11 +251,6 @@ public final class MethodInvocation {
         int index;
         Object value;
         HandlerParameter parameter;
-    }
-
-    private static final class Invocation {
-        volatile Result result;
-        volatile Throwable failure;
     }
 
 }

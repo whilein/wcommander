@@ -19,6 +19,7 @@ package w.commander.execution;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 import w.commander.RawArguments;
+import w.commander.attribute.AttributeStore;
 
 /**
  * @author whilein
@@ -26,6 +27,10 @@ import w.commander.RawArguments;
 public interface ExecutionContextFactory {
 
     @NotNull
-    ExecutionContext create(@NotNull CommandActor actor, @NotNull RawArguments arguments);
+    ExecutionContext create(
+            @NotNull CommandActor actor,
+            @NotNull RawArguments arguments,
+            @NotNull AttributeStore attributeStore
+    );
 
 }

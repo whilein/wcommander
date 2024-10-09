@@ -26,6 +26,10 @@ import org.bukkit.command.CommandSender;
 import w.commander.minecraft.MinecraftCommanderConfig;
 import w.commander.minecraft.MinecraftErrorResultFactory;
 import w.commander.minecraft.validator.NonSelfPlayerValidatorFactory;
+import w.commander.parameter.type.CommandActorParameterParser;
+import w.commander.platform.spigot.parameter.CommandSenderParameterParser;
+import w.commander.platform.spigot.parameter.PlayerTargetParameterParser;
+import w.commander.platform.spigot.parameter.WorldTargetParameterParser;
 import w.commander.platform.spigot.tabcomplete.PlayerTabCompleter;
 import w.commander.platform.spigot.tabcomplete.WorldTabCompleter;
 
@@ -82,9 +86,9 @@ public class SpigotCommanderConfig extends MinecraftCommanderConfig {
         addTabCompleter(playerTabCompleter);
         addTabCompleter(worldTabCompleter);
 
-        addParameterParser(new SpigotParameterParser(this,
-                playerTabCompleter, worldTabCompleter));
-
+        addTypedParameterParser(new CommandSenderParameterParser());
+        addAnnotatedParameterParser(new PlayerTargetParameterParser(this, playerTabCompleter));
+        addAnnotatedParameterParser(new WorldTargetParameterParser(this, worldTabCompleter));
         addArgumentValidatorFactory(new NonSelfPlayerValidatorFactory(CommandSender.class,
                 this));
     }

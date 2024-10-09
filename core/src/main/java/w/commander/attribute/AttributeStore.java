@@ -14,19 +14,21 @@
  *    limitations under the License.
  */
 
-package w.commander.parameter;
+package w.commander.attribute;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Parameter;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * @author whilein
+ * @author _Novit_ (novitpw)
  */
-public interface ParameterParser {
+public interface AttributeStore {
 
-    boolean matches(@NotNull Parameter parameter);
+    <T> void setAttribute(@NotNull Class<T> type, @Nullable T value);
 
-    @NotNull HandlerParameter parse(@NotNull Parameter parameter);
+    @Nullable
+    <T> T getAttribute(@NotNull Class<T> type);
+
+    boolean isAttributeSet(@NotNull Class<?> type);
 
 }

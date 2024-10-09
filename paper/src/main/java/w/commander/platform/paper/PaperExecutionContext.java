@@ -18,6 +18,7 @@ package w.commander.platform.paper;
 
 import org.jetbrains.annotations.NotNull;
 import w.commander.RawArguments;
+import w.commander.attribute.AttributeStore;
 import w.commander.platform.adventure.AdventureExecutionContext;
 import w.commander.platform.spigot.SpigotExecutionContext;
 
@@ -32,9 +33,10 @@ public class PaperExecutionContext
         implements AdventureExecutionContext {
     public PaperExecutionContext(
             @NotNull PaperCommandActor actor,
-            @NotNull RawArguments rawArguments
+            @NotNull RawArguments rawArguments,
+            @NotNull AttributeStore attributeStore
     ) {
-        super(actor, rawArguments);
+        super(actor, rawArguments, attributeStore);
     }
 
     @Override

@@ -19,6 +19,7 @@ package w.commander.execution;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 import w.commander.RawArguments;
+import w.commander.attribute.AttributeStore;
 
 /**
  * @author whilein
@@ -28,8 +29,9 @@ public class SimpleExecutionContextFactory implements ExecutionContextFactory {
     @Override
     public @NotNull ExecutionContext create(
             @NotNull CommandActor actor,
-            @NotNull RawArguments arguments
+            @NotNull RawArguments arguments,
+            @NotNull AttributeStore attributeStore
     ) {
-        return new SimpleExecutionContext(actor, arguments);
+        return new SimpleExecutionContext(actor, arguments, attributeStore);
     }
 }

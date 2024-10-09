@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package w.commander.platform.spigot.argument;
+package w.commander.platform.spigot.parameter;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -25,19 +25,20 @@ import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.AbstractArgument;
 import w.commander.parameter.argument.cursor.ArgumentCursor;
 import w.commander.platform.spigot.SpigotCommanderConfig;
-import w.commander.platform.spigot.SpigotExecutionContext;
 
 /**
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class WorldArgument extends AbstractArgument {
+public final class PlayerArgument extends AbstractArgument {
 
+    boolean exact;
     SpigotCommanderConfig config;
 
-    public WorldArgument(@NotNull String name, SpigotCommanderConfig config) {
+    public PlayerArgument(@NotNull String name, boolean exact, SpigotCommanderConfig config) {
         super(name);
 
+        this.exact = exact;
         this.config = config;
     }
 
@@ -46,10 +47,10 @@ public final class WorldArgument extends AbstractArgument {
         if (cursor.hasNext(isRequired())) {
             val name = context.getRawArguments().value(cursor.next());
 
-            val world = Bukkit.getWorld(name);
-            return world == null
-                    ? config.getSpigotErrorResultFactory().onUnknownWorld((SpigotExecutionContext) context, name)
-                    : world;
+            val player = exact ? Bukkit.getPlayerExact(name) : Bukkit.getPlayer(name);
+            return player == null
+                    ? config.getSpigotErrorResultFactory().onOfflinePlayer(context, name)
+                    : player;
         }
 
         return null;

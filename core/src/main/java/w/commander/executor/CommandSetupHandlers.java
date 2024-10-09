@@ -17,58 +17,61 @@
 package w.commander.executor;
 
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.condition.Conditions;
 import w.commander.execution.ExecutionContext;
-import w.commander.manual.ManualEntry;
-import w.commander.parameter.HandlerParameters;
 import w.commander.result.Result;
+import w.commander.result.Results;
 import w.commander.util.Callback;
+
+import java.util.List;
 
 /**
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class MethodCommandHandler extends AbstractCommandHandler {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class CommandSetupHandlers {
 
-    MethodExecutor methodExecutor;
+    private static final CommandSetupHandlers EMPTY = new CommandSetupHandlers(new CommandSetupHandler[0]);
 
-    public MethodCommandHandler(
-            HandlerPath path,
-            ManualEntry manualEntry,
-            HandlerParameters parameters,
-            Conditions conditions,
-            MethodExecutor methodExecutor
+    CommandSetupHandler[] handlers;
+
+    public static CommandSetupHandlers of(List<CommandSetupHandler> handlers) {
+        if (handlers == null || handlers.isEmpty()) return EMPTY;
+
+        return new CommandSetupHandlers(handlers.toArray(new CommandSetupHandler[0]));
+    }
+
+    public static CommandSetupHandlers empty() {
+        return EMPTY;
+    }
+
+    private static void setupRecursive(
+            ExecutionContext ctx,
+            Callback<Result> callback,
+            CommandSetupHandler[] handlers,
+            int index
     ) {
-        super(path, parameters, manualEntry, conditions);
+        if (handlers.length == index) {
+            callback.complete(Results.ok());
+            return;
+        }
 
-        this.methodExecutor = methodExecutor;
-    }
-
-    @Override
-    public String toString() {
-        return path.toString();
-    }
-
-    @Override
-    public void execute(@NotNull ExecutionContext context, @NotNull Callback<@NotNull Result> callback) {
-        conditions.test(context, Callback.of((result, cause) -> {
+        handlers[index].execute(ctx, Callback.of((result, cause) -> {
             if (cause != null) {
                 callback.completeExceptionally(cause);
             } else if (result != null && !result.isSuccess()) {
                 callback.complete(result);
             } else {
-                val invocation = new MethodInvocation(
-                        parameters,
-                        methodExecutor,
-                        context,
-                        callback
-                );
-                invocation.process();
+                setupRecursive(ctx, callback, handlers, index + 1);
             }
         }));
+    }
+
+    public void setup(@NotNull ExecutionContext ctx, @NotNull Callback<Result> callback) {
+        setupRecursive(ctx, callback, handlers, 0);
     }
 
 }

@@ -14,34 +14,39 @@
  *    limitations under the License.
  */
 
-package w.commander.execution;
+package w.commander.executor;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
-import w.commander.RawArguments;
-import w.commander.attribute.AttributeStore;
-
-import javax.annotation.concurrent.Immutable;
+import w.commander.execution.ExecutionContext;
+import w.commander.parameter.HandlerParameters;
+import w.commander.result.Result;
+import w.commander.util.Callback;
 
 /**
  * @author whilein
  */
-@Getter
-@Immutable
-@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SimpleExecutionContext implements ExecutionContext {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+public final class MethodCommandSetupHandler implements CommandSetupHandler {
 
-    @NotNull CommandActor actor;
-    @NotNull RawArguments rawArguments;
-    @NotNull AttributeStore attributeStore;
+    @Getter
+    HandlerParameters parameters;
+
+    MethodExecutor methodExecutor;
 
     @Override
-    public void sendMessage(@NotNull String text) {
-        actor.sendMessage(text);
+    public void execute(@NotNull ExecutionContext context, @NotNull Callback<@NotNull Result> callback) {
+        val invocation = new MethodInvocation(
+                parameters,
+                methodExecutor,
+                context,
+                callback
+        );
+        invocation.process();
     }
 }

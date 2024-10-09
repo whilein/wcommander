@@ -14,19 +14,17 @@
  *    limitations under the License.
  */
 
-package w.commander.parameter;
+package w.commander.annotation;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Parameter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author whilein
+ * @author _Novit_ (novitpw)
  */
-public interface ParameterParser {
-
-    boolean matches(@NotNull Parameter parameter);
-
-    @NotNull HandlerParameter parse(@NotNull Parameter parameter);
-
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Attr {
 }

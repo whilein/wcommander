@@ -18,6 +18,7 @@ package w.commander.platform.velocity;
 
 import org.jetbrains.annotations.NotNull;
 import w.commander.RawArguments;
+import w.commander.attribute.AttributeStore;
 import w.commander.execution.SimpleExecutionContext;
 import w.commander.platform.adventure.AdventureExecutionContext;
 
@@ -32,9 +33,10 @@ public class VelocityExecutionContext
         implements AdventureExecutionContext {
     public VelocityExecutionContext(
             @NotNull VelocityCommandActor actor,
-            @NotNull RawArguments rawArguments
+            @NotNull RawArguments rawArguments,
+            @NotNull AttributeStore attributeStore
     ) {
-        super(actor, rawArguments);
+        super(actor, rawArguments, attributeStore);
     }
 
     @Override

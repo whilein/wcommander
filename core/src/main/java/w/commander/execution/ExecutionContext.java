@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 import w.commander.RawArguments;
+import w.commander.attribute.AttributeStore;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -34,6 +35,8 @@ public interface ExecutionContext {
 
     @Contract(pure = true)
     @NotNull RawArguments getRawArguments();
+
+    @NotNull AttributeStore getAttributeStore();
 
     void sendMessage(@NotNull String text);
 

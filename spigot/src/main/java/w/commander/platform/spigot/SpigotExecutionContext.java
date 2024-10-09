@@ -18,6 +18,7 @@ package w.commander.platform.spigot;
 
 import org.jetbrains.annotations.NotNull;
 import w.commander.RawArguments;
+import w.commander.attribute.AttributeStore;
 import w.commander.execution.SimpleExecutionContext;
 
 import javax.annotation.concurrent.Immutable;
@@ -30,9 +31,10 @@ public class SpigotExecutionContext
         extends SimpleExecutionContext {
     public SpigotExecutionContext(
             @NotNull SpigotCommandActor actor,
-            @NotNull RawArguments rawArguments
+            @NotNull RawArguments rawArguments,
+            @NotNull AttributeStore attributeStore
     ) {
-        super(actor, rawArguments);
+        super(actor, rawArguments, attributeStore);
     }
 
     @Override

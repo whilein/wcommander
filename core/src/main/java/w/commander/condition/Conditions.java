@@ -66,7 +66,12 @@ public class Conditions {
         );
     }
 
-    private void testRecursive(ExecutionContext ctx, Callback<Result> callback, Condition[] conditions, int index) {
+    private static void testRecursive(
+            ExecutionContext ctx,
+            Callback<Result> callback,
+            Condition[] conditions,
+            int index
+    ) {
         if (conditions.length == index) {
             callback.complete(Results.ok());
             return;

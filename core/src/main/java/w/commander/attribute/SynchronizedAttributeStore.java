@@ -14,34 +14,35 @@
  *    limitations under the License.
  */
 
-package w.commander.execution;
+package w.commander.attribute;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
-import w.commander.RawArguments;
-import w.commander.attribute.AttributeStore;
-
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * @author whilein
+ * @author _Novit_ (novitpw)
  */
-@Getter
-@Immutable
-@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SimpleExecutionContext implements ExecutionContext {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+public class SynchronizedAttributeStore implements AttributeStore {
 
-    @NotNull CommandActor actor;
-    @NotNull RawArguments rawArguments;
-    @NotNull AttributeStore attributeStore;
+    AttributeStore delegate;
 
     @Override
-    public void sendMessage(@NotNull String text) {
-        actor.sendMessage(text);
+    public synchronized <T> void setAttribute(@NotNull Class<T> type, @Nullable T value) {
+        delegate.setAttribute(type, value);
+    }
+
+    @Override
+    public synchronized <T> T getAttribute(@NotNull Class<T> type) {
+        return delegate.getAttribute(type);
+    }
+
+    @Override
+    public synchronized boolean isAttributeSet(@NotNull Class<?> type) {
+        return delegate.isAttributeSet(type);
     }
 }

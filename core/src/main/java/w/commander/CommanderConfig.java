@@ -24,6 +24,8 @@ import lombok.experimental.NonFinal;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import w.commander.attribute.AttributeStoreFactory;
+import w.commander.attribute.MapAttributeStore;
 import w.commander.condition.Condition;
 import w.commander.condition.ConditionFactory;
 import w.commander.cooldown.CooldownManager;
@@ -44,9 +46,11 @@ import w.commander.manual.SimpleManualFactory;
 import w.commander.manual.SimpleManualFormatter;
 import w.commander.manual.SimpleUsageFormatter;
 import w.commander.manual.UsageFormatter;
-import w.commander.parameter.ArgumentParameterParser;
-import w.commander.parameter.ParameterParser;
+import w.commander.parameter.AnnotatedParameterParser;
+import w.commander.parameter.JoinArgumentParameterParser;
+import w.commander.parameter.OrdinaryArgumentParameterParser;
 import w.commander.parameter.ParameterPostProcessor;
+import w.commander.parameter.TypedParameterParser;
 import w.commander.parameter.argument.ArgumentPostProcessor;
 import w.commander.parameter.argument.parser.ArgumentParserFactory;
 import w.commander.parameter.argument.parser.type.EnumArgumentParserFactory;
@@ -56,6 +60,9 @@ import w.commander.parameter.argument.validator.type.BetweenArgumentValidatorFac
 import w.commander.parameter.argument.validator.type.GreaterThanArgumentValidatorFactory;
 import w.commander.parameter.argument.validator.type.LowerThanArgumentValidatorFactory;
 import w.commander.parameter.argument.validator.type.RegexArgumentValidatorFactory;
+import w.commander.parameter.type.AttributeParameterParser;
+import w.commander.parameter.type.AttributeStoreParameterParser;
+import w.commander.parameter.type.CommandActorParameterParser;
 import w.commander.tabcomplete.NamedTabCompleter;
 import w.commander.tabcomplete.TabCompleter;
 
@@ -98,6 +105,8 @@ public class CommanderConfig {
     ManualFormatter manualFormatter;
     @NonFinal
     Executor asyncExecutor;
+    @NonFinal
+    AttributeStoreFactory attributeStoreFactory;
 
     Map<String, TabCompleter> tabCompleters = new HashMap<>();
     Map<String, CooldownManager> cooldownManagers = new HashMap<>();
@@ -105,7 +114,8 @@ public class CommanderConfig {
     List<DecoratorFactory<?>> decoratorFactories = new ArrayList<>();
     List<ArgumentParserFactory> argumentParserFactories = new ArrayList<>();
     List<ArgumentValidatorFactory<?>> argumentValidatorFactories = new ArrayList<>();
-    List<ParameterParser> parameterParsers = new ArrayList<>();
+    List<AnnotatedParameterParser<?>> annotatedParameterParsers = new ArrayList<>();
+    List<TypedParameterParser<?>> typedParameterParsers = new ArrayList<>();
     List<ParameterPostProcessor> parameterPostProcessors = new ArrayList<>();
 
     public static CommanderConfig createDefaults() {
@@ -126,6 +136,7 @@ public class CommanderConfig {
         manualFactory = new SimpleManualFactory();
         manualFormatter = new SimpleManualFormatter();
         asyncExecutor = ForkJoinPool.commonPool();
+        attributeStoreFactory = MapAttributeStore::new;
 
         addCooldownManager(new InMemoryCooldownManager("default", new ConcurrentHashMap<>()));
 
@@ -138,7 +149,11 @@ public class CommanderConfig {
         addArgumentValidatorFactory(new RegexArgumentValidatorFactory(this));
 
         addParameterPostProcessor(new ArgumentPostProcessor(this));
-        addParameterParser(new ArgumentParameterParser(this));
+        addTypedParameterParser(new CommandActorParameterParser());
+        addTypedParameterParser(new AttributeStoreParameterParser());
+        addAnnotatedParameterParser(new OrdinaryArgumentParameterParser(this));
+        addAnnotatedParameterParser(new JoinArgumentParameterParser());
+        addAnnotatedParameterParser(new AttributeParameterParser());
         addDecorator(new AsyncDecoratorFactory(this));
         addDecorator(new CooldownDecoratorFactory(this));
     }
@@ -183,8 +198,12 @@ public class CommanderConfig {
         argumentValidatorFactories.add(argumentValidatorFactory);
     }
 
-    public void addParameterParser(@NotNull ParameterParser parameterParser) {
-        parameterParsers.add(parameterParser);
+    public void addAnnotatedParameterParser(@NotNull AnnotatedParameterParser<?> parameterParser) {
+        annotatedParameterParsers.add(parameterParser);
+    }
+
+    public void addTypedParameterParser(@NotNull TypedParameterParser<?> parameterParser) {
+        typedParameterParsers.add(parameterParser);
     }
 
     public void addParameterPostProcessor(@NotNull ParameterPostProcessor parameterPostProcessor) {

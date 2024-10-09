@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import w.commander.annotation.Command;
 import w.commander.annotation.CommandHandler;
 import w.commander.annotation.Hidden;
+import w.commander.annotation.SetupHandler;
 import w.commander.annotation.SubCommand;
 import w.commander.annotation.SubCommandHandler;
 import w.commander.annotation.WithAlias;
@@ -48,6 +49,10 @@ public class AnnotationScanner {
 
     public boolean isHasManual(@NotNull Class<?> type) {
         return type.isAnnotationPresent(WithManual.class);
+    }
+
+    public boolean isSetupHandler(@NotNull Method method) {
+        return method.isAnnotationPresent(SetupHandler.class);
     }
 
     public @Nullable String getCommandHandlerName(@NotNull Method method) {

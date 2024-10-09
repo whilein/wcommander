@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.executor.CommandExecutor;
+import w.commander.executor.CommandSetupHandlers;
 import w.commander.manual.Manual;
 
 import javax.annotation.concurrent.Immutable;
@@ -39,12 +40,17 @@ import java.util.function.BiConsumer;
 public final class CommandNode {
 
     @NotNull CommandExecutor[] executors;
+
+    @Getter
+    @NotNull CommandSetupHandlers setupHandlers;
+
     @NotNull Map<String, @NotNull CommandNode> subCommands;
 
-    @Getter @Nullable Manual manual;
+    @Getter
+    @Nullable Manual manual;
 
     public CommandNode(CommandExecutor executor) {
-        this(new CommandExecutor[]{executor}, Collections.emptyMap(), null);
+        this(new CommandExecutor[]{executor}, CommandSetupHandlers.empty(), Collections.emptyMap(), null);
     }
 
     @Contract(pure = true)

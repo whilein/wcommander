@@ -16,20 +16,24 @@
 
 package plugin;
 
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import w.commander.annotation.Arg;
 import w.commander.annotation.Async;
+import w.commander.annotation.Attr;
 import w.commander.annotation.Command;
 import w.commander.annotation.CommandHandler;
 import w.commander.annotation.Cooldown;
 import w.commander.annotation.NonRequired;
+import w.commander.annotation.SetupHandler;
 import w.commander.annotation.SubCommandHandler;
 import w.commander.annotation.TabComplete;
 import w.commander.annotation.WithDescription;
 import w.commander.annotation.WithManual;
 import w.commander.annotation.WithManualSubCommand;
+import w.commander.attribute.AttributeStore;
 import w.commander.cooldown.CooldownResult;
 import w.commander.minecraft.annotation.NonSelfPlayer;
 import w.commander.parameter.argument.validator.type.Between;
@@ -48,6 +52,17 @@ import java.time.Duration;
 @WithManualSubCommand
 @Command("test")
 public class TestCommand {
+
+    @SetupHandler
+    public void setup(Player player, AttributeStore as) {
+        player.sendMessage("setup call");
+        as.setAttribute(String.class, player.getName());
+    }
+
+    @SubCommandHandler("attr")
+    public Result attr(@Attr String playerName) {
+        return Results.ok(playerName);
+    }
 
     @CommandHandler
     public Result args1(@TabComplete({"foo", "bar", "baz"}) @Arg String arg0) {

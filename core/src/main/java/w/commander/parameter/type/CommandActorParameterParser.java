@@ -14,31 +14,27 @@
  *    limitations under the License.
  */
 
-package w.commander.platform.spigot.parameter;
+package w.commander.parameter.type;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import w.commander.execution.ExecutionContext;
+import w.commander.CommandActor;
 import w.commander.parameter.HandlerParameter;
-import w.commander.parameter.argument.cursor.ArgumentCursor;
-import w.commander.platform.spigot.SpigotExecutionContext;
+import w.commander.parameter.TypedParameterParser;
+
+import java.lang.reflect.Parameter;
 
 /**
  * @author whilein
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommandSenderHandlerParameter implements HandlerParameter {
+public class CommandActorParameterParser extends TypedParameterParser<CommandActor> {
 
-    private static final HandlerParameter INSTANCE = new CommandSenderHandlerParameter();
-
-    public static @NotNull HandlerParameter getInstance() {
-        return INSTANCE;
+    public CommandActorParameterParser() {
+        super(CommandActor.class);
     }
 
     @Override
-    public @NotNull Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        return ((SpigotExecutionContext) context).getActor().getSender();
+    public @NotNull HandlerParameter parse(@NotNull Parameter parameter) {
+        return (context, cursor) -> context.getActor();
     }
 
 }

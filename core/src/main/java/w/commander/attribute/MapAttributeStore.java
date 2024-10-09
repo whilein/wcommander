@@ -14,34 +14,42 @@
  *    limitations under the License.
  */
 
-package w.commander.execution;
+package w.commander.attribute;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
-import w.commander.RawArguments;
-import w.commander.attribute.AttributeStore;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.concurrent.Immutable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @author whilein
+ * @author _Novit_ (novitpw)
  */
-@Getter
-@Immutable
-@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SimpleExecutionContext implements ExecutionContext {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+public class MapAttributeStore implements AttributeStore {
 
-    @NotNull CommandActor actor;
-    @NotNull RawArguments rawArguments;
-    @NotNull AttributeStore attributeStore;
+    Map<Class<?>, Object> map;
+
+    public MapAttributeStore() {
+        this(new HashMap<>());
+    }
 
     @Override
-    public void sendMessage(@NotNull String text) {
-        actor.sendMessage(text);
+    public <T> void setAttribute(@NotNull Class<T> type, @Nullable T value) {
+        map.put(type, value);
+    }
+
+    @Override
+    public <T> T getAttribute(@NotNull Class<T> type) {
+        return type.cast(map.get(type));
+    }
+
+    @Override
+    public boolean isAttributeSet(@NotNull Class<?> type) {
+        return map.containsKey(type);
     }
 }

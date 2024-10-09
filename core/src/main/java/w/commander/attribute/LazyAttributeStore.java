@@ -14,34 +14,40 @@
  *    limitations under the License.
  */
 
-package w.commander.execution;
+package w.commander.attribute;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
-import w.commander.RawArguments;
-import w.commander.attribute.AttributeStore;
-
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * @author whilein
+ * @author _Novit_ (novitpw)
  */
-@Getter
-@Immutable
-@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SimpleExecutionContext implements ExecutionContext {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+public class LazyAttributeStore implements AttributeStore {
 
-    @NotNull CommandActor actor;
-    @NotNull RawArguments rawArguments;
-    @NotNull AttributeStore attributeStore;
+    AttributeStoreFactory factory;
 
-    @Override
-    public void sendMessage(@NotNull String text) {
-        actor.sendMessage(text);
+    @NonFinal
+    volatile AttributeStore delegate;
+
+    @Delegate(types = AttributeStore.class)
+    private AttributeStore delegate() {
+        AttributeStore as;
+        if ((as = this.delegate) == null) {
+            synchronized (this) {
+                if ((as = this.delegate) == null) {
+                    as = this.delegate = factory.create();
+                }
+            }
+        }
+
+        return as;
     }
+
 }

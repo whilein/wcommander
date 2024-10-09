@@ -30,6 +30,8 @@ import w.commander.execution.ExecutionContextFactory;
 import w.commander.minecraft.MinecraftCommanderConfig;
 import w.commander.minecraft.MinecraftErrorResultFactory;
 import w.commander.minecraft.validator.NonSelfPlayerValidatorFactory;
+import w.commander.platform.velocity.parameter.CommandSourceParameterParser;
+import w.commander.platform.velocity.parameter.PlayerTargetParameterParser;
 import w.commander.platform.velocity.tabcomplete.PlayerTabCompleter;
 
 /**
@@ -81,12 +83,15 @@ public class VelocityCommanderConfig extends MinecraftCommanderConfig {
         velocityCommandActorFactory = SimpleVelocityCommandActor::new;
         executionContextFactory = new VelocityExecutionContextFactory();
 
-        addParameterParser(new VelocityParameterParser(server, this));
+        val playerTabCompleter = new PlayerTabCompleter(server);
+
+        addTypedParameterParser(new CommandSourceParameterParser());
+        addAnnotatedParameterParser(new PlayerTargetParameterParser(this, playerTabCompleter));
 
         addArgumentValidatorFactory(new NonSelfPlayerValidatorFactory(CommandSource.class,
                 this));
 
-        addTabCompleter(new PlayerTabCompleter(server));
+        addTabCompleter(playerTabCompleter);
     }
 
     public void setExecutionContextFactory(
