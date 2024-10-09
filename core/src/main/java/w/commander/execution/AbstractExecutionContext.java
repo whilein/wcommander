@@ -20,9 +20,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import w.commander.CommandActor;
 import w.commander.RawArguments;
+import w.commander.attribute.AttributeStore;
+import w.commander.attribute.SimpleAttributeStore;
 
 /**
  * @author whilein
@@ -34,6 +38,27 @@ public abstract class AbstractExecutionContext<T extends CommandActor> implement
 
     @NotNull T actor;
     @NotNull RawArguments rawArguments;
+
+    @NonFinal
+    @Nullable
+    volatile AttributeStore attributeStore;
+
+    @Override
+    public @NotNull AttributeStore getAttributeStore() {
+        AttributeStore attributeStore = this.attributeStore;
+
+        if (attributeStore == null) {
+            synchronized (this) {
+                attributeStore = this.attributeStore;
+
+                if (attributeStore == null) {
+                    return this.attributeStore = new SimpleAttributeStore();
+                }
+            }
+        }
+
+        return attributeStore;
+    }
 
     @Override
     public void dispatch(@NotNull String text) {

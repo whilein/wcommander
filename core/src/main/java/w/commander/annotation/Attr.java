@@ -14,24 +14,17 @@
  *    limitations under the License.
  */
 
-package w.commander.execution;
+package w.commander.annotation;
 
-import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
-import w.commander.RawArguments;
-import w.commander.attribute.AttributeStore;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author whilein
+ * @author _Novit_ (novitpw)
  */
-public interface ExecutionContext {
-
-    @NotNull CommandActor getActor();
-
-    @NotNull RawArguments getRawArguments();
-
-    @NotNull AttributeStore getAttributeStore();
-
-    void dispatch(String text);
-
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Attr {
 }

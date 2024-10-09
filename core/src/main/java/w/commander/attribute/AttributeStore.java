@@ -14,24 +14,21 @@
  *    limitations under the License.
  */
 
-package w.commander.execution;
+package w.commander.attribute;
 
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
-import w.commander.RawArguments;
-import w.commander.attribute.AttributeStore;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * @author whilein
+ * @author _Novit_ (novitpw)
  */
-public interface ExecutionContext {
+public interface AttributeStore {
 
-    @NotNull CommandActor getActor();
+    <T> void setAttribute(@NotNull Class<T> type, @Nullable T value);
 
-    @NotNull RawArguments getRawArguments();
+    @Nullable
+    <T> T getAttribute(@NotNull Class<T> type);
 
-    @NotNull AttributeStore getAttributeStore();
-
-    void dispatch(String text);
+    boolean isAttributeSet(@NotNull Class<?> type);
 
 }

@@ -23,13 +23,17 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 import w.commander.annotation.Arg;
+import w.commander.annotation.Attr;
 import w.commander.annotation.Join;
+import w.commander.attribute.AttributeStore;
 import w.commander.parameter.argument.parser.ArgumentParser;
 import w.commander.parameter.argument.parser.ArgumentParserFactory;
 import w.commander.parameter.argument.parser.type.NoopArgumentParser;
 import w.commander.parameter.argument.type.JoinArgument;
 import w.commander.parameter.argument.type.OrdinaryArgument;
 import w.commander.parameter.type.ActorHandlerParameter;
+import w.commander.parameter.type.AttributeHandlerParameter;
+import w.commander.parameter.type.AttributeStoreHandlerParameter;
 
 import java.lang.reflect.Parameter;
 
@@ -45,8 +49,10 @@ public class ArgumentParameterParser extends AbstractParameterParser {
     @Override
     public boolean isSupported(@NotNull Parameter parameter) {
         return parameter.isAnnotationPresent(Arg.class)
-               || parameter.isAnnotationPresent(Join.class)
-               || CommandActor.class.isAssignableFrom(parameter.getType());
+                || parameter.isAnnotationPresent(Join.class)
+                || parameter.isAnnotationPresent(Attr.class)
+                || CommandActor.class.isAssignableFrom(parameter.getType())
+                || AttributeStore.class.isAssignableFrom(parameter.getType());
     }
 
     private ArgumentParser findParser(Class<?> type) {
@@ -91,8 +97,18 @@ public class ArgumentParameterParser extends AbstractParameterParser {
             return argument;
         }
 
+        val attribute = parameter.getDeclaredAnnotation(Attr.class);
+
+        if (attribute != null) {
+            return new AttributeHandlerParameter(type);
+        }
+
         if (CommandActor.class.isAssignableFrom(type)) {
             return ActorHandlerParameter.getInstance();
+        }
+
+        if (AttributeStore.class.isAssignableFrom(type)) {
+            return AttributeStoreHandlerParameter.getInstance();
         }
 
         throw new IllegalArgumentException("Unsupported parameter: " + parameter);
