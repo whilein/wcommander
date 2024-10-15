@@ -64,7 +64,7 @@ public class CooldownDecorator implements Decorator {
 
         @Override
         public void execute(ExecutionContext context, Callback<Result> callback, Object[] args) {
-            cooldownManager.getCooldownAsync(context.getActor(), id)
+            cooldownManager.getCooldownAsync(context.getActor(), id, executor)
                     .whenComplete((r, e) -> {
                         if (e != null) {
                             callback.completeExceptionally(e);
