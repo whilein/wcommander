@@ -18,19 +18,24 @@ package w.commander.platform.paper;
 
 import org.jetbrains.annotations.NotNull;
 import w.commander.RawArguments;
-import w.commander.execution.AbstractExecutionContext;
 import w.commander.platform.adventure.AdventureExecutionContext;
+import w.commander.platform.spigot.SpigotExecutionContext;
 
 /**
  * @author whilein
  */
 public class PaperExecutionContext
-        extends AbstractExecutionContext<PaperCommandActor>
+        extends SpigotExecutionContext
         implements AdventureExecutionContext {
     public PaperExecutionContext(
             @NotNull PaperCommandActor actor,
             @NotNull RawArguments rawArguments
     ) {
         super(actor, rawArguments);
+    }
+
+    @Override
+    public @NotNull PaperCommandActor getActor() {
+        return (PaperCommandActor) super.getActor();
     }
 }
