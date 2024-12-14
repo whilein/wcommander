@@ -19,6 +19,8 @@ package w.commander.result;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * @author whilein
  */
@@ -30,5 +32,9 @@ public interface Result {
 
     default @NotNull ResultException asException() {
         return ResultException.create(this);
+    }
+
+    default @NotNull CompletableFuture<Result> asFuture() {
+        return CompletableFuture.completedFuture(this);
     }
 }
