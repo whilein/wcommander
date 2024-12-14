@@ -20,11 +20,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
+import w.commander.CommanderConfig;
 import w.commander.annotation.Async;
 import w.commander.decorator.Decorator;
 import w.commander.decorator.DecoratorFactory;
-
-import java.util.concurrent.Executor;
 
 /**
  * @author whilein
@@ -33,7 +32,7 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 public class AsyncDecoratorFactory implements DecoratorFactory<Async> {
 
-    Executor executor;
+    CommanderConfig config;
 
     @Override
     public @NotNull Class<? extends Async> getAnnotation() {
@@ -42,7 +41,7 @@ public class AsyncDecoratorFactory implements DecoratorFactory<Async> {
 
     @Override
     public @NotNull Decorator create(@NotNull Async annotation) {
-        return new AsyncDecorator(executor);
+        return new AsyncDecorator(config);
     }
 
 }

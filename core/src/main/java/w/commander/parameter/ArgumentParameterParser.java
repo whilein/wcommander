@@ -22,10 +22,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
+import w.commander.CommanderConfig;
 import w.commander.annotation.Arg;
 import w.commander.annotation.Join;
 import w.commander.parameter.argument.parser.ArgumentParser;
-import w.commander.parameter.argument.parser.ArgumentParserFactory;
 import w.commander.parameter.argument.parser.type.NoopArgumentParser;
 import w.commander.parameter.argument.type.JoinArgument;
 import w.commander.parameter.argument.type.OrdinaryArgument;
@@ -40,7 +40,7 @@ import java.lang.reflect.Parameter;
 @RequiredArgsConstructor
 public class ArgumentParameterParser extends AbstractParameterParser {
 
-    Iterable<? extends ArgumentParserFactory> argumentParserFactoryResolvers;
+    CommanderConfig config;
 
     @Override
     public boolean isSupported(@NotNull Parameter parameter) {
@@ -54,7 +54,7 @@ public class ArgumentParameterParser extends AbstractParameterParser {
             return NoopArgumentParser.getInstance();
         }
 
-        for (val resolver : argumentParserFactoryResolvers) {
+        for (val resolver : config.getArgumentParserFactories()) {
             if (resolver.isSupported(type)) {
                 return resolver.resolve(type);
             }

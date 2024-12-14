@@ -37,11 +37,11 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class VelocityCommand implements SimpleCommand {
     Command command;
-    VelocityCommandActorFactory velocityCommandActorFactory;
+    VelocityCommanderConfig config;
 
     @Override
     public CompletableFuture<List<String>> suggestAsync(Invocation invocation) {
-        val actor = velocityCommandActorFactory.create(invocation.source());
+        val actor = config.getVelocityCommandActorFactory().create(invocation.source());
         val arguments = RawArguments.fromTrustedArray(invocation.arguments());
 
         return command.tabComplete(actor, arguments);
@@ -49,7 +49,7 @@ public class VelocityCommand implements SimpleCommand {
 
     @Override
     public void execute(@NotNull Invocation invocation) {
-        val actor = velocityCommandActorFactory.create(invocation.source());
+        val actor = config.getVelocityCommandActorFactory().create(invocation.source());
         val arguments = RawArguments.fromTrustedArray(invocation.arguments());
 
         command.execute(actor, arguments);

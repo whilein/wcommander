@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.AbstractArgument;
 import w.commander.parameter.argument.cursor.ArgumentCursor;
-import w.commander.platform.spigot.SpigotErrorResultFactory;
+import w.commander.platform.spigot.SpigotCommanderConfig;
 
 /**
  * @author whilein
@@ -42,7 +42,7 @@ public final class WorldArgument extends AbstractArgument {
     boolean required;
 
     Server server;
-    SpigotErrorResultFactory errorResultFactory;
+    SpigotCommanderConfig config;
 
     @Override
     public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
@@ -51,7 +51,7 @@ public final class WorldArgument extends AbstractArgument {
 
             val world = server.getWorld(name);
             return world == null
-                    ? errorResultFactory.onUnknownWorld(name)
+                    ? config.getSpigotErrorResultFactory().onUnknownWorld(name)
                     : world;
         }
 

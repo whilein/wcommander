@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.AbstractArgument;
 import w.commander.parameter.argument.cursor.ArgumentCursor;
-import w.commander.platform.velocity.VelocityErrorResultFactory;
+import w.commander.platform.velocity.VelocityCommanderConfig;
 
 /**
  * @author _Novit_ (novitpw)
@@ -42,7 +42,7 @@ public final class PlayerArgument extends AbstractArgument {
     boolean required;
 
     ProxyServer server;
-    VelocityErrorResultFactory errorResultFactory;
+    VelocityCommanderConfig config;
 
     @Override
     public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
@@ -51,7 +51,7 @@ public final class PlayerArgument extends AbstractArgument {
 
             return server.getPlayer(name)
                     .map(Object.class::cast)
-                    .orElseGet(() -> errorResultFactory.onOfflinePlayer(name));
+                    .orElseGet(() -> config.getVelocityErrorResultFactory().onOfflinePlayer(name));
         }
 
         return null;

@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.parameter.argument.validator.ArgumentValidator;
 import w.commander.parameter.argument.validator.ArgumentValidatorFactory;
 
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class RegexArgumentValidatorFactory implements ArgumentValidatorFactory<Regex> {
 
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @Override
     public boolean isSupported(@NotNull Class<?> type) {
@@ -47,7 +47,7 @@ public class RegexArgumentValidatorFactory implements ArgumentValidatorFactory<R
 
     @Override
     public @NotNull ArgumentValidator create(@NotNull Regex regex) {
-        return new RegexArgumentValidator(Pattern.compile(regex.value()), errorResultFactory);
+        return new RegexArgumentValidator(Pattern.compile(regex.value()), config);
     }
 
 }

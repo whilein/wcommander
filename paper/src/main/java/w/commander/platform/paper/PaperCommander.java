@@ -16,16 +16,27 @@
 
 package w.commander.platform.paper;
 
+import lombok.experimental.Delegate;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import w.commander.CommanderConfig;
+import w.commander.platform.spigot.SpigotCommander;
+import w.commander.platform.spigot.SpigotCommanderConfig;
 
 /**
  * @author whilein
  */
-public interface PaperCommander {
+public class PaperCommander extends SpigotCommander {
 
-    static PaperCommanderBuilder<?> builder(@NotNull Plugin plugin) {
-        return new PaperCommanderBuilderImpl(plugin);
+    @Delegate(types = PaperCommanderConfig.class, excludes = {SpigotCommanderConfig.class, CommanderConfig.class})
+    PaperCommanderConfig paperConfig;
+
+    public PaperCommander(PaperCommanderConfig config) {
+        super(config);
+
+        this.paperConfig = config;
     }
 
+    public PaperCommander(Plugin plugin) {
+        this(PaperCommanderConfig.createDefaults(plugin));
+    }
 }

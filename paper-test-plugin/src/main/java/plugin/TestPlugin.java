@@ -36,71 +36,71 @@ public class TestPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        var commander = PaperCommander.builder(this)
-                .addCooldownManager(new TestCooldownManager())
-                .errorResultFactory(new ErrorResultFactory() {
-                    @Override
-                    public <E extends Enum<E>> FailedResult onInvalidEnum(
-                            @NotNull Argument argument,
-                            @NotNull String value,
-                            @NotNull Map<@NotNull String, @NotNull E> enumValues
-                    ) {
-                        return Results.error("wtf " + value + "?! try " + enumValues.keySet());
-                    }
+        var commander = new PaperCommander(this);
+        commander.addCooldownManager(new TestCooldownManager());
+        commander.addCondition(new PermissionCondition());
 
-                    @Override
-                    public @NotNull FailedResult onCooldown(@NotNull Duration remaining) {
-                        return Results.error("cooldown " + remaining);
-                    }
+        commander.setErrorResultFactory(new ErrorResultFactory() {
+            @Override
+            public <E extends Enum<E>> FailedResult onInvalidEnum(
+                    @NotNull Argument argument,
+                    @NotNull String value,
+                    @NotNull Map<@NotNull String, @NotNull E> enumValues
+            ) {
+                return Results.error("wtf " + value + "?! try " + enumValues.keySet());
+            }
 
-                    @Override
-                    public @NotNull FailedResult onFailBetweenValidation(@NotNull Argument argument, double min, double max) {
-                        return Results.error("fail between " + min + " and " + max);
-                    }
+            @Override
+            public @NotNull FailedResult onCooldown(@NotNull Duration remaining) {
+                return Results.error("cooldown " + remaining);
+            }
 
-                    @Override
-                    public @NotNull FailedResult onFailGreaterThanValidation(@NotNull Argument argument, double value) {
-                        return Results.error("fail greater than " + value);
-                    }
+            @Override
+            public @NotNull FailedResult onFailBetweenValidation(@NotNull Argument argument, double min, double max) {
+                return Results.error("fail between " + min + " and " + max);
+            }
 
-                    @Override
-                    public @NotNull FailedResult onFailLowerThanValidation(@NotNull Argument argument, double value) {
-                        return Results.error("fail lower than " + value);
-                    }
+            @Override
+            public @NotNull FailedResult onFailGreaterThanValidation(@NotNull Argument argument, double value) {
+                return Results.error("fail greater than " + value);
+            }
 
-                    @Override
-                    public @NotNull FailedResult onFailRegexValidation(@NotNull Argument argument, @NotNull Pattern pattern) {
-                        return Results.error("fail regex " + pattern);
-                    }
-                })
-                .spigotErrorResultFactory(new SpigotErrorResultFactory() {
-                    @Override
-                    public @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
-                        return Results.error("bro " + value + " is offline :(");
-                    }
+            @Override
+            public @NotNull FailedResult onFailLowerThanValidation(@NotNull Argument argument, double value) {
+                return Results.error("fail lower than " + value);
+            }
 
-                    @Override
-                    public @NotNull FailedResult onUnknownWorld(@NotNull String value) {
-                        return Results.error("world " + value + " not found :<");
-                    }
+            @Override
+            public @NotNull FailedResult onFailRegexValidation(@NotNull Argument argument, @NotNull Pattern pattern) {
+                return Results.error("fail regex " + pattern);
+            }
+        });
+        commander.setSpigotErrorResultFactory(new SpigotErrorResultFactory() {
+            @Override
+            public @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
+                return Results.error("bro " + value + " is offline :(");
+            }
 
-                    @Override
-                    public @NotNull FailedResult onFailConsoleOnlyCondition() {
-                        return Results.error("console only");
-                    }
+            @Override
+            public @NotNull FailedResult onUnknownWorld(@NotNull String value) {
+                return Results.error("world " + value + " not found :<");
+            }
 
-                    @Override
-                    public @NotNull FailedResult onFailNonSelfPlayerValidation(@NotNull String customMessage) {
-                        return Results.error("non self " + customMessage);
-                    }
+            @Override
+            public @NotNull FailedResult onFailConsoleOnlyCondition() {
+                return Results.error("console only");
+            }
 
-                    @Override
-                    public @NotNull FailedResult onFailPlayerOnlyCondition() {
-                        return Results.error("player only");
-                    }
-                })
-                .addCondition(new PermissionCondition())
-                .build();
+            @Override
+            public @NotNull FailedResult onFailNonSelfPlayerValidation(@NotNull String customMessage) {
+                return Results.error("non self " + customMessage);
+            }
+
+            @Override
+            public @NotNull FailedResult onFailPlayerOnlyCondition() {
+                return Results.error("player only");
+            }
+        });
 
         commander.register(new TestCommand());
     }

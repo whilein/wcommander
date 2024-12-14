@@ -17,16 +17,31 @@
 package w.commander.platform.velocity;
 
 import com.velocitypowered.api.proxy.ProxyServer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.Delegate;
+import lombok.experimental.FieldDefaults;
+import w.commander.Commander;
+import w.commander.CommanderConfig;
 
 /**
  * @author whilein
  */
-public interface VelocityCommander {
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class VelocityCommander extends Commander {
 
-    static VelocityCommanderBuilder<?> builder(@Nullable Object plugin, @NotNull ProxyServer server) {
-        return new VelocityCommanderBuilderImpl(plugin, server);
+    @Delegate(types = VelocityCommanderConfig.class, excludes = CommanderConfig.class)
+    VelocityCommanderConfig velocityConfig;
+
+    public VelocityCommander(VelocityCommanderConfig config) {
+        super(config);
+
+        this.velocityConfig = config;
+    }
+
+    public VelocityCommander(Object plugin, ProxyServer server) {
+        this(VelocityCommanderConfig.createDefaults(plugin, server));
     }
 
 }

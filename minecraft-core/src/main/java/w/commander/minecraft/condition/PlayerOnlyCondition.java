@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.condition.Condition;
 import w.commander.execution.ExecutionContext;
 import w.commander.minecraft.MinecraftCommandActor;
-import w.commander.minecraft.MinecraftErrorResultFactory;
+import w.commander.minecraft.MinecraftCommanderConfig;
 import w.commander.result.Result;
 import w.commander.result.Results;
 
@@ -34,12 +34,12 @@ import w.commander.result.Results;
 @RequiredArgsConstructor
 public final class PlayerOnlyCondition implements Condition {
 
-    MinecraftErrorResultFactory minecraftErrorResultFactory;
+    MinecraftCommanderConfig config;
 
     @Override
     public @NotNull Result test(@NotNull ExecutionContext ctx) {
         return !((MinecraftCommandActor) ctx.getActor()).isPlayer()
-                ? minecraftErrorResultFactory.onFailPlayerOnlyCondition()
+                ? config.getMinecraftErrorResultFactory().onFailPlayerOnlyCondition()
                 : Results.ok();
     }
 

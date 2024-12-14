@@ -39,24 +39,25 @@ public class TestPlugin {
 
     @Inject
     public TestPlugin(ProxyServer proxyServer) {
-        var commander = VelocityCommander.builder(this, proxyServer)
-                .errorResultFactory(new ErrorResultFactory() {
-                    @Override
-                    public <E extends Enum<E>> FailedResult onInvalidEnum(
-                            @NotNull Argument argument,
-                            @NotNull String value,
-                            @NotNull Map<@NotNull String, @NotNull E> enumValues
-                    ) {
-                        return Results.error("wtf " + value + "?! try " + enumValues.keySet());
-                    }
-                })
-                .velocityErrorResultFactory(new VelocityErrorResultFactory() {
-                    @Override
-                    public @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
-                        return Results.error("bro " + value + " is offline :(");
-                    }
-                })
-                .build();
+        var commander = new VelocityCommander(this, proxyServer);
+
+        commander.setErrorResultFactory(new ErrorResultFactory() {
+            @Override
+            public <E extends Enum<E>> FailedResult onInvalidEnum(
+                    @NotNull Argument argument,
+                    @NotNull String value,
+                    @NotNull Map<@NotNull String, @NotNull E> enumValues
+            ) {
+                return Results.error("wtf " + value + "?! try " + enumValues.keySet());
+            }
+        });
+
+        commander.setVelocityErrorResultFactory(new VelocityErrorResultFactory() {
+            @Override
+            public @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
+                return Results.error("bro " + value + " is offline :(");
+            }
+        });
 
         commander.register(new TestCommand());
     }

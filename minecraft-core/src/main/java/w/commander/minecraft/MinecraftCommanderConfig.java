@@ -14,23 +14,24 @@
  *    limitations under the License.
  */
 
-package w.commander.platform.paper;
+package w.commander.minecraft;
 
-import org.jetbrains.annotations.NotNull;
-import w.commander.RawArguments;
-import w.commander.execution.AbstractExecutionContext;
-import w.commander.platform.adventure.AdventureExecutionContext;
+import w.commander.CommanderConfig;
 
 /**
  * @author whilein
  */
-public class PaperExecutionContext
-        extends AbstractExecutionContext<PaperCommandActor>
-        implements AdventureExecutionContext {
-    public PaperExecutionContext(
-            @NotNull PaperCommandActor actor,
-            @NotNull RawArguments rawArguments
-    ) {
-        super(actor, rawArguments);
+public abstract class MinecraftCommanderConfig extends CommanderConfig {
+
+    public abstract MinecraftErrorResultFactory getMinecraftErrorResultFactory();
+
+    public abstract void setMinecraftErrorResultFactory(MinecraftErrorResultFactory factory);
+
+    @Override
+    protected void initDefaults() {
+        super.initDefaults();
+
+        MinecraftConditions.install(this);
     }
+
 }

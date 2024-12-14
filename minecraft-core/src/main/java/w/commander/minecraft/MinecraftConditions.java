@@ -17,7 +17,6 @@
 package w.commander.minecraft;
 
 import lombok.experimental.UtilityClass;
-import w.commander.CommanderSetup;
 import w.commander.minecraft.annotation.ConsoleOnly;
 import w.commander.minecraft.annotation.PlayerOnly;
 import w.commander.minecraft.condition.ConsoleOnlyCondition;
@@ -29,9 +28,9 @@ import w.commander.minecraft.condition.PlayerOnlyCondition;
 @UtilityClass
 public class MinecraftConditions {
 
-    public void install(CommanderSetup<?> setup, MinecraftErrorResultFactory errorResultFactory) {
-        setup.addCondition(PlayerOnly.class, new PlayerOnlyCondition(errorResultFactory));
-        setup.addCondition(ConsoleOnly.class, new ConsoleOnlyCondition(errorResultFactory));
+    public void install(MinecraftCommanderConfig config) {
+        config.addCondition(PlayerOnly.class, new PlayerOnlyCondition(config));
+        config.addCondition(ConsoleOnly.class, new ConsoleOnlyCondition(config));
     }
 
 }

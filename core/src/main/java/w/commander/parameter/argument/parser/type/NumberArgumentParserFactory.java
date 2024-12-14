@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.parameter.argument.parser.ArgumentParser;
 import w.commander.parameter.argument.parser.ArgumentParserFactory;
 
@@ -38,8 +38,8 @@ public final class NumberArgumentParserFactory
 
     Map<Class<?>, ArgumentParser> parsers;
 
-    public NumberArgumentParserFactory(ErrorResultFactory errorResultFactory) {
-        val initializer = new ParsersInitializer(errorResultFactory);
+    public NumberArgumentParserFactory(CommanderConfig config) {
+        val initializer = new ParsersInitializer(config);
         initializer.add(byte.class, Byte.class, Byte::valueOf);
         initializer.add(short.class, Short.class, Short::valueOf);
         initializer.add(int.class, Integer.class, Integer::valueOf);
@@ -67,7 +67,7 @@ public final class NumberArgumentParserFactory
     @FieldDefaults(makeFinal = true)
     @RequiredArgsConstructor
     private static final class ParsersInitializer {
-        ErrorResultFactory errorResultFactory;
+        CommanderConfig config;
 
         Map<Class<?>, ArgumentParser> parsers = new HashMap<>();
 
@@ -76,7 +76,7 @@ public final class NumberArgumentParserFactory
                 Class<? extends N> wrapper,
                 Function<? super String, ? extends N> fn
         ) {
-            val factory = NumberArgumentParser.create(errorResultFactory, fn);
+            val factory = new NumberArgumentParser(config, fn);
             parsers.put(primitive, factory);
             parsers.put(wrapper, factory);
         }

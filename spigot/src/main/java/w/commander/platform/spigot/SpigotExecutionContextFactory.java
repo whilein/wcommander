@@ -32,7 +32,7 @@ public class SpigotExecutionContextFactory implements ExecutionContextFactory {
             @NotNull CommandActor actor,
             @NotNull RawArguments arguments
     ) {
-        return new SpigotExecutionContext(
+        return new SpigotExecutionContext<>(
                 (SpigotCommandActor) actor,
                 arguments
         );

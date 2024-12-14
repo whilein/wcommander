@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.Argument;
 import w.commander.parameter.argument.validator.NumberArgumentValidator;
@@ -35,13 +35,13 @@ import w.commander.result.Results;
 public class BetweenArgumentValidator extends NumberArgumentValidator {
 
     double min, max;
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @Override
     public @NotNull Result validate(@NotNull Number value, @NotNull ExecutionContext ctx, @NotNull Argument argument) {
         double v;
         return (v = value.doubleValue()) < min || v > max
-                ? errorResultFactory.onFailBetweenValidation(argument, min, max)
+                ? config.getErrorResultFactory().onFailBetweenValidation(argument, min, max)
                 : Results.ok();
     }
 }

@@ -19,7 +19,6 @@ package w.commander.platform.spigot.parameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.argument.cursor.ArgumentCursor;
@@ -38,8 +37,8 @@ public final class CommandSenderHandlerParameter implements HandlerParameter {
     }
 
     @Override
-    public @Nullable Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        return ((SpigotExecutionContext) context).getActor().getSender();
+    public @NotNull Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
+        return ((SpigotExecutionContext<?>) context).getActor().getSender();
     }
 
 }

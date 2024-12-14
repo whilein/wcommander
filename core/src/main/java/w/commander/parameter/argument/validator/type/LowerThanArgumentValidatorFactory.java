@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.parameter.argument.validator.NumberArgumentValidator;
 import w.commander.parameter.argument.validator.NumberArgumentValidatorFactory;
 
@@ -31,7 +31,7 @@ import w.commander.parameter.argument.validator.NumberArgumentValidatorFactory;
 @RequiredArgsConstructor
 public class LowerThanArgumentValidatorFactory implements NumberArgumentValidatorFactory<LowerThan> {
 
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @Override
     public @NotNull Class<LowerThan> getAnnotation() {
@@ -40,6 +40,6 @@ public class LowerThanArgumentValidatorFactory implements NumberArgumentValidato
 
     @Override
     public @NotNull NumberArgumentValidator create(@NotNull LowerThan lowerThan) {
-        return new LowerThanArgumentValidator(lowerThan.value(), errorResultFactory);
+        return new LowerThanArgumentValidator(lowerThan.value(), config);
     }
 }

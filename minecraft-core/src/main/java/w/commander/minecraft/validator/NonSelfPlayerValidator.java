@@ -22,7 +22,7 @@ import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.minecraft.MinecraftCommandActor;
-import w.commander.minecraft.MinecraftErrorResultFactory;
+import w.commander.minecraft.MinecraftCommanderConfig;
 import w.commander.parameter.argument.Argument;
 import w.commander.parameter.argument.validator.ArgumentValidator;
 import w.commander.result.Result;
@@ -36,12 +36,12 @@ import w.commander.result.Results;
 public class NonSelfPlayerValidator implements ArgumentValidator {
 
     String customMessage;
-    MinecraftErrorResultFactory minecraftErrorResultFactory;
+    MinecraftCommanderConfig config;
 
     @Override
     public @NotNull Result validate(Object value, ExecutionContext ctx, Argument argument) {
         return ((MinecraftCommandActor) ctx.getActor()).getIdentity().equals(value)
-                ? minecraftErrorResultFactory.onFailNonSelfPlayerValidation(customMessage)
+                ? config.getMinecraftErrorResultFactory().onFailNonSelfPlayerValidation(customMessage)
                 : Results.ok();
     }
 }

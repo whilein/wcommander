@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.Argument;
 import w.commander.parameter.argument.parser.ArgumentParser;
@@ -31,18 +31,11 @@ import java.util.function.Function;
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class NumberArgumentParser implements ArgumentParser {
 
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
     Function<? super String, ? extends Number> fn;
-
-    public static @NotNull ArgumentParser create(
-            @NotNull ErrorResultFactory errorResultFactory,
-            @NotNull Function<? super @NotNull String, ? extends @NotNull Number> fn
-    ) {
-        return new NumberArgumentParser(errorResultFactory, fn);
-    }
 
     @Override
     public @NotNull Object parse(
@@ -53,7 +46,7 @@ public final class NumberArgumentParser implements ArgumentParser {
         try {
             return fn.apply(value);
         } catch (NumberFormatException e) {
-            return errorResultFactory.onInvalidNumber(argument, value);
+            return config.getErrorResultFactory().onInvalidNumber(argument, value);
         }
     }
 }

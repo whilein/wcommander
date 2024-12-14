@@ -45,7 +45,7 @@ import java.lang.reflect.Parameter;
 public class SpigotParameterParser extends AbstractParameterParser {
 
     Server server;
-    SpigotErrorResultFactory errorResultFactory;
+    SpigotCommanderConfig config;
 
     PlayerTabCompleter playerTabCompleter;
     WorldTabCompleter worldTabCompleter;
@@ -72,7 +72,7 @@ public class SpigotParameterParser extends AbstractParameterParser {
                     isRequired(parameter),
                     playerTarget.exact(),
                     server,
-                    errorResultFactory
+                    config
             );
             argument.setTabCompleter(playerTabCompleter);
 
@@ -89,7 +89,7 @@ public class SpigotParameterParser extends AbstractParameterParser {
                     worldTarget.value(),
                     isRequired(parameter),
                     server,
-                    errorResultFactory
+                    config
             );
             argument.setTabCompleter(worldTabCompleter);
 

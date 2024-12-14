@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.parameter.argument.validator.NumberArgumentValidator;
 import w.commander.parameter.argument.validator.NumberArgumentValidatorFactory;
 
@@ -31,7 +31,7 @@ import w.commander.parameter.argument.validator.NumberArgumentValidatorFactory;
 @RequiredArgsConstructor
 public class BetweenArgumentValidatorFactory implements NumberArgumentValidatorFactory<Between> {
 
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @Override
     public @NotNull Class<Between> getAnnotation() {
@@ -40,6 +40,6 @@ public class BetweenArgumentValidatorFactory implements NumberArgumentValidatorF
 
     @Override
     public @NotNull NumberArgumentValidator create(@NotNull Between between) {
-        return new BetweenArgumentValidator(between.min(), between.max(), errorResultFactory);
+        return new BetweenArgumentValidator(between.min(), between.max(), config);
     }
 }

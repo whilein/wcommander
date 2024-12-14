@@ -17,10 +17,7 @@
 package w.commander.platform.spigot;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.val;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
@@ -35,18 +32,15 @@ import javax.annotation.concurrent.ThreadSafe;
  */
 @ThreadSafe
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@RequiredArgsConstructor
 public class SpigotCommandRegistrar implements CommandRegistrar {
 
     Plugin plugin;
     CommandMap commandMap;
+    SpigotCommanderConfig config;
 
-    @Setter
-    @NonFinal
-    SpigotCommandActorFactory spigotCommandActorFactory;
-
-    public SpigotCommandRegistrar(Plugin plugin) {
+    public SpigotCommandRegistrar(Plugin plugin, SpigotCommanderConfig config) {
         this.plugin = plugin;
+        this.config = config;
 
         val server = plugin.getServer();
 
@@ -61,7 +55,7 @@ public class SpigotCommandRegistrar implements CommandRegistrar {
     }
 
     protected org.bukkit.command.Command create(Command command) {
-        return new SpigotCommand(command, spigotCommandActorFactory);
+        return new SpigotCommand(command, config);
     }
 
     @Override

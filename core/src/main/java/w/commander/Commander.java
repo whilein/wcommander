@@ -16,38 +16,80 @@
 
 package w.commander;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
+import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnmodifiableView;
+import w.commander.spec.CommandSpecFactory;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author whilein
  */
-public interface Commander {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+public class Commander {
 
-    @UnmodifiableView @NotNull Collection<? extends @NotNull Command> getCommands();
+    Map<Class<?>, Command> type2CommandMap = new ConcurrentHashMap<>();
 
-    @NotNull Command ofGraph(@NotNull CommandGraph graph);
+    @Getter
+    Collection<? extends Command> commands = Collections.unmodifiableCollection(type2CommandMap.values());
 
-    default @NotNull Command ofInstance(@NotNull Object object) {
+    @Getter
+    @Delegate(types = CommanderConfig.class)
+    CommanderConfig config;
+
+    CommandSpecFactory commandSpecFactory;
+    CommandFactory commandFactory;
+
+    public Commander() {
+        this(CommanderConfig.createDefaults());
+    }
+
+    public Commander(CommanderConfig config) {
+        this.config = config;
+        this.commandSpecFactory = new CommandSpecFactory(config);
+        this.commandFactory = new CommandFactory(config);
+    }
+
+    public @NotNull Command ofGraph(@NotNull CommandGraph graph) {
+        return commandFactory.create(commandSpecFactory.create(graph));
+    }
+
+    public @NotNull Command ofInstance(@NotNull Object object) {
         return ofGraph(CommandGraph.of(object));
     }
 
-    void register(@NotNull Command command);
-
-    default void register(@NotNull CommandGraph graph) {
+    public void register(@NotNull CommandGraph graph) {
         register(ofGraph(graph));
     }
 
-    default void register(@NotNull Object object) {
+    public void register(@NotNull Object object) {
         register(ofInstance(object));
     }
 
-    void unregister(@NotNull Class<?> type);
+    public void register(@NotNull Command command) {
+        val commandType = command.getInstanceType();
 
-    static @NotNull CommanderBuilder<?> builder() {
-        return new CommanderImpl.Builder();
+        val prevCommand = type2CommandMap.put(commandType, command);
+        if (prevCommand != null) {
+            config.getCommandRegistrar().unregister(prevCommand);
+        }
+        config.getCommandRegistrar().register(command);
+    }
+
+    public void unregister(@NotNull Class<?> type) {
+        val command = type2CommandMap.remove(type);
+        if (command == null) return;
+
+        config.getCommandRegistrar().unregister(command);
     }
 
 }

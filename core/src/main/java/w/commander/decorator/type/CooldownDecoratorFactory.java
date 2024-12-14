@@ -21,14 +21,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import w.commander.CommanderConfig;
 import w.commander.annotation.Cooldown;
-import w.commander.cooldown.CooldownManager;
 import w.commander.decorator.Decorator;
 import w.commander.decorator.DecoratorFactory;
-import w.commander.error.ErrorResultFactory;
-
-import java.util.Map;
-import java.util.concurrent.Executor;
 
 /**
  * @author whilein
@@ -37,9 +33,7 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 public class CooldownDecoratorFactory implements DecoratorFactory<Cooldown> {
 
-    Executor executor;
-    Map<String, CooldownManager> cooldownManagers;
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @Override
     public @NotNull Class<? extends Cooldown> getAnnotation() {
@@ -53,11 +47,11 @@ public class CooldownDecoratorFactory implements DecoratorFactory<Cooldown> {
             customId = null;
 
         val cooldownManagerName = annotation.cooldownManager();
-        val cooldownManager = cooldownManagers.get(cooldownManagerName);
+        val cooldownManager = config.getCooldownManager(cooldownManagerName);
         if (cooldownManager == null)
             throw new IllegalArgumentException("Unknown cooldown manager: " + cooldownManagerName);
 
-        return new CooldownDecorator(customId, executor, cooldownManager, errorResultFactory);
+        return new CooldownDecorator(customId, cooldownManager, config);
     }
 
 }

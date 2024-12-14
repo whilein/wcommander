@@ -16,16 +16,31 @@
 
 package w.commander.platform.spigot;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.Delegate;
+import lombok.experimental.FieldDefaults;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import w.commander.Commander;
+import w.commander.CommanderConfig;
 
 /**
  * @author whilein
  */
-public interface SpigotCommander {
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class SpigotCommander extends Commander {
 
-    static SpigotCommanderBuilder<?> builder(@NotNull Plugin plugin) {
-        return new SpigotCommanderBuilderImpl(plugin);
+    @Delegate(types = SpigotCommanderConfig.class, excludes = CommanderConfig.class)
+    SpigotCommanderConfig spigotConfig;
+
+    public SpigotCommander(SpigotCommanderConfig config) {
+        super(config);
+
+        this.spigotConfig = config;
     }
 
+    public SpigotCommander(Plugin plugin) {
+        this(SpigotCommanderConfig.createDefaults(plugin));
+    }
 }

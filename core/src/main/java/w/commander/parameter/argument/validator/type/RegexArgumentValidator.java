@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.Argument;
 import w.commander.parameter.argument.validator.ArgumentValidator;
@@ -38,12 +38,12 @@ import java.util.regex.Pattern;
 public class RegexArgumentValidator implements ArgumentValidator {
 
     Pattern pattern;
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @Override
     public @NotNull Result validate(@Nullable Object value, @NotNull ExecutionContext ctx, @NotNull Argument argument) {
         return value != null && !pattern.matcher(value.toString()).matches()
-                ? errorResultFactory.onFailRegexValidation(argument, pattern)
+                ? config.getErrorResultFactory().onFailRegexValidation(argument, pattern)
                 : Results.ok();
     }
 }

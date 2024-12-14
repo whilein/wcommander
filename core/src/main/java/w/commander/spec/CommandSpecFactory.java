@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.AnnotationScanner;
 import w.commander.CommandGraph;
+import w.commander.CommanderConfig;
 import w.commander.annotation.WithAlias;
 import w.commander.annotation.WithManualSubCommand;
 import w.commander.condition.Condition;
@@ -32,15 +32,10 @@ import w.commander.decorator.Decorator;
 import w.commander.decorator.DecoratorFactory;
 import w.commander.decorator.Decorators;
 import w.commander.executor.HandlerPath;
-import w.commander.executor.HandlerPathFactory;
-import w.commander.manual.DescriptionFormatter;
 import w.commander.manual.FormattingText;
 import w.commander.manual.ManualEntry;
-import w.commander.manual.UsageFormatter;
 import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.HandlerParameters;
-import w.commander.parameter.ParameterParser;
-import w.commander.parameter.ParameterPostProcessor;
 import w.commander.parameter.argument.Argument;
 
 import java.lang.annotation.Annotation;
@@ -60,15 +55,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class CommandSpecFactory {
 
-    AnnotationScanner annotationScanner;
-
-    HandlerPathFactory handlerPathFactory;
-    UsageFormatter usageFormatter;
-    DescriptionFormatter descriptionFormatter;
-    Iterable<? extends ParameterParser> parameterResolvers;
-    Iterable<? extends ParameterPostProcessor> parameterPostProcessors;
-    List<ConditionFactory<?>> conditionFactories;
-    List<DecoratorFactory<?>> decoratorFactories;
+    CommanderConfig config;
 
     private static ManualSubCommandSpec getManualSubCommand(WithManualSubCommand subCommand) {
         if (subCommand == null) return null;
@@ -80,7 +67,7 @@ public final class CommandSpecFactory {
     }
 
     private List<String> getAliases(AnnotatedElement element) {
-        val aliasesValues = Arrays.stream(annotationScanner.getAliases(element))
+        val aliasesValues = Arrays.stream(config.getAnnotationScanner().getAliases(element))
                 .map(WithAlias::value)
                 .collect(Collectors.toList());
 
@@ -90,18 +77,18 @@ public final class CommandSpecFactory {
     }
 
     private ManualSpec getManual(Class<?> commandType) {
-        val manualHandler = annotationScanner.isHasManual(commandType);
-        val manualSubCommand = annotationScanner.getManualSubCommand(commandType);
+        val manualHandler = config.getAnnotationScanner().isHasManual(commandType);
+        val manualSubCommand = config.getAnnotationScanner().getManualSubCommand(commandType);
 
         return ManualSpec.of(manualHandler, getManualSubCommand(manualSubCommand));
     }
 
     private HandlerParameter parseParameter(Parameter parameter) {
-        for (val resolver : parameterResolvers) {
-            if (resolver.isSupported(parameter)) {
-                HandlerParameter handlerParameter = resolver.parse(parameter);
+        for (val parser : config.getParameterParsers()) {
+            if (parser.isSupported(parameter)) {
+                HandlerParameter handlerParameter = parser.parse(parameter);
 
-                for (val parameterPostProcessor : parameterPostProcessors) {
+                for (val parameterPostProcessor : config.getParameterPostProcessors()) {
                     handlerParameter = parameterPostProcessor.process(parameter, handlerParameter);
                 }
 
@@ -124,13 +111,13 @@ public final class CommandSpecFactory {
     }
 
     private FormattingText getUsage(CommandSpec commandSpec, List<? extends Argument> arguments) {
-        return usageFormatter.create(commandSpec, arguments);
+        return config.getUsageFormatter().create(commandSpec, arguments);
     }
 
     private FormattingText getDescription(CommandSpec commandSpec, Method method) {
-        val description = annotationScanner.getDescription(method);
+        val description = config.getAnnotationScanner().getDescription(method);
 
-        return descriptionFormatter.create(commandSpec, description != null
+        return config.getDescriptionFormatter().create(commandSpec, description != null
                 ? description.value()
                 : "");
     }
@@ -150,7 +137,7 @@ public final class CommandSpecFactory {
     private Decorators createDecorators(Method method) {
         val result = new ArrayList<Decorator>();
 
-        for (val decoratorFactory : decoratorFactories) {
+        for (val decoratorFactory : config.getDecoratorFactories()) {
             val decorator = tryCreateDecorator(decoratorFactory, method);
             if (decorator != null) {
                 result.add(decorator);
@@ -175,7 +162,7 @@ public final class CommandSpecFactory {
     private Conditions createConditions(Method method) {
         val result = new ArrayList<Condition>();
 
-        for (val conditionFactory : conditionFactories) {
+        for (val conditionFactory : config.getConditionFactories()) {
             val condition = tryCreateCondition(conditionFactory, method);
             if (condition != null) {
                 result.add(condition);
@@ -196,7 +183,7 @@ public final class CommandSpecFactory {
                 .parameters(parameters)
                 .manualEntry(new ManualEntry(
                         getUsage(commandSpec, parameters.getArguments()),
-                        annotationScanner.isHidden(method) ? null : getDescription(commandSpec, method),
+                        config.getAnnotationScanner().isHidden(method) ? null : getDescription(commandSpec, method),
                         conditions
                 ))
                 .method(method)
@@ -216,7 +203,7 @@ public final class CommandSpecFactory {
         val commandType = commandInstance.getClass();
 
         val path = parent == null
-                ? handlerPathFactory.create(name)
+                ? config.getHandlerPathFactory().create(name)
                 : parent.getPath().resolve(name);
 
         val commandSpec = CommandSpec.builder()
@@ -233,12 +220,12 @@ public final class CommandSpecFactory {
         val subCommands = new ArrayList<CommandSpec>();
 
         for (val method : commandType.getMethods()) {
-            val commandHandler = annotationScanner.getCommandHandler(method);
+            val commandHandler = config.getAnnotationScanner().getCommandHandler(method);
             if (commandHandler != null) {
                 handlers.add(createHandler(commandSpec, path.resolve(commandHandler.value()), method));
             }
 
-            val subCommandHandler = annotationScanner.getSubCommandHandler(method);
+            val subCommandHandler = config.getAnnotationScanner().getSubCommandHandler(method);
             if (subCommandHandler != null) {
                 val subCommandName = subCommandHandler.value();
                 CommandSpecValidation.checkCommandName(subCommandName);
@@ -273,7 +260,7 @@ public final class CommandSpecFactory {
     }
 
     private CommandSpec createSubCommand(CommandSpec parent, CommandGraph template) {
-        val subCommand = annotationScanner.getSubCommand(template.getInstance().getClass());
+        val subCommand = config.getAnnotationScanner().getSubCommand(template.getInstance().getClass());
         if (subCommand == null) {
             throw new IllegalArgumentException("Sub command must be annotated with @SubCommand");
         }
@@ -281,7 +268,7 @@ public final class CommandSpecFactory {
     }
 
     private CommandSpec createCommand(CommandGraph template) {
-        val command = annotationScanner.getCommand(template.getInstance().getClass());
+        val command = config.getAnnotationScanner().getCommand(template.getInstance().getClass());
         if (command == null) {
             throw new IllegalArgumentException("Command must be annotated with @Command");
         }

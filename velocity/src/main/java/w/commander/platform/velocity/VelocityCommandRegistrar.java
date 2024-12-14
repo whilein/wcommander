@@ -20,9 +20,7 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.SimpleCommand;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.Command;
@@ -40,13 +38,10 @@ public class VelocityCommandRegistrar implements CommandRegistrar {
 
     Object plugin;
     CommandManager commandManager;
-
-    @Setter
-    @NonFinal
-    VelocityCommandActorFactory velocityCommandActorFactory;
+    VelocityCommanderConfig config;
 
     protected SimpleCommand create(Command command) {
-        return new VelocityCommand(command, velocityCommandActorFactory);
+        return new VelocityCommand(command, config);
     }
 
     @Override

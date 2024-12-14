@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.execution.ExecutionContext;
 import w.commander.result.Result;
 import w.commander.util.Callback;
@@ -36,7 +36,7 @@ public final class NotEnoughArgumentsCommandHandler implements CommandHandler {
     @Delegate(types = CommandHandler.class, excludes = CommandExecutor.class)
     CommandHandler handler;
 
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @Override
     public void execute(
@@ -44,7 +44,7 @@ public final class NotEnoughArgumentsCommandHandler implements CommandHandler {
             @NotNull Callback<@NotNull Result> callback
     ) {
         handler.getConditions().test(context, callback.map(result -> result == null || result.isSuccess()
-                ? errorResultFactory.onNotEnoughArguments(handler.getManualEntry().getUsage())
+                ? config.getErrorResultFactory().onNotEnoughArguments(handler.getManualEntry().getUsage())
                 : result));
     }
 }

@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
+import w.commander.CommanderConfig;
 import w.commander.decorator.Decorator;
 import w.commander.execution.ExecutionContext;
 import w.commander.executor.MethodExecutor;
@@ -28,7 +29,6 @@ import w.commander.spec.HandlerSpec;
 import w.commander.util.Callback;
 
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.Executor;
 
 /**
  * @author whilein
@@ -36,7 +36,7 @@ import java.util.concurrent.Executor;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class AsyncDecorator implements Decorator {
-    Executor executor;
+    CommanderConfig config;
 
     @Override
     public int getOrder() {
@@ -45,18 +45,18 @@ public class AsyncDecorator implements Decorator {
 
     @Override
     public @NotNull MethodExecutor wrap(@NotNull HandlerSpec handler, @NotNull MethodExecutor delegate) {
-        return new AsyncMethodExecutor(delegate, executor);
+        return new AsyncMethodExecutor(delegate, config);
     }
 
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @RequiredArgsConstructor
     private static final class AsyncMethodExecutor implements MethodExecutor {
         MethodExecutor delegate;
-        Executor executor;
+        CommanderConfig config;
 
         @Override
         public void execute(ExecutionContext context, Callback<Result> callback, Object[] args) {
-            executor.execute(() -> {
+            config.getAsyncExecutor().execute(() -> {
                 try {
                     delegate.execute(context, callback, args);
                 } catch (Throwable e) {

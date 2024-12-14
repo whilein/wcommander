@@ -36,19 +36,19 @@ import java.util.concurrent.ExecutionException;
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class SpigotCommand extends org.bukkit.command.Command {
     Command command;
-    SpigotCommandActorFactory spigotCommandActorFactory;
+    SpigotCommanderConfig config;
 
-    public SpigotCommand(Command command, SpigotCommandActorFactory spigotCommandActorFactory) {
+    public SpigotCommand(Command command, SpigotCommanderConfig config) {
         super(command.getName(), "", "/" + command.getName(), command.getAliases());
 
         this.command = command;
-        this.spigotCommandActorFactory = spigotCommandActorFactory;
+        this.config = config;
     }
 
     @Override
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
             throws IllegalArgumentException {
-        val actor = spigotCommandActorFactory.create(sender);
+        val actor = config.getSpigotCommandActorFactory().create(sender);
         val arguments = RawArguments.fromTrustedArray(args);
 
         try {
@@ -61,7 +61,7 @@ public class SpigotCommand extends org.bukkit.command.Command {
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
-        val actor = spigotCommandActorFactory.create(sender);
+        val actor = config.getSpigotCommandActorFactory().create(sender);
         val arguments = RawArguments.fromTrustedArray(args);
 
         command.execute(actor, arguments);

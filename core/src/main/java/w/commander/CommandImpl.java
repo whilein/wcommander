@@ -23,9 +23,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import w.commander.error.ErrorResultFactory;
 import w.commander.execution.ExecutionContext;
-import w.commander.execution.ExecutionContextFactory;
 import w.commander.executor.CommandHandler;
 import w.commander.manual.Manual;
 import w.commander.result.Result;
@@ -52,9 +50,8 @@ final class CommandImpl implements Command {
 
     @NotNull CommandNode tree;
 
-    @NotNull ExecutionContextFactory executionContextFactory;
-
-    @NotNull ErrorResultFactory errorResultFactory;
+    @NotNull
+    CommanderConfig config;
 
     @Getter
     @NotNull Object instance;
@@ -121,7 +118,7 @@ final class CommandImpl implements Command {
             return CompletableFuture.completedFuture(Collections.emptyList());
         }
 
-        val context = executionContextFactory.create(actor, arguments);
+        val context = config.getExecutionContextFactory().create(actor, arguments);
 
         CommandNode tree = this.tree;
         int offset = 0;
@@ -182,13 +179,13 @@ final class CommandImpl implements Command {
         val newArguments = arguments.withOffset(offset);
 
         val executor = tree.executor(newArguments.size());
-        val context = executionContextFactory.create(actor, newArguments);
+        val context = config.getExecutionContextFactory().create(actor, newArguments);
 
         val future = new CompletableFuture<Result>();
 
         executor.execute(context, Callback.of((result, cause) -> {
             if (cause != null) {
-                result = errorResultFactory.onInternalError(cause);
+                result = config.getErrorResultFactory().onInternalError(cause);
             }
 
             if (result != null) {

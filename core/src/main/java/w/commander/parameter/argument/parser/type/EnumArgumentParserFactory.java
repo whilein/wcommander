@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.parameter.argument.parser.ArgumentParser;
 import w.commander.parameter.argument.parser.ArgumentParserFactory;
 
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public final class EnumArgumentParserFactory
         implements ArgumentParserFactory {
 
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     Map<Class<?>, ArgumentParser> enumCache = new ConcurrentHashMap<>();
 
@@ -56,7 +56,7 @@ public final class EnumArgumentParserFactory
                         Function.identity()
                 ));
 
-        return new EnumArgumentParser<>(errorResultFactory, enumValues);
+        return new EnumArgumentParser<>(config, enumValues);
     }
 
     @Override

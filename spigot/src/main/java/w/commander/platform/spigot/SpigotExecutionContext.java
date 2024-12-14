@@ -23,10 +23,10 @@ import w.commander.execution.AbstractExecutionContext;
 /**
  * @author whilein
  */
-public class SpigotExecutionContext
-        extends AbstractExecutionContext<SpigotCommandActor> {
+public class SpigotExecutionContext<T extends SpigotCommandActor>
+        extends AbstractExecutionContext<T> {
     public SpigotExecutionContext(
-            @NotNull SpigotCommandActor actor,
+            @NotNull T actor,
             @NotNull RawArguments rawArguments
     ) {
         super(actor, rawArguments);

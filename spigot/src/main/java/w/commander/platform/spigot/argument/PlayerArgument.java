@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.AbstractArgument;
 import w.commander.parameter.argument.cursor.ArgumentCursor;
-import w.commander.platform.spigot.SpigotErrorResultFactory;
+import w.commander.platform.spigot.SpigotCommanderConfig;
 
 /**
  * @author whilein
@@ -44,7 +44,7 @@ public final class PlayerArgument extends AbstractArgument {
     boolean exact;
 
     Server server;
-    SpigotErrorResultFactory errorResultFactory;
+    SpigotCommanderConfig config;
 
     @Override
     public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
@@ -53,7 +53,7 @@ public final class PlayerArgument extends AbstractArgument {
 
             val player = exact ? server.getPlayerExact(name) : server.getPlayer(name);
             return player == null
-                    ? errorResultFactory.onOfflinePlayer(name)
+                    ? config.getSpigotErrorResultFactory().onOfflinePlayer(name)
                     : player;
         }
 

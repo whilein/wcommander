@@ -40,7 +40,7 @@ import java.lang.reflect.Parameter;
 public class VelocityParameterParser extends AbstractParameterParser {
 
     ProxyServer server;
-    VelocityErrorResultFactory errorResultFactory;
+    VelocityCommanderConfig config;
 
     @Override
     public boolean isSupported(@NotNull Parameter parameter) {
@@ -62,7 +62,7 @@ public class VelocityParameterParser extends AbstractParameterParser {
                     playerTarget.value(),
                     isRequired(parameter),
                     server,
-                    errorResultFactory
+                    config
             );
         }
 

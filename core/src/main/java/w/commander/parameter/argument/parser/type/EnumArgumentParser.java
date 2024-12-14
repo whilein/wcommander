@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import w.commander.error.ErrorResultFactory;
+import w.commander.CommanderConfig;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.Argument;
 import w.commander.parameter.argument.parser.ArgumentParser;
@@ -37,14 +37,14 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class EnumArgumentParser<E extends Enum<E>> implements ArgumentParser {
 
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
     Map<String, E> enumValues;
 
     @Getter
     TabCompleter defaultTabCompleter;
 
-    public EnumArgumentParser(ErrorResultFactory errorResultFactory, Map<String, E> enumValues) {
-        this.errorResultFactory = errorResultFactory;
+    public EnumArgumentParser(CommanderConfig config, Map<String, E> enumValues) {
+        this.config = config;
         this.enumValues = enumValues;
 
         this.defaultTabCompleter = new ExplicitTabCompleter(new ArrayList<>(enumValues.keySet()));
@@ -58,7 +58,7 @@ public final class EnumArgumentParser<E extends Enum<E>> implements ArgumentPars
     ) {
         E enumValue;
         if ((enumValue = enumValues.get(value.toLowerCase())) == null) {
-            return errorResultFactory.onInvalidEnum(argument, value, enumValues);
+            return config.getErrorResultFactory().onInvalidEnum(argument, value, enumValues);
         }
 
         return enumValue;

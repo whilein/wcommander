@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.minecraft.MinecraftErrorResultFactory;
+import w.commander.minecraft.MinecraftCommanderConfig;
 import w.commander.minecraft.annotation.NonSelfPlayer;
 import w.commander.parameter.argument.validator.ArgumentValidator;
 import w.commander.parameter.argument.validator.ArgumentValidatorFactory;
@@ -33,7 +33,7 @@ import w.commander.parameter.argument.validator.ArgumentValidatorFactory;
 public class NonSelfPlayerValidatorFactory implements ArgumentValidatorFactory<NonSelfPlayer> {
 
     Class<?> identityType;
-    MinecraftErrorResultFactory minecraftErrorResultFactory;
+    MinecraftCommanderConfig config;
 
     @Override
     public boolean isSupported(@NotNull Class<?> type) {
@@ -47,7 +47,7 @@ public class NonSelfPlayerValidatorFactory implements ArgumentValidatorFactory<N
 
     @Override
     public @NotNull ArgumentValidator create(@NotNull NonSelfPlayer annotation) {
-        return new NonSelfPlayerValidator(annotation.value(), minecraftErrorResultFactory);
+        return new NonSelfPlayerValidator(annotation.value(), config);
     }
 
 }

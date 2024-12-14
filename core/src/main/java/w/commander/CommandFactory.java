@@ -22,8 +22,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.error.ErrorResultFactory;
-import w.commander.execution.ExecutionContextFactory;
 import w.commander.executor.CommandExecutor;
 import w.commander.executor.CommandHandler;
 import w.commander.executor.ManualCommandExecutor;
@@ -31,8 +29,6 @@ import w.commander.executor.MethodCommandHandler;
 import w.commander.executor.MethodHandleExecutor;
 import w.commander.executor.NotEnoughArgumentsCommandHandler;
 import w.commander.manual.Manual;
-import w.commander.manual.ManualFactory;
-import w.commander.manual.ManualFormatter;
 import w.commander.spec.CommandSpec;
 import w.commander.spec.HandlerSpec;
 import w.commander.util.Immutables;
@@ -56,10 +52,7 @@ public final class CommandFactory {
             CommandExecutor.empty()
     };
 
-    ExecutionContextFactory executionContextFactory;
-    ManualFactory manualFactory;
-    ManualFormatter manualFormatter;
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @SneakyThrows
     private CommandExecutor createExecutor(HandlerSpec handler, CommandSpec command) {
@@ -127,7 +120,7 @@ public final class CommandFactory {
             }
 
             executorByArgument[i] = nextHandler != null
-                    ? new NotEnoughArgumentsCommandHandler(nextHandler, errorResultFactory)
+                    ? new NotEnoughArgumentsCommandHandler(nextHandler, config)
                     : CommandExecutor.empty();
         }
 
@@ -169,8 +162,8 @@ public final class CommandFactory {
         Manual manual;
         val manualSpec = spec.getManual();
         if (!manualSpec.isEmpty()) {
-            val manualExecutor = new ManualCommandExecutor(manual = manualFactory.create(spec),
-                    manualFormatter, errorResultFactory);
+            val manualExecutor = new ManualCommandExecutor(manual = config.getManualFactory().create(spec),
+                    config.getManualFormatter(), config.getErrorResultFactory());
 
             if (manualSpec.isHasHandler()) {
                 commandExecutors.add(manualExecutor);
@@ -200,8 +193,7 @@ public final class CommandFactory {
                 spec.getName(),
                 spec.getAliases(),
                 createNode(spec),
-                executionContextFactory,
-                errorResultFactory,
+                config,
                 spec.getInstance()
         );
     }

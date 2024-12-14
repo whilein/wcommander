@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import w.commander.CommanderConfig;
 import w.commander.annotation.TabComplete;
 import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.ParameterPostProcessor;
@@ -35,7 +36,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author whilein
@@ -44,8 +44,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ArgumentPostProcessor implements ParameterPostProcessor {
 
-    Map<String, TabCompleter> tabCompleters;
-    List<? extends ArgumentValidatorFactory<?>> argumentValidatorFactories;
+    CommanderConfig config;
 
     private static <A extends Annotation> ArgumentValidator tryCreateValidator(
             ArgumentValidatorFactory<A> factory,
@@ -62,7 +61,7 @@ public final class ArgumentPostProcessor implements ParameterPostProcessor {
     private List<ArgumentValidator> findValidators(Parameter parameter) {
         val result = new ArrayList<ArgumentValidator>();
 
-        for (val argumentValidatorFactory : argumentValidatorFactories) {
+        for (val argumentValidatorFactory : config.getArgumentValidatorFactories()) {
             val validator = tryCreateValidator(argumentValidatorFactory, parameter);
             if (validator != null) {
                 val type = parameter.getType();
@@ -85,7 +84,7 @@ public final class ArgumentPostProcessor implements ParameterPostProcessor {
             return new ExplicitTabCompleter(Arrays.asList(variants));
         }
 
-        return tabCompleters.get(tabComplete.use());
+        return config.getTabCompleter(tabComplete.use());
     }
 
     @Override

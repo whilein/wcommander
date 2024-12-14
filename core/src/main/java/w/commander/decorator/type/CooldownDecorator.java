@@ -22,17 +22,15 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
+import w.commander.CommanderConfig;
 import w.commander.cooldown.CooldownManager;
 import w.commander.cooldown.CooldownResult;
 import w.commander.decorator.Decorator;
-import w.commander.error.ErrorResultFactory;
 import w.commander.execution.ExecutionContext;
 import w.commander.executor.MethodExecutor;
 import w.commander.result.Result;
 import w.commander.spec.HandlerSpec;
 import w.commander.util.Callback;
-
-import java.util.concurrent.Executor;
 
 /**
  * @author whilein
@@ -42,9 +40,8 @@ import java.util.concurrent.Executor;
 public class CooldownDecorator implements Decorator {
 
     String customId;
-    Executor executor;
     CooldownManager cooldownManager;
-    ErrorResultFactory errorResultFactory;
+    CommanderConfig config;
 
     @Override
     public @NotNull MethodExecutor wrap(@NotNull HandlerSpec handler, @NotNull MethodExecutor delegate) {
@@ -64,7 +61,7 @@ public class CooldownDecorator implements Decorator {
 
         @Override
         public void execute(ExecutionContext context, Callback<Result> callback, Object[] args) {
-            cooldownManager.getCooldownAsync(context.getActor(), id, executor)
+            cooldownManager.getCooldownAsync(context.getActor(), id, config.getAsyncExecutor())
                     .whenComplete((r, e) -> {
                         if (e != null) {
                             callback.completeExceptionally(e);
@@ -72,7 +69,7 @@ public class CooldownDecorator implements Decorator {
                         }
 
                         if (r != null && !r.isNegative()) {
-                            callback.complete(errorResultFactory.onCooldown(r));
+                            callback.complete(config.getErrorResultFactory().onCooldown(r));
                             return;
                         }
 
@@ -105,7 +102,7 @@ public class CooldownDecorator implements Decorator {
                         actor,
                         id,
                         duration,
-                        executor
+                        config.getAsyncExecutor()
                 ).whenComplete((r, e) -> {
                     if (e != null) {
                         delegate.completeExceptionally(e);
