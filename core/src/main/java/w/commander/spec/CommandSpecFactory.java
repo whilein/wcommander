@@ -23,8 +23,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandGraph;
 import w.commander.CommanderConfig;
-import w.commander.annotation.WithAlias;
-import w.commander.annotation.WithManualSubCommand;
+import w.commander.annotation.WithManualSubCommandData;
 import w.commander.condition.Condition;
 import w.commander.condition.ConditionFactory;
 import w.commander.condition.Conditions;
@@ -46,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author whilein
@@ -57,23 +55,21 @@ public final class CommandSpecFactory {
 
     CommanderConfig config;
 
-    private static ManualSubCommandSpec getManualSubCommand(WithManualSubCommand subCommand) {
+    private static ManualSubCommandSpec getManualSubCommand(WithManualSubCommandData subCommand) {
         if (subCommand == null) return null;
 
         return ManualSubCommandSpec.of(
-                subCommand.value(),
-                Arrays.asList(subCommand.aliases())
+                subCommand.getValue(),
+                Arrays.asList(subCommand.getAliases())
         );
     }
 
     private List<String> getAliases(AnnotatedElement element) {
-        val aliasesValues = Arrays.stream(config.getAnnotationScanner().getAliases(element))
-                .map(WithAlias::value)
-                .collect(Collectors.toList());
+        val aliases = config.getAnnotationScanner().getAliases(element);
 
-        CommandSpecValidation.checkCommandNames(aliasesValues);
+        CommandSpecValidation.checkCommandNames(aliases);
 
-        return aliasesValues;
+        return aliases;
     }
 
     private ManualSpec getManual(Class<?> commandType) {
@@ -117,9 +113,7 @@ public final class CommandSpecFactory {
     private FormattingText getDescription(CommandSpec commandSpec, Method method) {
         val description = config.getAnnotationScanner().getDescription(method);
 
-        return config.getDescriptionFormatter().create(commandSpec, description != null
-                ? description.value()
-                : "");
+        return config.getDescriptionFormatter().create(commandSpec, description);
     }
 
     private static <A extends Annotation> Decorator tryCreateDecorator(

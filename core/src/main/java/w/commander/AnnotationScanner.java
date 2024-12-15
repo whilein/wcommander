@@ -18,6 +18,8 @@ package w.commander;
 
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import w.commander.annotation.Command;
 import w.commander.annotation.CommandHandler;
 import w.commander.annotation.Hidden;
@@ -28,9 +30,14 @@ import w.commander.annotation.WithAliases;
 import w.commander.annotation.WithDescription;
 import w.commander.annotation.WithManual;
 import w.commander.annotation.WithManualSubCommand;
+import w.commander.annotation.WithManualSubCommandData;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author whilein
@@ -41,47 +48,65 @@ public class AnnotationScanner {
         return type.isAnnotationPresent(WithManual.class);
     }
 
-    public CommandHandler getCommandHandler(@NotNull Method method) {
-        return method.getDeclaredAnnotation(CommandHandler.class);
+    public @Nullable String getCommandHandlerName(@NotNull Method method) {
+        val commandHandler = method.getDeclaredAnnotation(CommandHandler.class);
+        if (commandHandler == null) return null;
+
+        return commandHandler.value();
     }
 
-    public SubCommandHandler getSubCommandHandler(@NotNull Method method) {
-        return method.getDeclaredAnnotation(SubCommandHandler.class);
+    public @Nullable String getSubCommandHandlerName(@NotNull Method method) {
+        val subCommandHandler = method.getDeclaredAnnotation(SubCommandHandler.class);
+        if (subCommandHandler == null) return null;
+
+        return subCommandHandler.value();
     }
 
-    public Command getCommand(@NotNull Class<?> type) {
-        return type.getDeclaredAnnotation(Command.class);
+    public @Nullable String getCommandName(@NotNull Class<?> type) {
+        val command = type.getDeclaredAnnotation(Command.class);
+        if (command == null) return null;
+
+        return command.value();
     }
 
-    public SubCommand getSubCommand(@NotNull Class<?> type) {
-        return type.getDeclaredAnnotation(SubCommand.class);
+    public @Nullable String getSubCommandName(@NotNull Class<?> type) {
+        val subCommand = type.getDeclaredAnnotation(SubCommand.class);
+        if (subCommand == null) return null;
+
+        return subCommand.value();
     }
 
-    public WithManualSubCommand getManualSubCommand(@NotNull Class<?> type) {
-        return type.getDeclaredAnnotation(WithManualSubCommand.class);
+    public @Nullable WithManualSubCommandData getManualSubCommand(@NotNull Class<?> type) {
+        return WithManualSubCommandData.of(type.getDeclaredAnnotation(WithManualSubCommand.class));
     }
 
     public boolean isHidden(@NotNull Method method) {
         return method.isAnnotationPresent(Hidden.class);
     }
 
-    public WithDescription getDescription(@NotNull Method method) {
-        return method.getDeclaredAnnotation(WithDescription.class);
+    public @NotNull String getDescription(@NotNull Method method) {
+        val description = method.getDeclaredAnnotation(WithDescription.class);
+        if (description == null) return "";
+
+        return description.value();
     }
 
-    public WithAlias[] getAliases(@NotNull AnnotatedElement element) {
+    public @Unmodifiable @NotNull List<@NotNull String> getAliases(@NotNull AnnotatedElement element) {
         val alias = element.getDeclaredAnnotation(WithAlias.class);
 
         if (alias != null) {
-            return new WithAlias[]{alias};
+            return Collections.singletonList(alias.value());
         }
 
         val aliases = element.getDeclaredAnnotation(WithAliases.class);
 
         if (aliases != null) {
-            return aliases.value();
+            return Collections.unmodifiableList(Arrays.stream(aliases.value())
+                    .map(WithAlias::value)
+                    .collect(Collectors.toList()));
         }
 
-        return new WithAlias[0];
+        return Collections.emptyList();
     }
+
 }

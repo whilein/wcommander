@@ -16,23 +16,24 @@
 
 package w.commander.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author whilein
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface SubCommandHandler {
+@Value
+@RequiredArgsConstructor
+public class WithManualSubCommandData {
 
-    /**
-     * Get sub command handler name
-     *
-     * @return sub command name
-     */
-    String value();
+    String value;
+    String[] aliases;
+
+    public static @Nullable WithManualSubCommandData of(@Nullable WithManualSubCommand withManualSubCommand) {
+        return withManualSubCommand != null
+                ? new WithManualSubCommandData(withManualSubCommand.value(), withManualSubCommand.aliases())
+                : null;
+    }
 
 }
