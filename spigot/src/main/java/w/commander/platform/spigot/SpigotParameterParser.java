@@ -20,7 +20,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -44,7 +43,6 @@ import java.lang.reflect.Parameter;
 @RequiredArgsConstructor
 public class SpigotParameterParser extends AbstractParameterParser {
 
-    Server server;
     SpigotCommanderConfig config;
 
     PlayerTabCompleter playerTabCompleter;
@@ -71,7 +69,6 @@ public class SpigotParameterParser extends AbstractParameterParser {
                     playerTarget.value(),
                     isRequired(parameter),
                     playerTarget.exact(),
-                    server,
                     config
             );
             argument.setTabCompleter(playerTabCompleter);
@@ -88,7 +85,6 @@ public class SpigotParameterParser extends AbstractParameterParser {
             val argument = new WorldArgument(
                     worldTarget.value(),
                     isRequired(parameter),
-                    server,
                     config
             );
             argument.setTabCompleter(worldTabCompleter);

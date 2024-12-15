@@ -19,8 +19,8 @@ package w.commander.platform.spigot;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import w.commander.Command;
 import w.commander.CommandRegistrar;
@@ -34,17 +34,15 @@ import javax.annotation.concurrent.ThreadSafe;
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class SpigotCommandRegistrar implements CommandRegistrar {
 
-    Plugin plugin;
     CommandMap commandMap;
     SpigotCommanderConfig config;
 
-    public SpigotCommandRegistrar(Plugin plugin, SpigotCommanderConfig config) {
-        this.plugin = plugin;
+    public SpigotCommandRegistrar(SpigotCommanderConfig config) {
         this.config = config;
 
-        val server = plugin.getServer();
-
         try {
+            val server = Bukkit.getServer();
+
             val commandMapField = server.getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);
 
@@ -60,7 +58,8 @@ public class SpigotCommandRegistrar implements CommandRegistrar {
 
     @Override
     public void register(@NotNull Command command) {
-        commandMap.register(plugin.getName(), create(command));
+        val info = (SpigotCommandInfo) command.getInfo();
+        commandMap.register(info.getPlugin().getName(), create(command));
     }
 
     @Override

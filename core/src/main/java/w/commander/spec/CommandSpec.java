@@ -22,6 +22,7 @@ import lombok.Builder;
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
+import w.commander.CommandInfo;
 import w.commander.executor.HandlerPath;
 
 import java.util.List;
@@ -42,8 +43,7 @@ public class CommandSpec implements NameAwareSpec, PathAwareSpec {
     HandlerPath path;
 
     CommandSpec parent;
-    Object instance;
-    Class<?> type;
+    CommandInfo info;
 
     ManualSpec manual;
 
@@ -54,5 +54,13 @@ public class CommandSpec implements NameAwareSpec, PathAwareSpec {
     @Setter
     @NonFinal
     List<CommandSpec> subCommands;
+
+    public Object getInstance() {
+        return info.getInstance();
+    }
+
+    public Class<?> getType() {
+        return info.getInstanceType();
+    }
 
 }

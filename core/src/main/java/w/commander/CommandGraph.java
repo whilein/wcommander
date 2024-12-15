@@ -39,19 +39,19 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class CommandGraph {
 
-    Object instance;
+    CommandInfo info;
     List<CommandGraph> subCommands;
 
-    private CommandGraph(Object instance) {
-        this(instance, Collections.emptyList());
+    private CommandGraph(CommandInfo info) {
+        this(info, Collections.emptyList());
     }
 
-    public static @NotNull CommandGraph.Builder builder(@NotNull Object instance) {
-        return new CommandGraph.Builder(instance);
+    public static @NotNull CommandGraph.Builder builder(@NotNull CommandInfo info) {
+        return new CommandGraph.Builder(info);
     }
 
-    public static @NotNull CommandGraph of(@NotNull Object instance) {
-        return new CommandGraph(instance);
+    public static @NotNull CommandGraph of(@NotNull CommandInfo info) {
+        return new CommandGraph(info);
     }
 
     @NotThreadSafe
@@ -59,7 +59,7 @@ public class CommandGraph {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class Builder {
 
-        Object instance;
+        CommandInfo info;
 
         List<CommandGraph> subCommands = new ArrayList<>();
 
@@ -69,21 +69,32 @@ public class CommandGraph {
         }
 
         public @NotNull Builder subCommand(@NotNull Object instance) {
-            return subCommand(new CommandGraph(instance));
+            return subCommand(info.withInstance(instance));
+        }
+
+        public @NotNull Builder subCommand(@NotNull CommandInfo info) {
+            return subCommand(new CommandGraph(info));
         }
 
         public @NotNull Builder subCommand(
                 @NotNull Object instance,
                 @NotNull Consumer<Builder> build
         ) {
-            val builder = new Builder(instance);
+            return subCommand(info.withInstance(instance), build);
+        }
+
+        public @NotNull Builder subCommand(
+                @NotNull CommandInfo info,
+                @NotNull Consumer<Builder> build
+        ) {
+            val builder = new Builder(info);
             build.accept(builder);
             return subCommand(builder.build());
         }
 
         public @NotNull CommandGraph build() {
             return new CommandGraph(
-                    instance,
+                    info,
                     Immutables.immutableList(subCommands)
             );
         }

@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import w.commander.Commander;
 import w.commander.CommanderConfig;
 
@@ -40,7 +42,16 @@ public class SpigotCommander extends Commander {
         this.spigotConfig = config;
     }
 
-    public SpigotCommander(Plugin plugin) {
-        this(SpigotCommanderConfig.createDefaults(plugin));
+    public SpigotCommander() {
+        this(SpigotCommanderConfig.createDefaults());
     }
+
+    public void register(@NotNull Plugin plugin, @NotNull Object instance) {
+        super.register(new SpigotCommandInfo(plugin, instance));
+    }
+
+    public void register(@NotNull Object instance) {
+        register(JavaPlugin.getProvidingPlugin(instance.getClass()), instance);
+    }
+
 }

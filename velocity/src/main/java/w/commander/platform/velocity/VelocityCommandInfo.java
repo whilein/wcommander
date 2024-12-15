@@ -14,28 +14,25 @@
  *    limitations under the License.
  */
 
-package w.commander.platform.paper;
+package w.commander.platform.velocity;
 
-import lombok.experimental.Delegate;
-import w.commander.CommanderConfig;
-import w.commander.platform.spigot.SpigotCommander;
-import w.commander.platform.spigot.SpigotCommanderConfig;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+import w.commander.CommandInfo;
 
 /**
  * @author whilein
  */
-public class PaperCommander extends SpigotCommander {
+@Getter
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
+public class VelocityCommandInfo extends CommandInfo {
+    Object plugin;
 
-    @Delegate(types = PaperCommanderConfig.class, excludes = {SpigotCommanderConfig.class, CommanderConfig.class})
-    PaperCommanderConfig paperConfig;
+    public VelocityCommandInfo(Object plugin, Object instance) {
+        super(instance);
 
-    public PaperCommander(PaperCommanderConfig config) {
-        super(config);
-
-        this.paperConfig = config;
-    }
-
-    public PaperCommander() {
-        this(PaperCommanderConfig.createDefaults());
+        this.plugin = plugin;
     }
 }
+

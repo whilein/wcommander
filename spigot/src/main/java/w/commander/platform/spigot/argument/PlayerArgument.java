@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import org.bukkit.Server;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.AbstractArgument;
@@ -43,7 +43,6 @@ public final class PlayerArgument extends AbstractArgument {
 
     boolean exact;
 
-    Server server;
     SpigotCommanderConfig config;
 
     @Override
@@ -51,7 +50,7 @@ public final class PlayerArgument extends AbstractArgument {
         if (cursor.hasNext(required)) {
             val name = context.getRawArguments().value(cursor.next());
 
-            val player = exact ? server.getPlayerExact(name) : server.getPlayer(name);
+            val player = exact ? Bukkit.getPlayerExact(name) : Bukkit.getPlayer(name);
             return player == null
                     ? config.getSpigotErrorResultFactory().onOfflinePlayer(name)
                     : player;

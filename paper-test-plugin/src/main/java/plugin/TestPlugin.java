@@ -36,8 +36,7 @@ public class TestPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        var commander = new PaperCommander(this);
-        commander.addCooldownManager(new TestCooldownManager());
+        var commander = new PaperCommander();
         commander.addCondition(new PermissionCondition());
 
         commander.setErrorResultFactory(new ErrorResultFactory() {
@@ -102,7 +101,7 @@ public class TestPlugin extends JavaPlugin {
             }
         });
 
-        commander.register(new TestCommand());
+        commander.register(this, new TestCommand());
     }
 
 }

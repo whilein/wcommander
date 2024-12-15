@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import org.bukkit.Server;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.platform.spigot.SpigotExecutionContext;
@@ -35,8 +35,6 @@ import w.commander.util.StringUtils;
 @RequiredArgsConstructor
 public final class PlayerTabCompleter implements NamedTabCompleter {
 
-    Server server;
-
     @Override
     public @NotNull String getName() {
         return "PLAYER";
@@ -47,7 +45,7 @@ public final class PlayerTabCompleter implements NamedTabCompleter {
         val pctx = (SpigotExecutionContext<?>) ctx;
         val self = pctx.getActor().asPlayer();
 
-        for (val player : server.getOnlinePlayers()) {
+        for (val player : Bukkit.getOnlinePlayers()) {
             if (self != null && !self.canSee(player)) {
                 continue;
             }

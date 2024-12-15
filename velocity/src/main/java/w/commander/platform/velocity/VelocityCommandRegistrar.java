@@ -36,7 +36,6 @@ import javax.annotation.concurrent.ThreadSafe;
 @RequiredArgsConstructor
 public class VelocityCommandRegistrar implements CommandRegistrar {
 
-    Object plugin;
     CommandManager commandManager;
     VelocityCommanderConfig config;
 
@@ -46,8 +45,10 @@ public class VelocityCommandRegistrar implements CommandRegistrar {
 
     @Override
     public void register(@NotNull Command command) {
+        val info = (VelocityCommandInfo) command.getInfo();
+
         val commandMeta = commandManager.metaBuilder(command.getName())
-                .plugin(plugin)
+                .plugin(info.getPlugin())
                 .aliases(command.getAliases().toArray(String[]::new))
                 .build();
 

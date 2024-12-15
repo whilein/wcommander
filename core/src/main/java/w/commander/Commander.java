@@ -63,20 +63,20 @@ public class Commander {
         return commandFactory.create(commandSpecFactory.create(graph));
     }
 
-    public @NotNull Command ofInstance(@NotNull Object object) {
-        return ofGraph(CommandGraph.of(object));
+    public @NotNull Command ofInfo(@NotNull CommandInfo info) {
+        return ofGraph(CommandGraph.of(info));
     }
 
     public void register(@NotNull CommandGraph graph) {
         register(ofGraph(graph));
     }
 
-    public void register(@NotNull Object object) {
-        register(ofInstance(object));
+    public void register(@NotNull CommandInfo info) {
+        register(ofInfo(info));
     }
 
     public void register(@NotNull Command command) {
-        val commandType = command.getInstanceType();
+        val commandType = command.getInfo().getInstanceType();
 
         val prevCommand = type2CommandMap.put(commandType, command);
         if (prevCommand != null) {

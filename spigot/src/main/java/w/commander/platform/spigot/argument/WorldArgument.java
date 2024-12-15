@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import org.bukkit.Server;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.AbstractArgument;
@@ -41,7 +41,6 @@ public final class WorldArgument extends AbstractArgument {
     @Getter
     boolean required;
 
-    Server server;
     SpigotCommanderConfig config;
 
     @Override
@@ -49,7 +48,7 @@ public final class WorldArgument extends AbstractArgument {
         if (cursor.hasNext(required)) {
             val name = context.getRawArguments().value(cursor.next());
 
-            val world = server.getWorld(name);
+            val world = Bukkit.getWorld(name);
             return world == null
                     ? config.getSpigotErrorResultFactory().onUnknownWorld(name)
                     : world;

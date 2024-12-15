@@ -199,8 +199,8 @@ public final class CommandSpecFactory {
     ) {
         CommandSpecValidation.checkCommandName(name);
 
-        val commandInstance = template.getInstance();
-        val commandType = commandInstance.getClass();
+        val commandInfo = template.getInfo();
+        val commandType = commandInfo.getInstanceType();
 
         val path = parent == null
                 ? config.getHandlerPathFactory().create(name)
@@ -210,8 +210,7 @@ public final class CommandSpecFactory {
                 .parent(parent)
                 .name(name)
                 .path(path)
-                .type(commandType)
-                .instance(commandInstance)
+                .info(commandInfo)
                 .aliases(getAliases(commandType))
                 .manual(getManual(commandType))
                 .build();
@@ -220,24 +219,22 @@ public final class CommandSpecFactory {
         val subCommands = new ArrayList<CommandSpec>();
 
         for (val method : commandType.getMethods()) {
-            val commandHandler = config.getAnnotationScanner().getCommandHandler(method);
+            val commandHandler = config.getAnnotationScanner().getCommandHandlerName(method);
             if (commandHandler != null) {
-                handlers.add(createHandler(commandSpec, path.resolve(commandHandler.value()), method));
+                handlers.add(createHandler(commandSpec, path.resolve(commandHandler), method));
             }
 
-            val subCommandHandler = config.getAnnotationScanner().getSubCommandHandler(method);
-            if (subCommandHandler != null) {
-                val subCommandName = subCommandHandler.value();
-                CommandSpecValidation.checkCommandName(subCommandName);
+            val subCommandHandlerName = config.getAnnotationScanner().getSubCommandHandlerName(method);
+            if (subCommandHandlerName != null) {
+                CommandSpecValidation.checkCommandName(subCommandHandlerName);
 
-                val subCommandPath = path.resolve(subCommandName);
+                val subCommandPath = path.resolve(subCommandHandlerName);
 
                 val subCommandSpec = CommandSpec.builder()
                         .parent(commandSpec)
-                        .name(subCommandHandler.value())
+                        .name(subCommandHandlerName)
                         .path(subCommandPath)
-                        .type(commandType)
-                        .instance(commandInstance)
+                        .info(commandInfo)
                         .aliases(getAliases(method))
                         .manual(ManualSpec.empty())
                         .build();
@@ -260,19 +257,19 @@ public final class CommandSpecFactory {
     }
 
     private CommandSpec createSubCommand(CommandSpec parent, CommandGraph template) {
-        val subCommand = config.getAnnotationScanner().getSubCommand(template.getInstance().getClass());
+        val subCommand = config.getAnnotationScanner().getSubCommandName(template.getInfo().getInstanceType());
         if (subCommand == null) {
             throw new IllegalArgumentException("Sub command must be annotated with @SubCommand");
         }
-        return create(parent, subCommand.value(), template);
+        return create(parent, subCommand, template);
     }
 
     private CommandSpec createCommand(CommandGraph template) {
-        val command = config.getAnnotationScanner().getCommand(template.getInstance().getClass());
+        val command = config.getAnnotationScanner().getCommandName(template.getInfo().getInstanceType());
         if (command == null) {
             throw new IllegalArgumentException("Command must be annotated with @Command");
         }
-        return create(null, command.value(), template);
+        return create(null, command, template);
     }
 
     public @NotNull CommandSpec create(@NotNull CommandGraph template) {

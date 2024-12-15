@@ -39,7 +39,7 @@ public class TestPlugin {
 
     @Inject
     public TestPlugin(ProxyServer proxyServer) {
-        var commander = new VelocityCommander(this, proxyServer);
+        var commander = new VelocityCommander(proxyServer);
 
         commander.setErrorResultFactory(new ErrorResultFactory() {
             @Override
@@ -59,6 +59,6 @@ public class TestPlugin {
             }
         });
 
-        commander.register(new TestCommand());
+        commander.register(this, new TestCommand());
     }
 }

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import w.commander.Commander;
 import w.commander.CommanderConfig;
 
@@ -40,8 +41,13 @@ public class VelocityCommander extends Commander {
         this.velocityConfig = config;
     }
 
-    public VelocityCommander(Object plugin, ProxyServer server) {
-        this(VelocityCommanderConfig.createDefaults(plugin, server));
+    public VelocityCommander(ProxyServer server) {
+        this(VelocityCommanderConfig.createDefaults(server));
     }
+
+    public void register(@NotNull Object plugin, @NotNull Object instance) {
+        super.register(new VelocityCommandInfo(plugin, instance));
+    }
+
 
 }

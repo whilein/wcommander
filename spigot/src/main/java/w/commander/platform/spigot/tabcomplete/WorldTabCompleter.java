@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import org.bukkit.Server;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.tabcomplete.NamedTabCompleter;
@@ -34,8 +34,6 @@ import w.commander.util.StringUtils;
 @RequiredArgsConstructor
 public final class WorldTabCompleter implements NamedTabCompleter {
 
-    Server server;
-
     @Override
     public @NotNull String getName() {
         return "WORLD";
@@ -43,7 +41,7 @@ public final class WorldTabCompleter implements NamedTabCompleter {
 
     @Override
     public void getSuggestions(@NotNull ExecutionContext ctx, @NotNull String value, @NotNull Suggestions suggestions) {
-        for (val world : server.getWorlds()) {
+        for (val world : Bukkit.getWorlds()) {
             val name = world.getName();
 
             if (StringUtils.startsWithIgnoreCase(name, value)) {

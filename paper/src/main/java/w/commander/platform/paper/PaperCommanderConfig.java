@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContextFactory;
 import w.commander.platform.spigot.SpigotCommandActorFactory;
@@ -35,12 +34,8 @@ import w.commander.platform.spigot.SpigotCommanderConfig;
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class PaperCommanderConfig extends SpigotCommanderConfig {
 
-    public PaperCommanderConfig(Plugin plugin) {
-        super(plugin);
-    }
-
-    public static PaperCommanderConfig createDefaults(Plugin plugin) {
-        val config = new PaperCommanderConfig(plugin);
+    public static PaperCommanderConfig createDefaults() {
+        val config = new PaperCommanderConfig();
         config.initDefaults();
 
         return config;

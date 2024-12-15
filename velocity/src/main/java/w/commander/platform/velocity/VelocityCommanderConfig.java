@@ -20,6 +20,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -37,23 +38,17 @@ import w.commander.platform.velocity.tabcomplete.PlayerTabCompleter;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
+@RequiredArgsConstructor
 public class VelocityCommanderConfig extends MinecraftCommanderConfig {
 
-    Object plugin;
     ProxyServer server;
-
     @NonFinal
     VelocityErrorResultFactory velocityErrorResultFactory;
     @NonFinal
     VelocityCommandActorFactory velocityCommandActorFactory;
 
-    public VelocityCommanderConfig(Object plugin, ProxyServer server) {
-        this.plugin = plugin;
-        this.server = server;
-    }
-
-    public static VelocityCommanderConfig createDefaults(Object plugin, ProxyServer server) {
-        val config = new VelocityCommanderConfig(plugin, server);
+    public static VelocityCommanderConfig createDefaults(ProxyServer server) {
+        val config = new VelocityCommanderConfig(server);
         config.initDefaults();
 
         return config;
@@ -81,7 +76,7 @@ public class VelocityCommanderConfig extends MinecraftCommanderConfig {
     protected void initDefaults() {
         super.initDefaults();
 
-        commandRegistrar = new VelocityCommandRegistrar(plugin, server.getCommandManager(), this);
+        commandRegistrar = new VelocityCommandRegistrar(server.getCommandManager(), this);
         velocityErrorResultFactory = VelocityErrorResultFactory.NOOP;
         velocityCommandActorFactory = SimpleVelocityCommandActor::new;
         executionContextFactory = new VelocityExecutionContextFactory();

@@ -54,7 +54,8 @@ final class CommandImpl implements Command {
     CommanderConfig config;
 
     @Getter
-    @NotNull Object instance;
+    @NotNull
+    CommandInfo info;
 
     private void addSubCommandToSuggestions(
             ExecutionContext context,
@@ -200,11 +201,6 @@ final class CommandImpl implements Command {
         }));
 
         return future;
-    }
-
-    @Override
-    public @NotNull Class<?> getInstanceType() {
-        return instance.getClass();
     }
 
     @Override

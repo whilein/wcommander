@@ -16,31 +16,28 @@
 
 package w.commander;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import w.commander.manual.Manual;
-import w.commander.result.Result;
-
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author whilein
  */
-public interface Command {
+@Getter
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
+@RequiredArgsConstructor
+public class CommandInfo {
 
-    @NotNull String getName();
+    Object instance;
 
-    @NotNull List<@NotNull String> getAliases();
+    public @NotNull Class<?> getInstanceType() {
+        return getInstance().getClass();
+    }
 
-    @NotNull
-    CompletableFuture<@NotNull List<String>> tabComplete(@NotNull CommandActor actor, @NotNull RawArguments args);
-
-    @NotNull CompletableFuture<@NotNull Result> execute(@NotNull CommandActor actor, @NotNull RawArguments args);
-
-    @NotNull
-    CommandInfo getInfo();
-
-    @Nullable Manual getManual();
+    public @NotNull CommandInfo withInstance(@NotNull Object instance) {
+        return new CommandInfo(instance);
+    }
 
 }

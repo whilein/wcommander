@@ -23,7 +23,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.val;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 import w.commander.minecraft.MinecraftCommanderConfig;
 import w.commander.minecraft.MinecraftErrorResultFactory;
 import w.commander.minecraft.validator.NonSelfPlayerValidatorFactory;
@@ -38,22 +37,14 @@ import w.commander.platform.spigot.tabcomplete.WorldTabCompleter;
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class SpigotCommanderConfig extends MinecraftCommanderConfig {
 
-    Plugin plugin;
-
     @NonFinal
     SpigotErrorResultFactory spigotErrorResultFactory;
 
     @NonFinal
     SpigotCommandActorFactory spigotCommandActorFactory;
 
-    public SpigotCommanderConfig(Plugin plugin) {
-        super();
-
-        this.plugin = plugin;
-    }
-
-    public static SpigotCommanderConfig createDefaults(Plugin plugin) {
-        val config = new SpigotCommanderConfig(plugin);
+    public static SpigotCommanderConfig createDefaults() {
+        val config = new SpigotCommanderConfig();
         config.initDefaults();
 
         return config;
@@ -81,19 +72,17 @@ public class SpigotCommanderConfig extends MinecraftCommanderConfig {
     protected void initDefaults() {
         super.initDefaults();
 
-        commandRegistrar = new SpigotCommandRegistrar(plugin, this);
+        commandRegistrar = new SpigotCommandRegistrar(this);
         spigotErrorResultFactory = SpigotErrorResultFactory.NOOP;
         spigotCommandActorFactory = SimpleSpigotCommandActor::new;
 
-        val server = plugin.getServer();
-
-        val playerTabCompleter = new PlayerTabCompleter(server);
-        val worldTabCompleter = new WorldTabCompleter(server);
+        val playerTabCompleter = new PlayerTabCompleter();
+        val worldTabCompleter = new WorldTabCompleter();
 
         addTabCompleter(playerTabCompleter);
         addTabCompleter(worldTabCompleter);
 
-        addParameterParser(new SpigotParameterParser(server, this,
+        addParameterParser(new SpigotParameterParser(this,
                 playerTabCompleter, worldTabCompleter));
 
         addArgumentValidatorFactory(new NonSelfPlayerValidatorFactory(CommandSender.class,
