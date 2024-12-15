@@ -37,19 +37,19 @@ public interface ErrorResultFactory {
     };
 
     default @NotNull FailedResult onManualUnavailable(@NotNull Manual manual) {
-        return Results.error();
+        return Results.error("Manual is unavailable for you");
     }
 
     default @NotNull FailedResult onInternalError(@NotNull Throwable throwable) {
-        return Results.error();
+        return Results.error("Internal error occurred");
     }
 
     default @NotNull FailedResult onNotEnoughArguments(@NotNull FormattingText usage) {
-        return Results.error();
+        return Results.error("Not enough arguments");
     }
 
     default @NotNull FailedResult onInvalidNumber(@NotNull Argument argument, @NotNull String value) {
-        return Results.error();
+        return Results.error("Invalid number passed");
     }
 
     default <E extends Enum<E>> FailedResult onInvalidEnum(
@@ -57,7 +57,7 @@ public interface ErrorResultFactory {
             @NotNull String value,
             @NotNull Map<@NotNull String, @NotNull E> enumValues
     ) {
-        return Results.error();
+        return Results.error("Invalid enum passed");
     }
 
     default @NotNull FailedResult onFailBetweenValidation(
@@ -65,34 +65,34 @@ public interface ErrorResultFactory {
             double min,
             double max
     ) {
-        return Results.error();
+        return Results.error("Invalid number passed");
     }
 
     default @NotNull FailedResult onFailGreaterThanValidation(
             @NotNull Argument argument,
             double value
     ) {
-        return Results.error();
+        return Results.error("Invalid number passed");
     }
 
     default @NotNull FailedResult onFailLowerThanValidation(
             @NotNull Argument argument,
             double value
     ) {
-        return Results.error();
+        return Results.error("Invalid number passed");
     }
 
     default @NotNull FailedResult onFailRegexValidation(
             @NotNull Argument argument,
             @NotNull Pattern pattern
     ) {
-        return Results.error();
+        return Results.error("Invalid value passed");
     }
 
     default @NotNull FailedResult onCooldown(
             @NotNull Duration remaining
     ) {
-        return Results.error();
+        return Results.error("Too quick!");
     }
 
 }

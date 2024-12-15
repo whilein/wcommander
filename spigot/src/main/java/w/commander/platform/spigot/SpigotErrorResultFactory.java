@@ -31,11 +31,7 @@ public interface SpigotErrorResultFactory extends MinecraftErrorResultFactory {
     };
 
     default @NotNull FailedResult onUnknownWorld(@NotNull String value) {
-        return Results.error();
-    }
-
-    default @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
-        return Results.error();
+        return Results.error("Unknown world passed");
     }
 
 }

@@ -18,8 +18,6 @@ package w.commander.platform.velocity;
 
 import org.jetbrains.annotations.NotNull;
 import w.commander.minecraft.MinecraftErrorResultFactory;
-import w.commander.result.FailedResult;
-import w.commander.result.Results;
 
 /**
  * @author _Novit_ (novitpw)
@@ -28,9 +26,5 @@ public interface VelocityErrorResultFactory extends MinecraftErrorResultFactory 
 
     @NotNull VelocityErrorResultFactory NOOP = new VelocityErrorResultFactory() {
     };
-
-    default @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
-        return Results.error();
-    }
 
 }

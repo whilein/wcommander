@@ -26,15 +26,21 @@ import w.commander.result.Results;
 public interface MinecraftErrorResultFactory {
 
     default @NotNull FailedResult onFailPlayerOnlyCondition() {
-        return Results.error();
+        return Results.error("Console cannot use this command");
     }
 
     default @NotNull FailedResult onFailConsoleOnlyCondition() {
-        return Results.error();
+        return Results.error("Player cannot use this command");
     }
 
     default @NotNull FailedResult onFailNonSelfPlayerValidation(@NotNull String customMessage) {
-        return customMessage.isEmpty() ? Results.error() : Results.error(customMessage);
+        return customMessage.isEmpty()
+                ? Results.error("You cannot pass yourself as value")
+                : Results.error(customMessage);
+    }
+
+    default @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
+        return Results.error("Player is offline now");
     }
 
 }
