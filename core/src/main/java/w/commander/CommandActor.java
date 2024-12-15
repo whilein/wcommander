@@ -23,6 +23,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface CommandActor {
 
+    String getName();
+
     void sendMessage(@NotNull String text);
 
 }

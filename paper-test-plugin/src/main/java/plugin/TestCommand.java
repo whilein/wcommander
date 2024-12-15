@@ -70,7 +70,7 @@ public class TestCommand {
     }
 
     @SubCommandHandler("cooldown")
-    @Cooldown(cooldownManager = "test")
+    @Cooldown
     @WithDescription("cooldown")
     public Result cooldown(CommandSender sender) {
         return CooldownResult.of(Results.ok("cooldown set"), Duration.ofSeconds(5));

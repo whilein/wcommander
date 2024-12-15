@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import w.commander.condition.Condition;
 import w.commander.condition.ConditionFactory;
 import w.commander.cooldown.CooldownManager;
+import w.commander.cooldown.InMemoryCooldownManager;
 import w.commander.decorator.Decorator;
 import w.commander.decorator.DecoratorFactory;
 import w.commander.decorator.type.AsyncDecoratorFactory;
@@ -64,6 +65,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
@@ -125,18 +127,20 @@ public class CommanderConfig {
         manualFormatter = new SimpleManualFormatter();
         asyncExecutor = ForkJoinPool.commonPool();
 
-        argumentParserFactories.add(new EnumArgumentParserFactory(this));
-        argumentParserFactories.add(new NumberArgumentParserFactory(this));
+        addCooldownManager(new InMemoryCooldownManager("default", new ConcurrentHashMap<>()));
 
-        argumentValidatorFactories.add(new GreaterThanArgumentValidatorFactory(this));
-        argumentValidatorFactories.add(new LowerThanArgumentValidatorFactory(this));
-        argumentValidatorFactories.add(new BetweenArgumentValidatorFactory(this));
-        argumentValidatorFactories.add(new RegexArgumentValidatorFactory(this));
+        addArgumentParserFactory(new EnumArgumentParserFactory(this));
+        addArgumentParserFactory(new NumberArgumentParserFactory(this));
 
-        parameterPostProcessors.add(new ArgumentPostProcessor(this));
-        parameterParsers.add(new ArgumentParameterParser(this));
-        decoratorFactories.add(new AsyncDecoratorFactory(this));
-        decoratorFactories.add(new CooldownDecoratorFactory(this));
+        addArgumentValidatorFactory(new GreaterThanArgumentValidatorFactory(this));
+        addArgumentValidatorFactory(new LowerThanArgumentValidatorFactory(this));
+        addArgumentValidatorFactory(new BetweenArgumentValidatorFactory(this));
+        addArgumentValidatorFactory(new RegexArgumentValidatorFactory(this));
+
+        addParameterPostProcessor(new ArgumentPostProcessor(this));
+        addParameterParser(new ArgumentParameterParser(this));
+        addDecorator(new AsyncDecoratorFactory(this));
+        addDecorator(new CooldownDecoratorFactory(this));
     }
 
     public <A extends Annotation> void addDecorator(@NotNull DecoratorFactory<A> decoratorFactory) {

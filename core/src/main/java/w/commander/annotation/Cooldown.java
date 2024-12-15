@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Cooldown {
 
-    @NotNull String cooldownManager();
+    @NotNull String cooldownManager() default "default";
 
     @NotNull String id() default "";
 
