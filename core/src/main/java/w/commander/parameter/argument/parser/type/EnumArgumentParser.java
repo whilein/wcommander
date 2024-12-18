@@ -58,7 +58,7 @@ public final class EnumArgumentParser<E extends Enum<E>> implements ArgumentPars
     ) {
         E enumValue;
         if ((enumValue = enumValues.get(value.toLowerCase())) == null) {
-            return config.getErrorResultFactory().onInvalidEnum(argument, value, enumValues);
+            return config.getErrorResultFactory().onInvalidEnum(context, argument, value, enumValues);
         }
 
         return enumValue;

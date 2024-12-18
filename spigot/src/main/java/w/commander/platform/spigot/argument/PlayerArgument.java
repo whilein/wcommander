@@ -52,7 +52,7 @@ public final class PlayerArgument extends AbstractArgument {
 
             val player = exact ? Bukkit.getPlayerExact(name) : Bukkit.getPlayer(name);
             return player == null
-                    ? config.getSpigotErrorResultFactory().onOfflinePlayer(name)
+                    ? config.getSpigotErrorResultFactory().onOfflinePlayer(context, name)
                     : player;
         }
 

@@ -46,7 +46,7 @@ public final class NumberArgumentParser implements ArgumentParser {
         try {
             return fn.apply(value);
         } catch (NumberFormatException e) {
-            return config.getErrorResultFactory().onInvalidNumber(argument, value);
+            return config.getErrorResultFactory().onInvalidNumber(context, argument, value);
         }
     }
 }

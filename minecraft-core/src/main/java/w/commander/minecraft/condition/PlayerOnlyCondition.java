@@ -39,7 +39,7 @@ public final class PlayerOnlyCondition implements Condition {
     @Override
     public @NotNull Result test(@NotNull ExecutionContext ctx) {
         return !((MinecraftCommandActor) ctx.getActor()).isPlayer()
-                ? config.getMinecraftErrorResultFactory().onFailPlayerOnlyCondition()
+                ? config.getMinecraftErrorResultFactory().onFailPlayerOnlyCondition(ctx)
                 : Results.ok();
     }
 

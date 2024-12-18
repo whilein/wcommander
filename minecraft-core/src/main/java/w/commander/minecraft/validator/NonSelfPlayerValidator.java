@@ -41,7 +41,7 @@ public class NonSelfPlayerValidator implements ArgumentValidator {
     @Override
     public @NotNull Result validate(Object value, ExecutionContext ctx, Argument argument) {
         return ((MinecraftCommandActor) ctx.getActor()).getIdentity().equals(value)
-                ? config.getMinecraftErrorResultFactory().onFailNonSelfPlayerValidation(customMessage)
+                ? config.getMinecraftErrorResultFactory().onFailNonSelfPlayerValidation(ctx, customMessage)
                 : Results.ok();
     }
 }

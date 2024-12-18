@@ -17,6 +17,7 @@
 package w.commander.minecraft;
 
 import org.jetbrains.annotations.NotNull;
+import w.commander.execution.ExecutionContext;
 import w.commander.result.FailedResult;
 import w.commander.result.Results;
 
@@ -25,21 +26,31 @@ import w.commander.result.Results;
  */
 public interface MinecraftErrorResultFactory {
 
-    default @NotNull FailedResult onFailPlayerOnlyCondition() {
+    default @NotNull FailedResult onFailPlayerOnlyCondition(
+            @NotNull ExecutionContext context
+    ) {
         return Results.error("Console cannot use this command");
     }
 
-    default @NotNull FailedResult onFailConsoleOnlyCondition() {
+    default @NotNull FailedResult onFailConsoleOnlyCondition(
+            @NotNull ExecutionContext context
+    ) {
         return Results.error("Player cannot use this command");
     }
 
-    default @NotNull FailedResult onFailNonSelfPlayerValidation(@NotNull String customMessage) {
+    default @NotNull FailedResult onFailNonSelfPlayerValidation(
+            @NotNull ExecutionContext context,
+            @NotNull String customMessage
+    ) {
         return customMessage.isEmpty()
                 ? Results.error("You cannot pass yourself as value")
                 : Results.error(customMessage);
     }
 
-    default @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
+    default @NotNull FailedResult onOfflinePlayer(
+            @NotNull ExecutionContext context,
+            @NotNull String value
+    ) {
         return Results.error("Player is offline now");
     }
 

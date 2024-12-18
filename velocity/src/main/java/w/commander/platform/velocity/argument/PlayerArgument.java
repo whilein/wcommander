@@ -51,7 +51,7 @@ public final class PlayerArgument extends AbstractArgument {
 
             return server.getPlayer(name)
                     .map(Object.class::cast)
-                    .orElseGet(() -> config.getVelocityErrorResultFactory().onOfflinePlayer(name));
+                    .orElseGet(() -> config.getVelocityErrorResultFactory().onOfflinePlayer(context, name));
         }
 
         return null;

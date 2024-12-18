@@ -27,6 +27,7 @@ import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.AbstractArgument;
 import w.commander.parameter.argument.cursor.ArgumentCursor;
 import w.commander.platform.spigot.SpigotCommanderConfig;
+import w.commander.platform.spigot.SpigotExecutionContext;
 
 /**
  * @author whilein
@@ -50,7 +51,7 @@ public final class WorldArgument extends AbstractArgument {
 
             val world = Bukkit.getWorld(name);
             return world == null
-                    ? config.getSpigotErrorResultFactory().onUnknownWorld(name)
+                    ? config.getSpigotErrorResultFactory().onUnknownWorld((SpigotExecutionContext) context, name)
                     : world;
         }
 

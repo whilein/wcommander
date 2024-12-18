@@ -40,7 +40,7 @@ public class GreaterThanArgumentValidator extends NumberArgumentValidator {
     @Override
     public @NotNull Result validate(@NotNull Number value, @NotNull ExecutionContext ctx, @NotNull Argument argument) {
         return value.doubleValue() <= this.value
-                ? config.getErrorResultFactory().onFailGreaterThanValidation(argument, this.value)
+                ? config.getErrorResultFactory().onFailGreaterThanValidation(ctx, argument, this.value)
                 : Results.ok();
     }
 }

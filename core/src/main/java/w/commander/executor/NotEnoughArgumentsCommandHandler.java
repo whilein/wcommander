@@ -44,7 +44,7 @@ public final class NotEnoughArgumentsCommandHandler implements CommandHandler {
             @NotNull Callback<@NotNull Result> callback
     ) {
         handler.getConditions().test(context, callback.map(result -> result == null || result.isSuccess()
-                ? config.getErrorResultFactory().onNotEnoughArguments(handler.getManualEntry().getUsage())
+                ? config.getErrorResultFactory().onNotEnoughArguments(context, handler.getManualEntry().getUsage())
                 : result));
     }
 }

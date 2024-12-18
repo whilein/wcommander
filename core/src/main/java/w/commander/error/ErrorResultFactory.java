@@ -17,6 +17,7 @@
 package w.commander.error;
 
 import org.jetbrains.annotations.NotNull;
+import w.commander.execution.ExecutionContext;
 import w.commander.manual.FormattingText;
 import w.commander.manual.Manual;
 import w.commander.parameter.argument.Argument;
@@ -36,23 +37,37 @@ public interface ErrorResultFactory {
     ErrorResultFactory NOOP = new ErrorResultFactory() {
     };
 
-    default @NotNull FailedResult onManualUnavailable(@NotNull Manual manual) {
+    default @NotNull FailedResult onManualUnavailable(
+            @NotNull ExecutionContext context,
+            @NotNull Manual manual
+    ) {
         return Results.error("Manual is unavailable for you");
     }
 
-    default @NotNull FailedResult onInternalError(@NotNull Throwable throwable) {
+    default @NotNull FailedResult onInternalError(
+            @NotNull ExecutionContext context,
+            @NotNull Throwable throwable
+    ) {
         return Results.error("Internal error occurred");
     }
 
-    default @NotNull FailedResult onNotEnoughArguments(@NotNull FormattingText usage) {
+    default @NotNull FailedResult onNotEnoughArguments(
+            @NotNull ExecutionContext context,
+            @NotNull FormattingText usage
+    ) {
         return Results.error("Not enough arguments");
     }
 
-    default @NotNull FailedResult onInvalidNumber(@NotNull Argument argument, @NotNull String value) {
+    default @NotNull FailedResult onInvalidNumber(
+            @NotNull ExecutionContext context,
+            @NotNull Argument argument,
+            @NotNull String value
+    ) {
         return Results.error("Invalid number passed");
     }
 
     default <E extends Enum<E>> FailedResult onInvalidEnum(
+            @NotNull ExecutionContext context,
             @NotNull Argument argument,
             @NotNull String value,
             @NotNull Map<@NotNull String, @NotNull E> enumValues
@@ -61,6 +76,7 @@ public interface ErrorResultFactory {
     }
 
     default @NotNull FailedResult onFailBetweenValidation(
+            @NotNull ExecutionContext context,
             @NotNull Argument argument,
             double min,
             double max
@@ -69,6 +85,7 @@ public interface ErrorResultFactory {
     }
 
     default @NotNull FailedResult onFailGreaterThanValidation(
+            @NotNull ExecutionContext context,
             @NotNull Argument argument,
             double value
     ) {
@@ -76,6 +93,7 @@ public interface ErrorResultFactory {
     }
 
     default @NotNull FailedResult onFailLowerThanValidation(
+            @NotNull ExecutionContext context,
             @NotNull Argument argument,
             double value
     ) {
@@ -83,6 +101,7 @@ public interface ErrorResultFactory {
     }
 
     default @NotNull FailedResult onFailRegexValidation(
+            @NotNull ExecutionContext context,
             @NotNull Argument argument,
             @NotNull Pattern pattern
     ) {
@@ -90,6 +109,7 @@ public interface ErrorResultFactory {
     }
 
     default @NotNull FailedResult onCooldown(
+            @NotNull ExecutionContext context,
             @NotNull Duration remaining
     ) {
         return Results.error("Too quick!");

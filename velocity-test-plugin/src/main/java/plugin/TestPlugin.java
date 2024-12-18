@@ -20,6 +20,8 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
 import w.commander.error.ErrorResultFactory;
+import w.commander.execution.ExecutionContext;
+import w.commander.manual.FormattingText;
 import w.commander.parameter.argument.Argument;
 import w.commander.platform.velocity.VelocityCommander;
 import w.commander.platform.velocity.VelocityErrorResultFactory;
@@ -43,7 +45,16 @@ public class TestPlugin {
 
         commander.setErrorResultFactory(new ErrorResultFactory() {
             @Override
+            public @NotNull FailedResult onNotEnoughArguments(
+                    @NotNull ExecutionContext context,
+                    @NotNull FormattingText usage
+            ) {
+                return Results.error("usage: " + usage.format(context));
+            }
+
+            @Override
             public <E extends Enum<E>> FailedResult onInvalidEnum(
+                    @NotNull ExecutionContext context,
                     @NotNull Argument argument,
                     @NotNull String value,
                     @NotNull Map<@NotNull String, @NotNull E> enumValues
@@ -54,7 +65,10 @@ public class TestPlugin {
 
         commander.setVelocityErrorResultFactory(new VelocityErrorResultFactory() {
             @Override
-            public @NotNull FailedResult onOfflinePlayer(@NotNull String value) {
+            public @NotNull FailedResult onOfflinePlayer(
+                    @NotNull ExecutionContext context,
+                    @NotNull String value
+            ) {
                 return Results.error("bro " + value + " is offline :(");
             }
         });

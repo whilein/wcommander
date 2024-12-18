@@ -69,7 +69,7 @@ public class CooldownDecorator implements Decorator {
                         }
 
                         if (r != null && !r.isNegative()) {
-                            callback.complete(config.getErrorResultFactory().onCooldown(r));
+                            callback.complete(config.getErrorResultFactory().onCooldown(context, r));
                             return;
                         }
 

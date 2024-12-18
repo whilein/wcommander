@@ -64,7 +64,7 @@ public final class ManualCommandExecutor implements CommandExecutor {
                             .collect(Collectors.toList());
 
                     if (newEntries.isEmpty()) {
-                        return errorResultFactory.onManualUnavailable(manual);
+                        return errorResultFactory.onManualUnavailable(context, manual);
                     }
 
                     return manualFormatter.format(context, new Manual(name, newEntries));

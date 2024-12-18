@@ -30,7 +30,10 @@ public interface SpigotErrorResultFactory extends MinecraftErrorResultFactory {
     SpigotErrorResultFactory NOOP = new SpigotErrorResultFactory() {
     };
 
-    default @NotNull FailedResult onUnknownWorld(@NotNull String value) {
+    default @NotNull FailedResult onUnknownWorld(
+            @NotNull SpigotExecutionContext context,
+            @NotNull String value
+    ) {
         return Results.error("Unknown world passed");
     }
 

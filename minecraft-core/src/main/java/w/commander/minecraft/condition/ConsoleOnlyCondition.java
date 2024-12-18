@@ -39,7 +39,7 @@ public final class ConsoleOnlyCondition implements Condition {
     @Override
     public @NotNull Result test(@NotNull ExecutionContext ctx) {
         return !((MinecraftCommandActor) ctx.getActor()).isConsole()
-                ? config.getMinecraftErrorResultFactory().onFailConsoleOnlyCondition()
+                ? config.getMinecraftErrorResultFactory().onFailConsoleOnlyCondition(ctx)
                 : Results.ok();
     }
 
