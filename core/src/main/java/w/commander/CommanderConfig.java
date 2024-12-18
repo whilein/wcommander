@@ -33,7 +33,7 @@ import w.commander.decorator.DecoratorFactory;
 import w.commander.decorator.type.AsyncDecoratorFactory;
 import w.commander.decorator.type.CooldownDecoratorFactory;
 import w.commander.error.ErrorResultFactory;
-import w.commander.execution.DefaultExecutionContextFactory;
+import w.commander.execution.SimpleExecutionContextFactory;
 import w.commander.execution.ExecutionContextFactory;
 import w.commander.executor.DefaultHandlerPathFactory;
 import w.commander.executor.HandlerPathFactory;
@@ -119,7 +119,7 @@ public class CommanderConfig {
         annotationScanner = new AnnotationScanner();
         errorResultFactory = ErrorResultFactory.NOOP;
         handlerPathFactory = DefaultHandlerPathFactory.LOWER_SNAKE_CASE;
-        executionContextFactory = new DefaultExecutionContextFactory();
+        executionContextFactory = new SimpleExecutionContextFactory();
         commandRegistrar = CommandRegistrar.NOOP;
         usageFormatter = new SimpleUsageFormatter();
         descriptionFormatter = DescriptionFormatter.RAW;

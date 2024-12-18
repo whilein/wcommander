@@ -30,9 +30,9 @@ import w.commander.RawArguments;
 @Getter
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractExecutionContext<T extends CommandActor> implements ExecutionContext {
+public class SimpleExecutionContext implements ExecutionContext {
 
-    @NotNull T actor;
+    @NotNull CommandActor actor;
     @NotNull RawArguments rawArguments;
 
     @Override

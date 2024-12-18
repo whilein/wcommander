@@ -42,7 +42,7 @@ public final class PlayerTabCompleter implements NamedTabCompleter {
 
     @Override
     public void getSuggestions(@NotNull ExecutionContext ctx, @NotNull String value, @NotNull Suggestions suggestions) {
-        val pctx = (SpigotExecutionContext<?>) ctx;
+        val pctx = (SpigotExecutionContext) ctx;
         val self = pctx.getActor().asPlayer();
 
         for (val player : Bukkit.getOnlinePlayers()) {

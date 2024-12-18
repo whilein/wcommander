@@ -16,19 +16,20 @@
 
 package w.commander.execution;
 
+import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 import w.commander.RawArguments;
 
 /**
  * @author whilein
  */
-public final class DefaultExecutionContext extends AbstractExecutionContext<CommandActor> {
+public class SimpleExecutionContextFactory implements ExecutionContextFactory {
 
-    public DefaultExecutionContext(
-            CommandActor actor,
-            RawArguments rawArguments
+    @Override
+    public @NotNull ExecutionContext create(
+            @NotNull CommandActor actor,
+            @NotNull RawArguments arguments
     ) {
-        super(actor, rawArguments);
+        return new SimpleExecutionContext(actor, arguments);
     }
-
 }

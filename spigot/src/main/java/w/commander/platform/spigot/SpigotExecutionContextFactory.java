@@ -21,18 +21,19 @@ import w.commander.CommandActor;
 import w.commander.RawArguments;
 import w.commander.execution.ExecutionContext;
 import w.commander.execution.ExecutionContextFactory;
+import w.commander.execution.SimpleExecutionContextFactory;
 
 /**
  * @author whilein
  */
-public class SpigotExecutionContextFactory implements ExecutionContextFactory {
+public class SpigotExecutionContextFactory extends SimpleExecutionContextFactory {
 
     @Override
     public @NotNull ExecutionContext create(
             @NotNull CommandActor actor,
             @NotNull RawArguments arguments
     ) {
-        return new SpigotExecutionContext<>(
+        return new SpigotExecutionContext(
                 (SpigotCommandActor) actor,
                 arguments
         );

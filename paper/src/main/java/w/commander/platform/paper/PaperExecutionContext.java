@@ -14,22 +14,28 @@
  *    limitations under the License.
  */
 
-package w.commander.execution;
+package w.commander.platform.paper;
 
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
 import w.commander.RawArguments;
+import w.commander.platform.adventure.AdventureExecutionContext;
+import w.commander.platform.spigot.SpigotExecutionContext;
 
 /**
  * @author whilein
  */
-public final class DefaultExecutionContextFactory implements ExecutionContextFactory {
+public class PaperExecutionContext
+        extends SpigotExecutionContext
+        implements AdventureExecutionContext {
+    public PaperExecutionContext(
+            @NotNull PaperCommandActor actor,
+            @NotNull RawArguments rawArguments
+    ) {
+        super(actor, rawArguments);
+    }
 
     @Override
-    public @NotNull ExecutionContext create(
-            @NotNull CommandActor actor,
-            @NotNull RawArguments arguments
-    ) {
-        return new DefaultExecutionContext(actor, arguments);
+    public @NotNull PaperCommandActor getActor() {
+        return (PaperCommandActor) super.getActor();
     }
 }

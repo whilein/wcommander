@@ -18,14 +18,14 @@ package w.commander.platform.velocity;
 
 import org.jetbrains.annotations.NotNull;
 import w.commander.RawArguments;
-import w.commander.execution.AbstractExecutionContext;
+import w.commander.execution.SimpleExecutionContext;
 import w.commander.platform.adventure.AdventureExecutionContext;
 
 /**
  * @author whilein
  */
 public class VelocityExecutionContext
-        extends AbstractExecutionContext<VelocityCommandActor>
+        extends SimpleExecutionContext
         implements AdventureExecutionContext {
     public VelocityExecutionContext(
             @NotNull VelocityCommandActor actor,
@@ -33,4 +33,10 @@ public class VelocityExecutionContext
     ) {
         super(actor, rawArguments);
     }
+
+    @Override
+    public @NotNull VelocityCommandActor getActor() {
+        return (VelocityCommandActor) super.getActor();
+    }
+    
 }

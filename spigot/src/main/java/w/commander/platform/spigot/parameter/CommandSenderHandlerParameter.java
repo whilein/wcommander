@@ -38,7 +38,7 @@ public final class CommandSenderHandlerParameter implements HandlerParameter {
 
     @Override
     public @NotNull Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        return ((SpigotExecutionContext<?>) context).getActor().getSender();
+        return ((SpigotExecutionContext) context).getActor().getSender();
     }
 
 }

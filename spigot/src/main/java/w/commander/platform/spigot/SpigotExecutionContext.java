@@ -17,18 +17,24 @@
 package w.commander.platform.spigot;
 
 import org.jetbrains.annotations.NotNull;
+import w.commander.CommandActor;
 import w.commander.RawArguments;
-import w.commander.execution.AbstractExecutionContext;
+import w.commander.execution.SimpleExecutionContext;
 
 /**
  * @author whilein
  */
-public class SpigotExecutionContext<T extends SpigotCommandActor>
-        extends AbstractExecutionContext<T> {
+public class SpigotExecutionContext
+        extends SimpleExecutionContext {
     public SpigotExecutionContext(
-            @NotNull T actor,
+            @NotNull SpigotCommandActor actor,
             @NotNull RawArguments rawArguments
     ) {
         super(actor, rawArguments);
+    }
+
+    @Override
+    public @NotNull SpigotCommandActor getActor() {
+        return (SpigotCommandActor) super.getActor();
     }
 }
