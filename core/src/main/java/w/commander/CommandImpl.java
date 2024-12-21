@@ -195,7 +195,11 @@ final class CommandImpl implements Command {
 
         executor.execute(context, Callback.of((result, cause) -> {
             if (cause != null) {
-                result = config.getErrorResultFactory().onInternalError(context, cause);
+                if (cause instanceof Result) {
+                    result = (Result) cause;
+                } else {
+                    result = config.getErrorResultFactory().onInternalError(context, cause);
+                }
             }
 
             if (result != null) {

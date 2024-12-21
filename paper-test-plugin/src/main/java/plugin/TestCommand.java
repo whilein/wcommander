@@ -117,4 +117,9 @@ public class TestCommand {
     public Result validRegex(CommandSender sender, @Arg @Regex("hello *,? *world(?i)") String value) {
         return Results.ok(value);
     }
+
+    @SubCommandHandler("throw")
+    public Result throwException(CommandSender sender) {
+        throw Results.error("LOL").asException();
+    }
 }
