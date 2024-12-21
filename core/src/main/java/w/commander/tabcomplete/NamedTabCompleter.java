@@ -16,14 +16,19 @@
 
 package w.commander.tabcomplete;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author whilein
  */
+@Immutable
 public interface NamedTabCompleter extends TabCompleter {
 
     @NotNull
+    @Contract(pure = true)
     String getName();
 
 }

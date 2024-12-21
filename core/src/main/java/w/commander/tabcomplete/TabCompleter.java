@@ -19,9 +19,12 @@ package w.commander.tabcomplete;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author whilein
  */
+@Immutable
 public interface TabCompleter {
 
     void getSuggestions(@NotNull ExecutionContext ctx, @NotNull String value, @NotNull Suggestions suggestions);

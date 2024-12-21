@@ -21,15 +21,17 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
 /**
  * @author whilein
  */
 @Getter
+@Immutable
 @EqualsAndHashCode(callSuper = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ExplicitNamedTabCompleter extends ExplicitTabCompleter implements TabCompleter {
+public class ExplicitNamedTabCompleter extends ExplicitTabCompleter implements NamedTabCompleter {
 
     String name;
 
