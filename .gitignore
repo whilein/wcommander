@@ -43,3 +43,5 @@ bin/
 paper-test-plugin/run
 velocity-test-plugin/run
 output
+
+gradle.properties

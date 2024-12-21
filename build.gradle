@@ -15,6 +15,6 @@
  */
 
 allprojects {
-    group 'io.github.whilein'
-    version findProperty('wcommander.version') ?: 'unknown'
+    group 'io.github.whilein.wcommander'
+    version findProperty('version') ?: 'unknown'
 }
