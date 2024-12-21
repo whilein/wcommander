@@ -16,6 +16,7 @@
 
 plugins {
     id 'java-library'
+    id 'maven-publish'
     id 'com.github.ben-manes.versions'
 }
 
@@ -42,6 +43,8 @@ dependencies {
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    withSourcesJar()
+    withJavadocJar()
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -53,4 +56,12 @@ tasks.withType(JavaCompile).configureEach {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
 }
