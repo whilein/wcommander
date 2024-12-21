@@ -19,6 +19,7 @@ package w.commander.tabcomplete;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * Класс собирающий подсказки для команды. После завершения сбора передает все
@@ -39,17 +40,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public final class Suggestions {
 
-    List<String> suggestions = new ArrayList<>();
-    AtomicInteger refCount = new AtomicInteger(1);
+    private static final AtomicIntegerFieldUpdater<Suggestions> REF_COUNT_UPDATER
+            = AtomicIntegerFieldUpdater.newUpdater(Suggestions.class, "refCount");
 
+    List<String> suggestions = new ArrayList<>();
     CompletableFuture<List<String>> completion;
 
+    @NonFinal
+    volatile int refCount = 1;
+
     public void retain() {
-        refCount.incrementAndGet();
+        REF_COUNT_UPDATER.incrementAndGet(this);
     }
 
     public void release() {
-        if (refCount.decrementAndGet() == 0) {
+        if (REF_COUNT_UPDATER.decrementAndGet(this) == 0) {
             completion.complete(getSuggestions());
         }
     }
