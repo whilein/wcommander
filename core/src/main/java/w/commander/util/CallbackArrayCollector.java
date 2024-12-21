@@ -20,14 +20,19 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
+ * Вспомогательный класс для сбора нескольких упорядоченных по индексу {@link Callback}'ов в
+ * единый {@link Callback}.
+ *
  * @author whilein
  */
+@ThreadSafe
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CallbackArrayCollector<T> {
 
