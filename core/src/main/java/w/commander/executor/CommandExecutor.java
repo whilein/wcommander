@@ -40,6 +40,11 @@ public interface CommandExecutor {
             @NotNull Callback<@NotNull Result> callback
     );
 
+    void test(
+            @NotNull ExecutionContext context,
+            @NotNull Callback<@NotNull Result> callback
+    );
+
     default boolean isYielding() {
         return false;
     }

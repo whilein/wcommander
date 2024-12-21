@@ -43,7 +43,15 @@ public interface CommandHandler extends CommandExecutor {
     @Override
     default void suggest(
             @NotNull ExecutionContext context,
-            @NotNull Callback<Result> callback
+            @NotNull Callback<@NotNull Result> callback
+    ) {
+        getConditions().testVisibility(context, callback);
+    }
+
+    @Override
+    default void test(
+            @NotNull ExecutionContext context,
+            @NotNull Callback<@NotNull Result> callback
     ) {
         getConditions().testVisibility(context, callback);
     }

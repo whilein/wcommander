@@ -134,6 +134,7 @@ public class TestPlugin extends JavaPlugin {
         });
 
         commander.register(this, new TestCommand());
+        commander.register(this, new TestPermCommand());
     }
 
 }

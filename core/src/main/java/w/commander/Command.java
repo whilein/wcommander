@@ -50,6 +50,10 @@ public interface Command {
             @NotNull RawArguments args
     );
 
+    @NotNull CompletableFuture<@NotNull Result> test(
+            @NotNull CommandActor actor
+    );
+
     @Contract(pure = true)
     @NotNull CommandInfo getInfo();
 

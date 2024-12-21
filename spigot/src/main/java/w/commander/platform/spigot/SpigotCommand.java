@@ -46,6 +46,20 @@ public class SpigotCommand extends org.bukkit.command.Command {
     }
 
     @Override
+    public boolean testPermissionSilent(CommandSender target) {
+        val actor = config.getSpigotCommandActorFactory().create(target);
+
+        try {
+            val result = command.test(actor)
+                    .get(); // надеемся, что Future уже завершен
+
+            return result.isSuccess();
+        } catch (InterruptedException | ExecutionException e) {
+            return false;
+        }
+    }
+
+    @Override
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
             throws IllegalArgumentException {
         val actor = config.getSpigotCommandActorFactory().create(sender);
@@ -53,7 +67,7 @@ public class SpigotCommand extends org.bukkit.command.Command {
 
         try {
             return command.tabComplete(actor, arguments)
-                    .get();
+                    .get(); // надеемся, что Future уже завершен
         } catch (InterruptedException | ExecutionException e) {
             return Collections.emptyList();
         }

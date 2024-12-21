@@ -24,13 +24,18 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.execution.ExecutionContext;
+import w.commander.executor.CommandExecutor;
 import w.commander.executor.CommandHandler;
+import w.commander.executor.ManualCommandExecutor;
 import w.commander.manual.Manual;
 import w.commander.result.Result;
+import w.commander.result.Results;
 import w.commander.tabcomplete.Suggestions;
 import w.commander.util.Callback;
+import w.commander.util.CallbackArrayCollector;
 import w.commander.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -43,12 +48,15 @@ import java.util.concurrent.CompletableFuture;
 final class CommandImpl implements Command {
 
     @Getter
-    @NotNull String name;
+    @NotNull
+    String name;
 
     @Getter
-    @NotNull List<@NotNull String> aliases;
+    @NotNull
+    List<@NotNull String> aliases;
 
-    @NotNull CommandNode tree;
+    @NotNull
+    CommandNode tree;
 
     @NotNull
     CommanderConfig config;
@@ -159,6 +167,7 @@ final class CommandImpl implements Command {
         return future;
     }
 
+
     @Override
     public @NotNull CompletableFuture<@NotNull Result> execute(
             @NotNull CommandActor actor,
@@ -199,6 +208,45 @@ final class CommandImpl implements Command {
                 }
             }
         }));
+
+        return future;
+    }
+
+    private void addExecutors(CommandNode node, List<CommandExecutor> executors) {
+        executors.add(node.executor(0));
+
+        node.forEach((name, subcommand) -> addExecutors(subcommand, executors));
+    }
+
+    @Override
+    public @NotNull CompletableFuture<@NotNull Result> test(@NotNull CommandActor actor) {
+        val context = config.getExecutionContextFactory().create(actor, RawArguments.empty());
+
+        val executors = new ArrayList<CommandExecutor>();
+        addExecutors(tree, executors);
+
+        val future = new CompletableFuture<Result>();
+
+        val arrayCollector = new CallbackArrayCollector<Result>(
+                Callback.of((results, cause) -> {
+                    if (cause != null) {
+                        future.completeExceptionally(cause);
+                    } else if (results != null) {
+                        for (val result : results) {
+                            if (result.isSuccess()) {
+                                future.complete(Results.ok());
+                                return;
+                            }
+                        }
+
+                        future.complete(Results.error());
+                    }
+                }), executors.size());
+
+        int i = 0;
+        for (val executor : executors) {
+            executor.test(context, arrayCollector.element(i++));
+        }
 
         return future;
     }

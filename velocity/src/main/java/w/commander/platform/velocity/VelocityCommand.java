@@ -28,6 +28,7 @@ import w.commander.RawArguments;
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author whilein
@@ -38,6 +39,20 @@ import java.util.concurrent.CompletableFuture;
 public class VelocityCommand implements SimpleCommand {
     Command command;
     VelocityCommanderConfig config;
+
+    @Override
+    public boolean hasPermission(Invocation invocation) {
+        val actor = config.getVelocityCommandActorFactory().create(invocation.source());
+
+        try {
+            val result = command.test(actor)
+                    .get(); // надеемся, что Future уже завершен
+
+            return result.isSuccess();
+        } catch (InterruptedException | ExecutionException e) {
+            return false;
+        }
+    }
 
     @Override
     public CompletableFuture<List<String>> suggestAsync(Invocation invocation) {

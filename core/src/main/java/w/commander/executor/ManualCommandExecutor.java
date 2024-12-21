@@ -28,6 +28,8 @@ import w.commander.manual.Manual;
 import w.commander.manual.ManualEntry;
 import w.commander.manual.ManualFormatter;
 import w.commander.result.Result;
+import w.commander.result.Results;
+import w.commander.result.SuccessResult;
 import w.commander.util.Callback;
 import w.commander.util.CallbackArrayCollector;
 
@@ -80,7 +82,7 @@ public final class ManualCommandExecutor implements CommandExecutor {
     @Override
     public void suggest(
             @NotNull ExecutionContext context,
-            @NotNull Callback<@Nullable Result> callback
+            @NotNull Callback<@NotNull Result> callback
     ) {
         val manual = this.manual;
 
@@ -95,7 +97,34 @@ public final class ManualCommandExecutor implements CommandExecutor {
                         }
                     }
 
-                    return null;
+                    return Results.ok();
+                }), entryCount);
+
+        int i = 0;
+        for (val entry : manual.entries()) {
+            entry.getConditions().testVisibility(context, arrayCollector.element(i++));
+        }
+    }
+
+    @Override
+    public void test(
+            @NotNull ExecutionContext context,
+            @NotNull Callback<@NotNull Result> callback
+    ) {
+        val manual = this.manual;
+
+        val entries = manual.entries();
+        val entryCount = entries.size();
+
+        val arrayCollector = new CallbackArrayCollector<Result>(
+                callback.map(results -> {
+                    for (val result : results) {
+                        if (result.isSuccess()) {
+                            return Results.ok();
+                        }
+                    }
+
+                    return Results.error();
                 }), entryCount);
 
         int i = 0;
