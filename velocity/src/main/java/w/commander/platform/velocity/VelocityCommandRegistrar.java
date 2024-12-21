@@ -24,20 +24,23 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.Command;
+import w.commander.CommandInfo;
 import w.commander.CommandRegistrar;
 
 import javax.annotation.concurrent.Immutable;
 
 /**
- * @author _Novit_ (novitpw)
+ * @author whilein
  */
 @Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @RequiredArgsConstructor
-public class VelocityCommandRegistrar implements CommandRegistrar {
+public abstract class VelocityCommandRegistrar implements CommandRegistrar {
 
     CommandManager commandManager;
     VelocityCommanderConfig config;
+
+    protected abstract Object getPlugin(CommandInfo info);
 
     protected SimpleCommand create(Command command) {
         return new VelocityCommand(command, config);
@@ -45,10 +48,8 @@ public class VelocityCommandRegistrar implements CommandRegistrar {
 
     @Override
     public void register(@NotNull Command command) {
-        val info = (VelocityCommandInfo) command.getInfo();
-
         val commandMeta = commandManager.metaBuilder(command.getName())
-                .plugin(info.getPlugin())
+                .plugin(getPlugin(command.getInfo()))
                 .aliases(command.getAliases().toArray(String[]::new))
                 .build();
 
@@ -59,5 +60,4 @@ public class VelocityCommandRegistrar implements CommandRegistrar {
     public void unregister(@NotNull Command command) {
         commandManager.unregister(command.getName());
     }
-
 }

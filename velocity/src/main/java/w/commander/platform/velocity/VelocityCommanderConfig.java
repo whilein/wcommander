@@ -76,7 +76,7 @@ public class VelocityCommanderConfig extends MinecraftCommanderConfig {
     protected void initDefaults() {
         super.initDefaults();
 
-        commandRegistrar = new VelocityCommandRegistrar(server.getCommandManager(), this);
+        commandRegistrar = new PluginPerCommandVelocityCommandRegistrar(server.getCommandManager(), this);
         velocityErrorResultFactory = VelocityErrorResultFactory.NOOP;
         velocityCommandActorFactory = SimpleVelocityCommandActor::new;
         executionContextFactory = new VelocityExecutionContextFactory();
