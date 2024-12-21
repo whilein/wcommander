@@ -25,12 +25,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author _Novit_ (novitpw), whilein
  */
 @Getter
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @RequiredArgsConstructor
 public class SimpleVelocityCommandActor implements VelocityCommandActor {
@@ -43,16 +47,19 @@ public class SimpleVelocityCommandActor implements VelocityCommandActor {
     }
 
     @Override
+    @Contract(pure = true)
     public @NotNull String getName() {
         return getSource().get(Identity.NAME).orElse("");
     }
 
     @Override
+    @Contract(pure = true)
     public boolean isPlayer() {
         return getSource() instanceof Player;
     }
 
     @Override
+    @Contract(pure = true)
     public boolean isConsole() {
         return getSource() instanceof ConsoleCommandSource;
     }

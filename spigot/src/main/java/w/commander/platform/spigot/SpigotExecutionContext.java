@@ -17,13 +17,15 @@
 package w.commander.platform.spigot;
 
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
 import w.commander.RawArguments;
 import w.commander.execution.SimpleExecutionContext;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author whilein
  */
+@Immutable
 public class SpigotExecutionContext
         extends SimpleExecutionContext {
     public SpigotExecutionContext(

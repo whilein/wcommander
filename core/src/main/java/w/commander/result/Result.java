@@ -16,16 +16,20 @@
 
 package w.commander.result;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author whilein
  */
+@Immutable
 public interface Result {
 
+    @Contract(pure = true)
     boolean isSuccess();
 
     void dispatch(@NotNull ExecutionContext context);

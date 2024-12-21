@@ -23,12 +23,16 @@ import lombok.experimental.FieldDefaults;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author whilein
  */
 @Getter
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @RequiredArgsConstructor
 public class SimpleSpigotCommandActor implements SpigotCommandActor {
@@ -36,16 +40,19 @@ public class SimpleSpigotCommandActor implements SpigotCommandActor {
     CommandSender sender;
 
     @Override
+    @Contract(pure = true)
     public @NotNull String getName() {
         return getSender().getName();
     }
 
     @Override
+    @Contract(pure = true)
     public boolean isPlayer() {
         return getSender() instanceof Player;
     }
 
     @Override
+    @Contract(pure = true)
     public boolean isConsole() {
         return getSender() instanceof ConsoleCommandSender;
     }

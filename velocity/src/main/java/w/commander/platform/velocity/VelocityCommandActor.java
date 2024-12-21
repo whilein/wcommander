@@ -19,31 +19,36 @@ package w.commander.platform.velocity;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.minecraft.MinecraftCommandActor;
 import w.commander.platform.adventure.AdventureCommandActor;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author whilein
  */
+@Immutable
 public interface VelocityCommandActor extends MinecraftCommandActor, AdventureCommandActor {
 
     @NotNull
-    String getName();
-
-    @NotNull
+    @Contract(pure = true)
     CommandSource getSource();
 
     @Override
+    @Contract(pure = true)
     default @NotNull CommandSource getIdentity() {
         return getSource();
     }
 
+    @Contract(pure = true)
     default @Nullable ConsoleCommandSource asConsole() {
         return isConsole() ? (ConsoleCommandSource) getSource() : null;
     }
 
+    @Contract(pure = true)
     default @Nullable Player asPlayer() {
         return isPlayer() ? (Player) getSource() : null;
     }

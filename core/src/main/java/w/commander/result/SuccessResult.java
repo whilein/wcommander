@@ -16,12 +16,18 @@
 
 package w.commander.result;
 
+import org.jetbrains.annotations.Contract;
+
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author whilein
  */
+@Immutable
 public interface SuccessResult extends Result {
 
     @Override
+    @Contract(pure = true)
     default boolean isSuccess() {
         return true;
     }

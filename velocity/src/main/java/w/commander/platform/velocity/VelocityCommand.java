@@ -25,14 +25,14 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.Command;
 import w.commander.RawArguments;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author whilein
  */
-@ThreadSafe
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @RequiredArgsConstructor
 public class VelocityCommand implements SimpleCommand {

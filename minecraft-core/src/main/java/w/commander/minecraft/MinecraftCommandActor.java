@@ -16,19 +16,26 @@
 
 package w.commander.minecraft;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author whilein
  */
+@Immutable
 public interface MinecraftCommandActor extends CommandActor {
 
     @NotNull
+    @Contract(pure = true)
     Object getIdentity();
 
+    @Contract(pure = true)
     boolean isPlayer();
 
+    @Contract(pure = true)
     boolean isConsole();
 
 }

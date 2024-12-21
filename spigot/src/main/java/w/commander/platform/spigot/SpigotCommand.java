@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.Command;
 import w.commander.RawArguments;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author whilein
  */
-@ThreadSafe
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class SpigotCommand extends org.bukkit.command.Command {
     Command command;

@@ -17,14 +17,19 @@
 package w.commander.platform.adventure;
 
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author _Novit_ (novitpw)
  */
+@Immutable
 public interface AdventureExecutionContext extends ExecutionContext {
 
+    @Contract(pure = true)
     @NotNull AdventureCommandActor getActor();
 
     default void dispatch(@NotNull Component message) {

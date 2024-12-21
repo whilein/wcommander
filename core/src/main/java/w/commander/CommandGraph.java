@@ -24,8 +24,8 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.util.Immutables;
 
+import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * @author whilein
  */
 @Value
-@ThreadSafe
+@Immutable
 @RequiredArgsConstructor
 public class CommandGraph {
 

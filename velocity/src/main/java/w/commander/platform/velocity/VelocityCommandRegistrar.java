@@ -26,12 +26,12 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.Command;
 import w.commander.CommandRegistrar;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author _Novit_ (novitpw)
  */
-@ThreadSafe
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @RequiredArgsConstructor
 public class VelocityCommandRegistrar implements CommandRegistrar {

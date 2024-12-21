@@ -16,14 +16,19 @@
 
 package w.commander.platform.adventure;
 
+import org.jetbrains.annotations.Contract;
 import w.commander.result.FailedResult;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author _Novit_ (novitpw)
  */
+@Immutable
 public interface AdventureFailedResult extends AdventureResult, FailedResult {
 
     @Override
+    @Contract(pure = true)
     default boolean isSuccess() {
         return false;
     }

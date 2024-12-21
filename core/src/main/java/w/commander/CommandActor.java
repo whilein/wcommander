@@ -16,14 +16,19 @@
 
 package w.commander;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author whilein
  */
+@Immutable
 public interface CommandActor {
 
-    String getName();
+    @Contract(pure = true)
+    @NotNull String getName();
 
     void sendMessage(@NotNull String text);
 

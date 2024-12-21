@@ -23,6 +23,7 @@ import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 import w.commander.spec.CommandSpecFactory;
 
 import java.util.Collection;
@@ -40,6 +41,7 @@ public class Commander {
     Map<Class<?>, Command> type2CommandMap = new ConcurrentHashMap<>();
 
     @Getter
+    @UnmodifiableView
     Collection<? extends Command> commands = Collections.unmodifiableCollection(type2CommandMap.values());
 
     @Getter

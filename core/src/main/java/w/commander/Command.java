@@ -16,31 +16,44 @@
 
 package w.commander;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import w.commander.manual.Manual;
 import w.commander.result.Result;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author whilein
  */
+@Immutable
 public interface Command {
 
+    @Contract(pure = true)
     @NotNull String getName();
 
+    @Contract(pure = true)
+    @Unmodifiable
     @NotNull List<@NotNull String> getAliases();
 
-    @NotNull
-    CompletableFuture<@NotNull List<String>> tabComplete(@NotNull CommandActor actor, @NotNull RawArguments args);
+    @NotNull CompletableFuture<@NotNull List<String>> tabComplete(
+            @NotNull CommandActor actor,
+            @NotNull RawArguments args
+    );
 
-    @NotNull CompletableFuture<@NotNull Result> execute(@NotNull CommandActor actor, @NotNull RawArguments args);
+    @NotNull CompletableFuture<@NotNull Result> execute(
+            @NotNull CommandActor actor,
+            @NotNull RawArguments args
+    );
 
-    @NotNull
-    CommandInfo getInfo();
+    @Contract(pure = true)
+    @NotNull CommandInfo getInfo();
 
+    @Contract(pure = true)
     @Nullable Manual getManual();
 
 }

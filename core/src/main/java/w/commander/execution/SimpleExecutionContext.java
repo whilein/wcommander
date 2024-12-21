@@ -24,10 +24,13 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 import w.commander.RawArguments;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author whilein
  */
 @Getter
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SimpleExecutionContext implements ExecutionContext {

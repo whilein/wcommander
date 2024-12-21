@@ -16,19 +16,25 @@
 
 package w.commander.execution;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 import w.commander.RawArguments;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author whilein
  */
+@Immutable
 public interface ExecutionContext {
 
+    @Contract(pure = true)
     @NotNull CommandActor getActor();
 
+    @Contract(pure = true)
     @NotNull RawArguments getRawArguments();
 
-    void dispatch(String text);
+    void dispatch(@NotNull String text);
 
 }

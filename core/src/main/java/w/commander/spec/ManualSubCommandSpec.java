@@ -22,14 +22,14 @@ import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 import w.commander.util.Immutables;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
 /**
  * @author whilein
  */
 @Value
-@ThreadSafe
+@Immutable
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ManualSubCommandSpec implements NameAwareSpec {
 

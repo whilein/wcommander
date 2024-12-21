@@ -25,12 +25,12 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.Command;
 import w.commander.CommandRegistrar;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author _Novit_ (novitpw), whilein
  */
-@ThreadSafe
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class SpigotCommandRegistrar implements CommandRegistrar {
 

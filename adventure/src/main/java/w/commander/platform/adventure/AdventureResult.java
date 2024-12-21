@@ -20,9 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.result.Result;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author _Novit_ (novitpw)
  */
+@Immutable
 public interface AdventureResult extends Result {
 
     @Override

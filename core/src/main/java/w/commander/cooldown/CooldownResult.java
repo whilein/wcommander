@@ -24,21 +24,22 @@ import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
 import w.commander.result.SuccessResult;
 
+import javax.annotation.concurrent.Immutable;
 import java.time.Duration;
 
 /**
  * @author whilein
  */
 @Getter
+@Immutable
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CooldownResult implements SuccessResult {
 
     SuccessResult delegate;
-
     Duration cooldown;
 
-    public static SuccessResult of(SuccessResult delegate, Duration cooldown) {
+    public static @NotNull SuccessResult of(@NotNull SuccessResult delegate, @NotNull Duration cooldown) {
         return new CooldownResult(delegate, cooldown);
     }
 

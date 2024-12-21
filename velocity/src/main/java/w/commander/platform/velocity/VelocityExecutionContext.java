@@ -21,9 +21,12 @@ import w.commander.RawArguments;
 import w.commander.execution.SimpleExecutionContext;
 import w.commander.platform.adventure.AdventureExecutionContext;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author whilein
  */
+@Immutable
 public class VelocityExecutionContext
         extends SimpleExecutionContext
         implements AdventureExecutionContext {

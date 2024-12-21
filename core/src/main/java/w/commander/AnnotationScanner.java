@@ -32,6 +32,7 @@ import w.commander.annotation.WithManual;
 import w.commander.annotation.WithManualSubCommand;
 import w.commander.annotation.WithManualSubCommandData;
 
+import javax.annotation.concurrent.Immutable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 /**
  * @author whilein
  */
+@Immutable
 public class AnnotationScanner {
 
     public boolean isHasManual(@NotNull Class<?> type) {

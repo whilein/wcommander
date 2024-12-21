@@ -23,7 +23,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.util.Preconditions;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +35,7 @@ import java.util.StringJoiner;
  *
  * @author whilein
  */
-@ThreadSafe
+@Immutable
 public interface RawArguments {
 
     /**
@@ -131,8 +131,7 @@ public interface RawArguments {
 
     int size();
 
-    @NotNull
-    String value(int index);
+    @NotNull String value(int index);
 
     default @NotNull String join(@NotNull String delimiter, int fromIndex, int toIndex) {
         Preconditions.checkRange(fromIndex, toIndex, size());
@@ -162,8 +161,7 @@ public interface RawArguments {
         return subArguments(0, length);
     }
 
-    @NotNull
-    RawArguments subArguments(int fromIndex, int toIndex);
+    @NotNull RawArguments subArguments(int fromIndex, int toIndex);
 
     abstract class RawArgumentsBase implements RawArguments {
 

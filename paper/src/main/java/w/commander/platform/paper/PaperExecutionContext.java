@@ -21,9 +21,12 @@ import w.commander.RawArguments;
 import w.commander.platform.adventure.AdventureExecutionContext;
 import w.commander.platform.spigot.SpigotExecutionContext;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author whilein
  */
+@Immutable
 public class PaperExecutionContext
         extends SpigotExecutionContext
         implements AdventureExecutionContext {

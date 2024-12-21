@@ -21,9 +21,12 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommandActor;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author _Novit_ (novitpw)
  */
+@Immutable
 public interface AdventureCommandActor extends CommandActor, Audience {
 
     @Override

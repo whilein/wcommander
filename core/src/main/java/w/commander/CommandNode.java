@@ -21,16 +21,19 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.executor.CommandExecutor;
 import w.commander.manual.Manual;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+@Immutable
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public final class CommandNode {
@@ -44,10 +47,12 @@ public final class CommandNode {
         this(new CommandExecutor[]{executor}, Collections.emptyMap(), null);
     }
 
+    @Contract(pure = true)
     public @Nullable CommandNode subCommand(@NotNull String name) {
         return subCommands.get(name);
     }
 
+    @Contract(pure = true)
     public @NotNull Set<@NotNull String> subCommands() {
         return subCommands.keySet();
     }
@@ -56,6 +61,7 @@ public final class CommandNode {
         subCommands.forEach(fn);
     }
 
+    @Contract(pure = true)
     public @NotNull CommandExecutor executor(int arguments) {
         val executors = this.executors;
         val maxArguments = executors.length;

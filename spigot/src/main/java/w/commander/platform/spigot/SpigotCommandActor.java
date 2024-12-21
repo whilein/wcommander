@@ -19,30 +19,35 @@ package w.commander.platform.spigot;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.minecraft.MinecraftCommandActor;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * @author whilein
  */
+@Immutable
 public interface SpigotCommandActor extends MinecraftCommandActor {
 
     @NotNull
-    String getName();
-
-    @NotNull
+    @Contract(pure = true)
     CommandSender getSender();
 
     @Override
+    @Contract(pure = true)
     default @NotNull CommandSender getIdentity() {
         return getSender();
     }
 
+    @Contract(pure = true)
     default @Nullable ConsoleCommandSender asConsole() {
         return isConsole() ? (ConsoleCommandSender) getSender() : null;
     }
 
+    @Contract(pure = true)
     default @Nullable Player asPlayer() {
         return isPlayer() ? (Player) getSender() : null;
     }

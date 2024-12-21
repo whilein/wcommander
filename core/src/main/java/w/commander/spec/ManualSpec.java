@@ -20,13 +20,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author whilein
  */
 @Value
-@ThreadSafe
+@Immutable
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ManualSpec {
 
