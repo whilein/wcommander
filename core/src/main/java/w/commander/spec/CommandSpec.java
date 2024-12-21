@@ -19,7 +19,9 @@ package w.commander.spec;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import w.commander.CommandInfo;
@@ -34,6 +36,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommandSpec implements NameAwareSpec, PathAwareSpec {
+    String fullName;
 
     // NameAwareSpec
     String name;
@@ -53,6 +56,8 @@ public class CommandSpec implements NameAwareSpec, PathAwareSpec {
 
     @Setter
     @NonFinal
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     List<CommandSpec> subCommands;
 
     public Object getInstance() {

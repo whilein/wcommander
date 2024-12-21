@@ -200,9 +200,14 @@ public final class CommandSpecFactory {
                 ? config.getHandlerPathFactory().create(name)
                 : parent.getPath().resolve(name);
 
+        val fullName = parent != null
+                ? parent.getFullName() + " " + name
+                : name;
+
         val commandSpec = CommandSpec.builder()
                 .parent(parent)
                 .name(name)
+                .fullName(fullName)
                 .path(path)
                 .info(commandInfo)
                 .aliases(getAliases(commandType))
@@ -227,6 +232,7 @@ public final class CommandSpecFactory {
                 val subCommandSpec = CommandSpec.builder()
                         .parent(commandSpec)
                         .name(subCommandHandlerName)
+                        .fullName(fullName + " " + subCommandHandlerName)
                         .path(subCommandPath)
                         .info(commandInfo)
                         .aliases(getAliases(method))

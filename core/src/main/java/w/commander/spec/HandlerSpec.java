@@ -18,6 +18,7 @@ package w.commander.spec;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
@@ -41,6 +42,7 @@ public class HandlerSpec implements PathAwareSpec {
     HandlerPath path;
 
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     CommandSpec command;
 
     HandlerParameters parameters;
