@@ -30,12 +30,15 @@ import w.commander.parameter.argument.cursor.ArgumentCursor;
  */
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public class JoinArgument extends AbstractArgument {
 
-    String name;
-    boolean required;
     String delimiter;
+
+    public JoinArgument(@NotNull String name, String delimiter) {
+        super(name);
+
+        this.delimiter = delimiter;
+    }
 
     @Override
     public int getMaxLength() {
@@ -44,7 +47,7 @@ public class JoinArgument extends AbstractArgument {
 
     @Override
     public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        if (cursor.hasNext(required)) {
+        if (cursor.hasNext(isRequired())) {
             return context.getRawArguments().join(delimiter, cursor.next());
         }
 

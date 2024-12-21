@@ -38,7 +38,7 @@ import java.lang.reflect.Parameter;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class ArgumentParameterParser extends AbstractParameterParser {
+public class ArgumentParameterParser implements ParameterParser {
 
     CommanderConfig config;
 
@@ -74,7 +74,6 @@ public class ArgumentParameterParser extends AbstractParameterParser {
 
             return new JoinArgument(
                     join.value(),
-                    isRequired(parameter),
                     join.delimiter()
             );
         }
@@ -84,10 +83,9 @@ public class ArgumentParameterParser extends AbstractParameterParser {
             val parser = findParser(type);
             val argument = new OrdinaryArgument(
                     arg.value(),
-                    isRequired(parameter),
                     parser
             );
-            argument.setTabCompleter(parser.getDefaultTabCompleter());
+            argument.getInfo().setTabCompleter(parser.getDefaultTabCompleter());
             return argument;
         }
 

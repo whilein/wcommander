@@ -22,6 +22,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommanderConfig;
+import w.commander.annotation.NonRequired;
 import w.commander.annotation.TabComplete;
 import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.ParameterPostProcessor;
@@ -94,16 +95,19 @@ public final class ArgumentPostProcessor implements ParameterPostProcessor {
     ) {
         if (handlerParameter instanceof Argument) {
             val argument = (Argument) handlerParameter;
+            val argumentInfo = argument.getInfo();
 
             val validators = findValidators(parameter);
             if (!validators.isEmpty()) {
-                argument.setValidators(validators);
+                argumentInfo.setValidators(validators);
             }
 
             val tabCompleter = findTabCompleter(parameter);
             if (tabCompleter != null) {
-                argument.setTabCompleter(tabCompleter);
+                argumentInfo.setTabCompleter(tabCompleter);
             }
+
+            argumentInfo.setRequired(!parameter.isAnnotationPresent(NonRequired.class));
         }
 
         return handlerParameter;

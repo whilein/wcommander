@@ -16,7 +16,6 @@
 
 package w.commander.annotation;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,11 +23,15 @@ import org.jetbrains.annotations.Nullable;
  * @author whilein
  */
 @Value
-@RequiredArgsConstructor
 public class WithManualSubCommandData {
 
     String value;
     String[] aliases;
+
+    public WithManualSubCommandData(String value, String... aliases) {
+        this.value = value;
+        this.aliases = aliases;
+    }
 
     public static @Nullable WithManualSubCommandData of(@Nullable WithManualSubCommand withManualSubCommand) {
         return withManualSubCommand != null

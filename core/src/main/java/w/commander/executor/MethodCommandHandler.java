@@ -48,6 +48,11 @@ public final class MethodCommandHandler extends AbstractCommandHandler {
     }
 
     @Override
+    public String toString() {
+        return path.toString();
+    }
+
+    @Override
     public void execute(@NotNull ExecutionContext context, @NotNull Callback<@NotNull Result> callback) {
         conditions.test(context, Callback.of((result, cause) -> {
             if (cause != null) {

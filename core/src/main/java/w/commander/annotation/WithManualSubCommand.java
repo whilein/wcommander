@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WithManualSubCommand {
 
-    String value();
+    String value() default "help";
 
     String[] aliases() default {};
 

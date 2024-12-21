@@ -60,7 +60,6 @@ public class VelocityParameterParser extends AbstractParameterParser {
 
             return new PlayerArgument(
                     playerTarget.value(),
-                    isRequired(parameter),
                     server,
                     config
             );

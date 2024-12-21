@@ -17,8 +17,6 @@
 package w.commander.platform.spigot.argument;
 
 import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -33,20 +31,19 @@ import w.commander.platform.spigot.SpigotExecutionContext;
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public final class WorldArgument extends AbstractArgument {
-
-    @Getter
-    String name;
-
-    @Getter
-    boolean required;
 
     SpigotCommanderConfig config;
 
+    public WorldArgument(@NotNull String name, SpigotCommanderConfig config) {
+        super(name);
+
+        this.config = config;
+    }
+
     @Override
     public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        if (cursor.hasNext(required)) {
+        if (cursor.hasNext(isRequired())) {
             val name = context.getRawArguments().value(cursor.next());
 
             val world = Bukkit.getWorld(name);

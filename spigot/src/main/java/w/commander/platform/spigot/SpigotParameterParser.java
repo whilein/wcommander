@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import w.commander.parameter.AbstractParameterParser;
 import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.ParameterParser;
 import w.commander.platform.spigot.annotation.PlayerTarget;
 import w.commander.platform.spigot.annotation.WorldTarget;
 import w.commander.platform.spigot.argument.PlayerArgument;
@@ -41,7 +42,7 @@ import java.lang.reflect.Parameter;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class SpigotParameterParser extends AbstractParameterParser {
+public class SpigotParameterParser implements ParameterParser {
 
     SpigotCommanderConfig config;
 
@@ -67,11 +68,10 @@ public class SpigotParameterParser extends AbstractParameterParser {
 
             val argument = new PlayerArgument(
                     playerTarget.value(),
-                    isRequired(parameter),
                     playerTarget.exact(),
                     config
             );
-            argument.setTabCompleter(playerTabCompleter);
+            argument.getInfo().setTabCompleter(playerTabCompleter);
 
             return argument;
         }
@@ -84,10 +84,9 @@ public class SpigotParameterParser extends AbstractParameterParser {
 
             val argument = new WorldArgument(
                     worldTarget.value(),
-                    isRequired(parameter),
                     config
             );
-            argument.setTabCompleter(worldTabCompleter);
+            argument.getInfo().setTabCompleter(worldTabCompleter);
 
             return argument;
         }

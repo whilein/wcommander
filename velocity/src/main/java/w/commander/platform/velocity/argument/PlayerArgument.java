@@ -32,21 +32,21 @@ import w.commander.platform.velocity.VelocityCommanderConfig;
  * @author _Novit_ (novitpw)
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public final class PlayerArgument extends AbstractArgument {
-
-    @Getter
-    String name;
-
-    @Getter
-    boolean required;
 
     ProxyServer server;
     VelocityCommanderConfig config;
 
+    public PlayerArgument(@NotNull String name, ProxyServer server, VelocityCommanderConfig config) {
+        super(name);
+
+        this.server = server;
+        this.config = config;
+    }
+
     @Override
     public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        if (cursor.hasNext(required)) {
+        if (cursor.hasNext(isRequired())) {
             val name = context.getRawArguments().value(cursor.next());
 
             return server.getPlayer(name)

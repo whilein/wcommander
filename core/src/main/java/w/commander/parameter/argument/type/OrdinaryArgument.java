@@ -18,7 +18,6 @@ package w.commander.parameter.argument.type;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
@@ -31,16 +30,19 @@ import w.commander.parameter.argument.parser.ArgumentParser;
  */
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public class OrdinaryArgument extends AbstractArgument {
 
-    String name;
-    boolean required;
     ArgumentParser parser;
+
+    public OrdinaryArgument(@NotNull String name, ArgumentParser parser) {
+        super(name);
+
+        this.parser = parser;
+    }
 
     @Override
     public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        if (cursor.hasNext(required)) {
+        if (cursor.hasNext(isRequired())) {
             return parser.parse(context.getRawArguments().value(cursor.next()), this, context);
         }
 

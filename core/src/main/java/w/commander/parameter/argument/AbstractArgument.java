@@ -20,21 +20,20 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import w.commander.parameter.argument.validator.ArgumentValidator;
-import w.commander.tabcomplete.TabCompleter;
-
-import java.util.Collections;
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author whilein
  */
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class AbstractArgument implements Argument {
 
-    List<ArgumentValidator> validators = Collections.emptyList();
-    TabCompleter tabCompleter = null;
+    ArgumentInfo info;
+
+    public AbstractArgument(@NotNull String name) {
+        this.info = new ArgumentInfo(name);
+    }
 
 }

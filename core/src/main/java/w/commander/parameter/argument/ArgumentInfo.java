@@ -16,41 +16,33 @@
 
 package w.commander.parameter.argument;
 
-import w.commander.parameter.HandlerParameter;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import w.commander.parameter.argument.validator.ArgumentValidator;
 import w.commander.tabcomplete.TabCompleter;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author whilein
  */
-public interface Argument extends HandlerParameter {
+@Getter
+@Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ArgumentInfo {
 
-    ArgumentInfo getInfo();
+    String name;
+    boolean required;
+    List<ArgumentValidator> validators;
+    TabCompleter tabCompleter;
 
-    default String getName() {
-        return getInfo().getName();
+    public ArgumentInfo(String name) {
+        this.name = name;
+        this.required = false;
+        this.validators = Collections.emptyList();
+        this.tabCompleter = null;
     }
-
-    default boolean isRequired() {
-        return getInfo().isRequired();
-    }
-
-    default TabCompleter getTabCompleter() {
-        return getInfo().getTabCompleter();
-    }
-
-    default List<ArgumentValidator> getValidators() {
-        return getInfo().getValidators();
-    }
-
-    default int getMinLength() {
-        return 1;
-    }
-
-    default int getMaxLength() {
-        return 1;
-    }
-
 }

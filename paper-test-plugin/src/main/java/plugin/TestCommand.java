@@ -45,7 +45,7 @@ import java.time.Duration;
  * @author whilein
  */
 @WithManual
-@WithManualSubCommand("help")
+@WithManualSubCommand
 @Command("test")
 public class TestCommand {
 

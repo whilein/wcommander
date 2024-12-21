@@ -32,22 +32,21 @@ import w.commander.platform.spigot.SpigotCommanderConfig;
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public final class PlayerArgument extends AbstractArgument {
 
-    @Getter
-    String name;
-
-    @Getter
-    boolean required;
-
     boolean exact;
-
     SpigotCommanderConfig config;
+
+    public PlayerArgument(@NotNull String name, boolean exact, SpigotCommanderConfig config) {
+        super(name);
+
+        this.exact = exact;
+        this.config = config;
+    }
 
     @Override
     public Object extract(@NotNull ExecutionContext context, @NotNull ArgumentCursor cursor) {
-        if (cursor.hasNext(required)) {
+        if (cursor.hasNext(isRequired())) {
             val name = context.getRawArguments().value(cursor.next());
 
             val player = exact ? Bukkit.getPlayerExact(name) : Bukkit.getPlayer(name);
