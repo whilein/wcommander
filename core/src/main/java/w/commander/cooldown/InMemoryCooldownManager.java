@@ -93,7 +93,7 @@ public final class InMemoryCooldownManager implements CooldownManager {
         }
 
         public long get(String name) {
-            return map.get(name.toLowerCase());
+            return map.getOrDefault(name.toLowerCase(), 0L);
         }
 
         public void put(String name, long expiresAt) {
