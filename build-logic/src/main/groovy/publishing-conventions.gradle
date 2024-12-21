@@ -15,18 +15,30 @@
  */
 
 plugins {
-    id 'java-conventions'
-    id 'publishing-conventions'
+    id 'maven-publish'
 }
 
-repositories {
-    maven {
-        name = 'papermc'
-        url = 'https://repo.papermc.io/repository/maven-public/'
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+
+            repositories {
+                maven {
+                    url = 'https://maven.pkg.github.com/whilein/wcommander'
+                    name = 'github'
+
+                    credentials {
+                        username = githubUsername
+                        password = githubPassword
+                    }
+                }
+            }
+        }
     }
-}
-
-dependencies {
-    api project(':minecraft-core')
-    compileOnly libs.spigot.api
 }
