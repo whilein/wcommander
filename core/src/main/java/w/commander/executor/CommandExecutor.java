@@ -35,11 +35,6 @@ public interface CommandExecutor {
             @NotNull Callback<@NotNull Result> callback
     );
 
-    void suggest(
-            @NotNull ExecutionContext context,
-            @NotNull Callback<@NotNull Result> callback
-    );
-
     void test(
             @NotNull ExecutionContext context,
             @NotNull Callback<@NotNull Result> callback

@@ -29,6 +29,7 @@ import w.commander.annotation.SubCommandHandler;
 import w.commander.annotation.TabComplete;
 import w.commander.annotation.WithDescription;
 import w.commander.annotation.WithManual;
+import w.commander.annotation.WithManualSubCommand;
 import w.commander.cooldown.CooldownResult;
 import w.commander.minecraft.annotation.NonSelfPlayer;
 import w.commander.parameter.argument.validator.type.Between;
@@ -44,6 +45,7 @@ import java.time.Duration;
  * @author whilein
  */
 @WithManual
+@WithManualSubCommand("help")
 @Command("test")
 public class TestCommand {
 

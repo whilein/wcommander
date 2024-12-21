@@ -43,13 +43,8 @@ final class EmptyCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public void suggest(@NotNull ExecutionContext context, @NotNull Callback<@NotNull Result> callback) {
-        callback.complete(Results.error());
-    }
-
-    @Override
     public void test(@NotNull ExecutionContext context, @NotNull Callback<@NotNull Result> callback) {
-        callback.complete(Results.ok());
+        callback.complete(Results.error());
     }
 
 }

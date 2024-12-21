@@ -79,7 +79,7 @@ final class CommandImpl implements Command {
         suggestions.retain();
 
         val executor = subCommand.executor(0);
-        executor.suggest(context, Callback.of((result, cause) -> {
+        executor.test(context, Callback.of((result, cause) -> {
             try {
                 if (result != null && result.isSuccess()) {
                     suggestions.next(subCommandName);

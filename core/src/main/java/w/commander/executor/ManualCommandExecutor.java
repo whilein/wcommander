@@ -80,33 +80,6 @@ public final class ManualCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public void suggest(
-            @NotNull ExecutionContext context,
-            @NotNull Callback<@NotNull Result> callback
-    ) {
-        val manual = this.manual;
-
-        val entries = manual.entries();
-        val entryCount = entries.size();
-
-        val arrayCollector = new CallbackArrayCollector<Result>(
-                callback.map(results -> {
-                    for (val result : results) {
-                        if (!result.isSuccess()) {
-                            return result;
-                        }
-                    }
-
-                    return Results.ok();
-                }), entryCount);
-
-        int i = 0;
-        for (val entry : manual.entries()) {
-            entry.getConditions().testVisibility(context, arrayCollector.element(i++));
-        }
-    }
-
-    @Override
     public void test(
             @NotNull ExecutionContext context,
             @NotNull Callback<@NotNull Result> callback
