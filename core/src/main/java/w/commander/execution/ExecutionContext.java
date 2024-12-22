@@ -35,6 +35,6 @@ public interface ExecutionContext {
     @Contract(pure = true)
     @NotNull RawArguments getRawArguments();
 
-    void dispatch(@NotNull String text);
+    void sendMessage(@NotNull String text);
 
 }

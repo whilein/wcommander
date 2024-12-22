@@ -16,7 +16,7 @@
 
 package w.commander.platform.adventure;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
@@ -32,7 +32,7 @@ public interface AdventureExecutionContext extends ExecutionContext {
     @Contract(pure = true)
     @NotNull AdventureCommandActor getActor();
 
-    default void dispatch(@NotNull Component message) {
+    default void sendMessage(@NotNull ComponentLike message) {
         getActor().sendMessage(message);
     }
 

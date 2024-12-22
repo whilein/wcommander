@@ -44,7 +44,7 @@ public class AdventureResults {
 
         @Override
         public void dispatch(@NotNull AdventureExecutionContext context) {
-            context.dispatch(message);
+            context.sendMessage(message);
         }
 
     }

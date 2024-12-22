@@ -16,6 +16,10 @@
 
 package w.commander.platform.paper;
 
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 import w.commander.platform.adventure.AdventureCommandActor;
 import w.commander.platform.spigot.SpigotCommandActor;
 
@@ -23,4 +27,9 @@ import w.commander.platform.spigot.SpigotCommandActor;
  * @author whilein
  */
 public interface PaperCommandActor extends SpigotCommandActor, AdventureCommandActor {
+    @Override
+    @SuppressWarnings("UnstableApiUsage")
+    default void sendMessage(@NotNull Identity source, @NotNull Component message, @NotNull MessageType type) {
+        getSender().sendMessage(source, message, type);
+    }
 }

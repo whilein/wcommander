@@ -87,7 +87,7 @@ public class Results {
 
         @Override
         public void dispatch(@NotNull ExecutionContext context) {
-            context.dispatch(text);
+            context.sendMessage(text);
         }
     }
 

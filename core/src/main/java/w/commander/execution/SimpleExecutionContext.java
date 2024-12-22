@@ -39,7 +39,7 @@ public class SimpleExecutionContext implements ExecutionContext {
     @NotNull RawArguments rawArguments;
 
     @Override
-    public void dispatch(@NotNull String text) {
+    public void sendMessage(@NotNull String text) {
         actor.sendMessage(text);
     }
 }

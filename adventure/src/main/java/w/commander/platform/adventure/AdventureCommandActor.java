@@ -34,6 +34,4 @@ public interface AdventureCommandActor extends CommandActor, Audience {
         sendMessage(Component.text(text));
     }
 
-    void sendMessage(@NotNull Component component);
-
 }

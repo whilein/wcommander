@@ -19,6 +19,9 @@ package w.commander.platform.velocity;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +39,12 @@ public interface VelocityCommandActor extends MinecraftCommandActor, AdventureCo
     @NotNull
     @Contract(pure = true)
     CommandSource getSource();
+
+    @Override
+    @SuppressWarnings("UnstableApiUsage")
+    default void sendMessage(@NotNull Identity source, @NotNull Component message, @NotNull MessageType type) {
+        getSource().sendMessage(source, message, type);
+    }
 
     @Override
     @Contract(pure = true)

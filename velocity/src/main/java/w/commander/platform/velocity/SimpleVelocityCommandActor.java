@@ -24,7 +24,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,11 +39,6 @@ import javax.annotation.concurrent.Immutable;
 public class SimpleVelocityCommandActor implements VelocityCommandActor {
 
     CommandSource source;
-
-    @Override
-    public void sendMessage(@NotNull Component component) {
-        getSource().sendMessage(component);
-    }
 
     @Override
     @Contract(pure = true)
