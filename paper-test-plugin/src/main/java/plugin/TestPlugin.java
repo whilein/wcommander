@@ -40,6 +40,7 @@ public class TestPlugin extends JavaPlugin {
     public void onEnable() {
         var commander = new PaperCommander();
         commander.addCondition(new PermissionCondition());
+        commander.setupAsyncTabCompleteListener(this);
 
         commander.setErrorResultFactory(new ErrorResultFactory() {
             @Override

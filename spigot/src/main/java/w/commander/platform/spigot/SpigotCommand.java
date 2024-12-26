@@ -17,6 +17,7 @@
 package w.commander.platform.spigot;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.bukkit.command.CommandSender;
@@ -35,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 @Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class SpigotCommand extends org.bukkit.command.Command {
+    @Getter
     Command command;
     SpigotCommanderConfig config;
 

@@ -21,9 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContextFactory;
 import w.commander.platform.spigot.SpigotCommandActorFactory;
+import w.commander.platform.spigot.SpigotCommandRegistrar;
 import w.commander.platform.spigot.SpigotCommanderConfig;
 
 /**
@@ -49,10 +51,20 @@ public class PaperCommanderConfig extends SpigotCommanderConfig {
         this.spigotCommandActorFactory = SimplePaperCommandActor::new;
     }
 
+    @Override
+    public SpigotCommandRegistrar getCommandRegistrar() {
+        return (SpigotCommandRegistrar) super.getCommandRegistrar();
+    }
+
     public void setSpigotCommandActorFactory(
             @NotNull PaperCommandActorFactory factory
     ) {
         super.setSpigotCommandActorFactory(factory);
+    }
+
+    public void setupAsyncTabCompleteListener(@NotNull Plugin plugin) {
+        val listener = new PaperAsyncTabCompleteListener(this);
+        plugin.getServer().getPluginManager().registerEvents(listener, plugin);
     }
 
     @Override

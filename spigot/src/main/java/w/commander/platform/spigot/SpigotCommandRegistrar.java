@@ -22,6 +22,7 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import w.commander.Command;
 import w.commander.CommandRegistrar;
 
@@ -54,6 +55,15 @@ public class SpigotCommandRegistrar implements CommandRegistrar {
 
     protected org.bukkit.command.Command create(Command command) {
         return new SpigotCommand(command, config);
+    }
+
+    public @Nullable SpigotCommand getCommand(@NotNull String alias) {
+        val command = commandMap.getCommand(alias);
+        if (!(command instanceof SpigotCommand)) {
+            return null;
+        }
+
+        return (SpigotCommand) command;
     }
 
     @Override
