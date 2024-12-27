@@ -57,7 +57,4 @@ public interface Command {
     @Contract(pure = true)
     @NotNull CommandInfo getInfo();
 
-    @Contract(pure = true)
-    @Nullable Manual getManual();
-
 }

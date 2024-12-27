@@ -289,11 +289,6 @@ final class CommandImpl implements Command {
         return future;
     }
 
-    @Override
-    public @Nullable Manual getManual() {
-        return tree.getManual();
-    }
-
     private ExecutionContext createContext(CommandActor actor, RawArguments args) {
         return config.getExecutionContextFactory().create(actor, args,
                 new LazyAttributeStore(config.getAttributeStoreFactory()));

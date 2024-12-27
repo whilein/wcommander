@@ -26,10 +26,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.executor.CommandExecutor;
 import w.commander.executor.CommandSetupHandlers;
-import w.commander.manual.Manual;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -46,11 +46,47 @@ public final class CommandNode {
 
     @NotNull Map<String, @NotNull CommandNode> subCommands;
 
-    @Getter
-    @Nullable Manual manual;
-
     public CommandNode(CommandExecutor executor) {
-        this(new CommandExecutor[]{executor}, CommandSetupHandlers.empty(), Collections.emptyMap(), null);
+        this(new CommandExecutor[]{executor}, CommandSetupHandlers.empty(), Collections.emptyMap());
+    }
+
+    public CommandNode merge(CommandNode another) {
+        val executors = this.executors;
+        val anotherExecutors = another.executors;
+        val subCommands = this.subCommands;
+        val anotherSubCommands = another.subCommands;
+
+        val executorsLength = executors.length;
+        val anotherExecutorsLength = anotherExecutors.length;
+        val newExecutors = new CommandExecutor[Math.max(executorsLength, anotherExecutorsLength)];
+        for (int i = 0, j = newExecutors.length; i < j; i++) {
+            if (i >= executorsLength) {
+                newExecutors[i] = anotherExecutors[i];
+            } else if (i >= anotherExecutorsLength) {
+                newExecutors[i] = executors[i];
+            } else {
+                val executor = executors[i];
+                val anotherExecutor = anotherExecutors[i];
+
+                if (executor.isYielding()) {
+                    newExecutors[i] = anotherExecutor;
+                } else if (anotherExecutor.isYielding()) {
+                    newExecutors[i] = executor;
+                } else {
+                    throw new IllegalStateException("Merge conflict: " + executor + " and " + anotherExecutor);
+                }
+            }
+        }
+        val newSubCommands = new HashMap<>(subCommands);
+        for (val subCommand : subCommands.entrySet()) {
+            val key = subCommand.getKey();
+
+            val anotherSubCommand = anotherSubCommands.get(key);
+            if (anotherSubCommand == null) continue;
+
+            newSubCommands.merge(key, anotherSubCommand, CommandNode::merge);
+        }
+        return new CommandNode(newExecutors, setupHandlers, newSubCommands);
     }
 
     @Contract(pure = true)

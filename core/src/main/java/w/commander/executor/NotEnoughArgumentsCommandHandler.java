@@ -39,6 +39,11 @@ public final class NotEnoughArgumentsCommandHandler implements CommandHandler {
     CommanderConfig config;
 
     @Override
+    public boolean isYielding() {
+        return true;
+    }
+
+    @Override
     public void execute(
             @NotNull ExecutionContext context,
             @NotNull Callback<@NotNull Result> callback

@@ -32,7 +32,6 @@ import w.commander.executor.MethodCommandSetupHandler;
 import w.commander.executor.MethodExecutor;
 import w.commander.executor.MethodHandleExecutor;
 import w.commander.executor.NotEnoughArgumentsCommandHandler;
-import w.commander.manual.Manual;
 import w.commander.spec.CommandSpec;
 import w.commander.spec.HandlerSpec;
 import w.commander.spec.SetupHandlerSpec;
@@ -170,7 +169,7 @@ public final class CommandFactory {
         val subCommands = new HashMap<String, CommandNode>();
         for (val subCommand : spec.getSubCommands()) {
             for (val name : subCommand.getNames()) {
-                subCommands.put(name.toLowerCase(), createNode(subCommand));
+                subCommands.merge(name.toLowerCase(), createNode(subCommand), CommandNode::merge);
             }
         }
 
@@ -182,10 +181,9 @@ public final class CommandFactory {
                 .map(handler -> createExecutor(handler, spec))
                 .collect(Collectors.toList());
 
-        Manual manual;
         val manualSpec = spec.getManual();
         if (!manualSpec.isEmpty()) {
-            val manualExecutor = new ManualCommandExecutor(manual = config.getManualFactory().create(spec),
+            val manualExecutor = new ManualCommandExecutor(config.getManualFactory().create(spec),
                     config.getManualFormatter(), config.getErrorResultFactory());
 
             if (manualSpec.isHasHandler()) {
@@ -200,15 +198,12 @@ public final class CommandFactory {
                     subCommands.putIfAbsent(name.toLowerCase(), manualNode);
                 }
             }
-        } else {
-            manual = null;
         }
 
         return new CommandNode(
                 createExecutors(commandExecutors),
                 createSetupHandlers(setupHandlerExecutors),
-                Immutables.immutableMap(subCommands),
-                manual
+                Immutables.immutableMap(subCommands)
         );
     }
 

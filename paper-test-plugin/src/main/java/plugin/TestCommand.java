@@ -53,6 +53,21 @@ import java.time.Duration;
 @Command("test")
 public class TestCommand {
 
+    @SubCommandHandler("foo")
+    public Result foo() {
+        return Results.ok("foo no arg");
+    }
+
+    @SubCommandHandler("foo")
+    public Result foo(@Arg String value) {
+        return Results.ok("foo 1 arg: " + value);
+    }
+
+    @SubCommandHandler("foo")
+    public Result foo(@Arg String a, @Arg String b) {
+        return Results.ok("foo 2 arg: " + a + " " + b);
+    }
+
     @SetupHandler
     public void setup(Player player, AttributeStore as) {
         player.sendMessage("setup call");
