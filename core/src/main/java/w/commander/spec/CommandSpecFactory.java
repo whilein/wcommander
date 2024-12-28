@@ -282,24 +282,24 @@ public final class CommandSpecFactory {
         return commandSpec;
     }
 
-    private CommandSpec createSubCommand(CommandSpec parent, CommandGraph template) {
-        val subCommand = config.getAnnotationScanner().getSubCommandName(template.getInfo().getInstanceType());
+    private CommandSpec createSubCommand(CommandSpec parent, CommandGraph graph) {
+        val subCommand = config.getAnnotationScanner().getSubCommandName(graph.getInfo().getInstanceType());
         if (subCommand == null) {
             throw new IllegalArgumentException("Sub command must be annotated with @SubCommand");
         }
-        return create(parent, subCommand, template);
+        return create(parent, subCommand, graph);
     }
 
-    private CommandSpec createCommand(CommandGraph template) {
-        val command = config.getAnnotationScanner().getCommandName(template.getInfo().getInstanceType());
+    private CommandSpec createCommand(CommandGraph graph) {
+        val command = config.getAnnotationScanner().getCommandName(graph.getInfo().getInstanceType());
         if (command == null) {
             throw new IllegalArgumentException("Command must be annotated with @Command");
         }
-        return create(null, command, template);
+        return create(null, command, graph);
     }
 
-    public @NotNull CommandSpec create(@NotNull CommandGraph template) {
-        return createCommand(template);
+    public @NotNull CommandSpec create(@NotNull CommandGraph graph) {
+        return createCommand(graph);
     }
 
 }

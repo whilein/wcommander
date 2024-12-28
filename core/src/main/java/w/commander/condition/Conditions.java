@@ -88,6 +88,10 @@ public class Conditions {
         }));
     }
 
+    public boolean isEmpty() {
+        return conditions.length == 0;
+    }
+
     public void test(ExecutionContext ctx, Callback<Result> callback) {
         testRecursive(ctx, callback, conditions, 0);
     }

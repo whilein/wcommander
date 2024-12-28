@@ -25,8 +25,10 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
@@ -48,6 +50,18 @@ public final class Suggestions {
 
     @NonFinal
     volatile int refCount = 1;
+
+    public Suggestions() {
+        this(new CompletableFuture<>());
+    }
+
+    public List<String> block() {
+        try {
+            return completion.get();
+        } catch (InterruptedException | ExecutionException e) {
+            return Collections.emptyList();
+        }
+    }
 
     public void retain() {
         REF_COUNT_UPDATER.incrementAndGet(this);

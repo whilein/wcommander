@@ -16,35 +16,21 @@
 
 package w.commander;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.concurrent.Immutable;
+import w.commander.attribute.AttributeStore;
+import w.commander.execution.SimpleExecutionContext;
 
 /**
  * @author whilein
  */
-@Getter
-@Immutable
-@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@RequiredArgsConstructor
-public class CommandInfo {
+public class TestExecutionContext extends SimpleExecutionContext {
 
-    @NotNull Object instance;
-
-    public @NotNull Class<?> getInstanceType() {
-        return getInstance().getClass();
+    public TestExecutionContext(
+            @NotNull CommandActor actor,
+            @NotNull RawArguments rawArguments,
+            @NotNull AttributeStore attributeStore
+    ) {
+        super(actor, rawArguments, attributeStore);
     }
 
-    public @NotNull CommandInfo withInstance(@NotNull Object instance) {
-        return new CommandInfo(instance);
-    }
-
-    @Override
-    public String toString() {
-        return instance.toString();
-    }
 }

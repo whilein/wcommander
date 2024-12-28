@@ -66,4 +66,8 @@ public class Decorators {
         return executor;
     }
 
+    public boolean isEmpty() {
+        return decorators.length == 0;
+    }
+
 }

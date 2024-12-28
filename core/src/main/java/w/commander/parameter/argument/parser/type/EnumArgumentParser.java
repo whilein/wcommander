@@ -19,6 +19,7 @@ package w.commander.parameter.argument.parser.type;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.CommanderConfig;
@@ -29,6 +30,7 @@ import w.commander.tabcomplete.ExplicitTabCompleter;
 import w.commander.tabcomplete.TabCompleter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
 
 /**
@@ -47,7 +49,10 @@ public final class EnumArgumentParser<E extends Enum<E>> implements ArgumentPars
         this.config = config;
         this.enumValues = enumValues;
 
-        this.defaultTabCompleter = new ExplicitTabCompleter(new ArrayList<>(enumValues.keySet()));
+        val values = new ArrayList<>(enumValues.keySet());
+        values.sort(Comparator.naturalOrder());
+
+        this.defaultTabCompleter = new ExplicitTabCompleter(values);
     }
 
     @Override

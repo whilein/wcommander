@@ -87,5 +87,9 @@ public final class HandlerParameters {
         );
     }
 
+    public boolean isEmpty() {
+        return parameters.isEmpty();
+    }
+
 }
 
