@@ -66,8 +66,16 @@ public class Decorators {
         return executor;
     }
 
+    public int size() {
+        return decorators.length;
+    }
+
+    public Decorator get(int index) {
+        return decorators[index];
+    }
+
     public boolean isEmpty() {
-        return decorators.length == 0;
+        return size() == 0;
     }
 
 }

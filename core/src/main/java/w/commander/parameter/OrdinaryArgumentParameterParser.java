@@ -53,7 +53,7 @@ public class OrdinaryArgumentParameterParser extends AnnotatedParameterParser<Ar
             }
         }
 
-        throw new UnsupportedOperationException("There are no available parsers for " + type);
+        throw new UnsupportedOperationException("There are no available argument parsers for " + type);
     }
 
     @Override

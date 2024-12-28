@@ -88,8 +88,16 @@ public class Conditions {
         }));
     }
 
+    public int size() {
+        return conditions.length;
+    }
+
+    public Condition get(int index) {
+        return conditions[index];
+    }
+
     public boolean isEmpty() {
-        return conditions.length == 0;
+        return size() == 0;
     }
 
     public void test(ExecutionContext ctx, Callback<Result> callback) {
