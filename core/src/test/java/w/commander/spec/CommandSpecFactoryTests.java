@@ -431,6 +431,50 @@ class CommandSpecFactoryTests {
     }
 
     @Test
+    void illegalNames() {
+        @Command("f o")
+        class IllegalName {
+        }
+
+        val csf = new CommandSpecFactory(CommanderConfig.createDefaults());
+        try {
+            csf.create(CommandGraph.builder(new CommandInfo(new IllegalName()))
+                    .build());
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Invalid command name: \"f o\"", e.getMessage());
+        }
+
+        @WithAlias("b r")
+        @Command("foo")
+        class IllegalAlias {
+        }
+
+        try {
+            csf.create(CommandGraph.builder(new CommandInfo(new IllegalAlias()))
+                    .build());
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Invalid command name: \"b r\"", e.getMessage());
+        }
+
+        @Command("foo")
+        class IllegalSubCommandHandlerName {
+            @SubCommandHandler("b r")
+            public void run() {
+            }
+        }
+
+        try {
+            csf.create(CommandGraph.builder(new CommandInfo(new IllegalSubCommandHandlerName()))
+                    .build());
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Invalid command name: \"b r\"", e.getMessage());
+        }
+    }
+
+    @Test
     void illegalParameters() {
         @Command("foo")
         class IllegalJoin {

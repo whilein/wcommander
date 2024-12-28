@@ -38,7 +38,7 @@ public class CommandSpecValidation {
 
     public void checkCommandName(@NotNull String name) {
         if (!VALID_COMMAND_NAME.matcher(name).matches()) {
-            throw new IllegalArgumentException("Invalid command name value: \"" + name + "\"");
+            throw new IllegalArgumentException("Invalid command name: \"" + name + "\"");
         }
     }
 
