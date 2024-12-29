@@ -63,8 +63,8 @@ public class CommandGraph {
 
         List<CommandGraph> subCommands = new ArrayList<>();
 
-        public @NotNull Builder subCommand(@NotNull CommandGraph template) {
-            subCommands.add(template);
+        public @NotNull Builder subCommand(@NotNull CommandGraph graph) {
+            subCommands.add(graph);
             return this;
         }
 

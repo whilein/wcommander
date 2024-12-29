@@ -61,20 +61,24 @@ public class Commander {
         this.commandFactory = new CommandFactory(config);
     }
 
-    public @NotNull Command ofGraph(@NotNull CommandGraph graph) {
+    public @NotNull Command createFromGraph(@NotNull CommandGraph graph) {
         return commandFactory.create(commandSpecFactory.create(graph));
     }
 
-    public @NotNull Command ofInfo(@NotNull CommandInfo info) {
-        return ofGraph(CommandGraph.of(info));
+    public @NotNull Command createFromInfo(@NotNull CommandInfo info) {
+        return createFromGraph(CommandGraph.of(info));
     }
 
-    public void register(@NotNull CommandGraph graph) {
-        register(ofGraph(graph));
+    public @NotNull Command register(@NotNull CommandGraph graph) {
+        val command = createFromGraph(graph);
+        register(command);
+        return command;
     }
 
-    public void register(@NotNull CommandInfo info) {
-        register(ofInfo(info));
+    public @NotNull Command register(@NotNull CommandInfo info) {
+        val command = createFromInfo(info);
+        register(command);
+        return command;
     }
 
     public void register(@NotNull Command command) {

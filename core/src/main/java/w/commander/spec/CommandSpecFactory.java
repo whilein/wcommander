@@ -206,11 +206,11 @@ public final class CommandSpecFactory {
     private CommandSpec create(
             CommandSpec parent,
             String name,
-            CommandGraph template
+            CommandGraph graph
     ) {
         CommandSpecValidation.checkCommandName(name);
 
-        val commandInfo = template.getInfo();
+        val commandInfo = graph.getInfo();
         val commandType = commandInfo.getInstanceType();
 
         val path = parent == null
@@ -272,7 +272,7 @@ public final class CommandSpecFactory {
             }
         }
 
-        for (val subCommand : template.getSubCommands()) {
+        for (val subCommand : graph.getSubCommands()) {
             subCommands.add(createSubCommand(commandSpec, subCommand));
         }
 
