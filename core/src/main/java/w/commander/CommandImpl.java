@@ -47,6 +47,8 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 final class CommandImpl implements Command {
 
+    private static final RawArguments EMPTY_TABCOMPLETE = RawArguments.fromTrustedArray("");
+
     @Getter
     @NotNull
     String name;
@@ -127,11 +129,11 @@ final class CommandImpl implements Command {
 
     @Override
     public @NotNull CompletableFuture<@NotNull List<String>> tabComplete(@NotNull CommandActor actor, @NotNull RawArguments arguments) {
-        if (arguments.isEmpty()) {
-            return CompletableFuture.completedFuture(Collections.emptyList());
-        }
-
         val context = createContext(actor, arguments);
+
+        if (arguments.isEmpty()) {
+            arguments = EMPTY_TABCOMPLETE;
+        }
 
         CommandNode tree = this.tree;
         int offset = 0;
