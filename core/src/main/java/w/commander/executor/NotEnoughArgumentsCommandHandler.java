@@ -22,6 +22,7 @@ import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommanderConfig;
+import w.commander.condition.Conditions;
 import w.commander.execution.ExecutionContext;
 import w.commander.result.Result;
 import w.commander.util.Callback;
@@ -44,11 +45,16 @@ public final class NotEnoughArgumentsCommandHandler implements CommandHandler {
     }
 
     @Override
+    public @NotNull Conditions getConditions() {
+        return handler.getConditions();
+    }
+
+    @Override
     public void execute(
             @NotNull ExecutionContext context,
             @NotNull Callback<@NotNull Result> callback
     ) {
-        handler.getConditions().test(context, callback.map(result -> result == null || result.isSuccess()
+        getConditions().test(context, callback.map(result -> result == null || result.isSuccess()
                 ? config.getErrorResultFactory().onNotEnoughArguments(context, handler.getManualEntry().getUsage())
                 : result));
     }
