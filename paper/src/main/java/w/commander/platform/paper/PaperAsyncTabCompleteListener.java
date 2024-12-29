@@ -27,7 +27,6 @@ import org.bukkit.event.EventPriority;
 import w.commander.RawArguments;
 
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
 /**
  * @author _Novit_ (novitpw)
@@ -37,15 +36,13 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class PaperAsyncTabCompleteListener implements org.bukkit.event.Listener {
 
-    private static final Pattern SPACE = Pattern.compile(" +");
-
     PaperCommanderConfig commanderConfig;
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onAsyncTabComplete(AsyncTabCompleteEvent event) {
         if (!event.isCommand()) return;
 
-        val rawArguments = SPACE.split(event.getBuffer(), -1);
+        val rawArguments = event.getBuffer().split(" ", -1);
         val rawArgumentsLength = rawArguments.length;
         if (rawArgumentsLength == 1) return;
 
