@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 /**
  * @author whilein
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Cooldown {
 

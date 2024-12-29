@@ -86,6 +86,8 @@ public class Conditions {
     }
 
     public @NotNull Conditions merge(@NotNull Conditions another) {
+        if (isEmpty() && another.isEmpty()) return EMPTY;
+
         val conditions = this.conditions;
         val anotherConditions = another.conditions;
 

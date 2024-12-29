@@ -17,6 +17,7 @@
 package w.commander.decorator.type;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
@@ -35,6 +36,7 @@ import w.commander.util.Callback;
 /**
  * @author whilein
  */
+@EqualsAndHashCode(of = {"customId", "cooldownManager"})
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class CooldownDecorator implements Decorator {

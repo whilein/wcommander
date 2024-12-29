@@ -26,6 +26,7 @@ import w.commander.spec.HandlerSpec;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 
 /**
  * @author whilein
@@ -52,10 +53,25 @@ public class Decorators {
             return EMPTY;
         }
 
-        val copyDecorators = Arrays.copyOf(decorators, decorators.length);
-        Arrays.sort(copyDecorators, Comparator.naturalOrder());
+        return from0(Arrays.copyOf(decorators, decorators.length));
+    }
 
-        return new Decorators(copyDecorators);
+    public @NotNull Decorators merge(@NotNull Decorators another) {
+        if (isEmpty() && another.isEmpty()) return EMPTY;
+
+        val decorators = this.decorators;
+        val anotherDecorators = another.decorators;
+
+        val result = new HashSet<Decorator>();
+        result.addAll(Arrays.asList(decorators));
+        result.addAll(Arrays.asList(anotherDecorators));
+
+        return from0(result.toArray(new Decorator[0]));
+    }
+
+    private static Decorators from0(Decorator... decorators) {
+        Arrays.sort(decorators, Comparator.naturalOrder());
+        return new Decorators(decorators);
     }
 
     public MethodExecutor wrap(HandlerSpec handler, MethodExecutor executor) {

@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommanderConfig;
+import w.commander.annotation.Async;
 import w.commander.decorator.Decorator;
 import w.commander.execution.ExecutionContext;
 import w.commander.executor.MethodExecutor;
@@ -46,6 +47,16 @@ public class AsyncDecorator implements Decorator {
     @Override
     public @NotNull MethodExecutor wrap(@NotNull HandlerSpec handler, @NotNull MethodExecutor delegate) {
         return new AsyncMethodExecutor(delegate, config);
+    }
+
+    @Override
+    public int hashCode() {
+        return Async.class.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this || obj != null && obj.getClass() == AsyncDecorator.class;
     }
 
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

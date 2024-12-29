@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import w.commander.error.ErrorResultFactory;
 import w.commander.execution.ExecutionContext;
 import w.commander.manual.Manual;
@@ -29,7 +28,6 @@ import w.commander.manual.ManualEntry;
 import w.commander.manual.ManualFormatter;
 import w.commander.result.Result;
 import w.commander.result.Results;
-import w.commander.result.SuccessResult;
 import w.commander.util.Callback;
 import w.commander.util.CallbackArrayCollector;
 

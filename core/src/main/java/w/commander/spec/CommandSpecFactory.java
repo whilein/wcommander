@@ -125,9 +125,9 @@ public final class CommandSpecFactory {
 
     private static <A extends Annotation> Decorator tryCreateDecorator(
             DecoratorFactory<A> factory,
-            Method method
+            AnnotatedElement element
     ) {
-        val annotation = method.getDeclaredAnnotation(factory.getAnnotation());
+        val annotation = element.getDeclaredAnnotation(factory.getAnnotation());
         if (annotation != null) {
             return factory.create(annotation);
         }
@@ -135,11 +135,11 @@ public final class CommandSpecFactory {
         return null;
     }
 
-    private Decorators createDecorators(Method method) {
+    private Decorators createDecorators(AnnotatedElement element) {
         val result = new ArrayList<Decorator>();
 
         for (val decoratorFactory : config.getDecoratorFactories()) {
-            val decorator = tryCreateDecorator(decoratorFactory, method);
+            val decorator = tryCreateDecorator(decoratorFactory, element);
             if (decorator != null) {
                 result.add(decorator);
             }
@@ -150,21 +150,20 @@ public final class CommandSpecFactory {
 
     private static <A extends Annotation> Condition tryCreateCondition(
             ConditionFactory<A> factory,
-            Method method
+            AnnotatedElement element
     ) {
-        val annotation = method.getDeclaredAnnotation(factory.getAnnotation());
+        val annotation = element.getDeclaredAnnotation(factory.getAnnotation());
         if (annotation != null) {
             return factory.create(annotation);
         }
-
         return null;
     }
 
-    private Conditions createConditions(Method method) {
+    private Conditions createConditions(AnnotatedElement element) {
         val result = new ArrayList<Condition>();
 
         for (val conditionFactory : config.getConditionFactories()) {
-            val condition = tryCreateCondition(conditionFactory, method);
+            val condition = tryCreateCondition(conditionFactory, element);
             if (condition != null) {
                 result.add(condition);
             }
@@ -183,10 +182,16 @@ public final class CommandSpecFactory {
                 .build();
     }
 
-    private HandlerSpec createHandler(CommandSpec commandSpec, HandlerPath path, Method method) {
+    private HandlerSpec createHandler(
+            CommandSpec commandSpec,
+            HandlerPath path,
+            Method method,
+            Conditions typeConditions,
+            Decorators typeDecorators
+    ) {
         val parameters = getParameters(method);
-        val conditions = createConditions(method);
-        val decorators = createDecorators(method);
+        val conditions = createConditions(method).merge(typeConditions);
+        val decorators = createDecorators(method).merge(typeDecorators);
 
         return HandlerSpec.builder()
                 .path(path)
@@ -221,6 +226,9 @@ public final class CommandSpecFactory {
                 ? parent.getFullName() + " " + name
                 : name;
 
+        val typeConditions = createConditions(commandType);
+        val typeDecorators = createDecorators(commandType);
+
         val commandSpec = CommandSpec.builder()
                 .parent(parent)
                 .name(name)
@@ -244,7 +252,8 @@ public final class CommandSpecFactory {
 
             val commandHandler = annotationScanner.getCommandHandlerName(method);
             if (commandHandler != null) {
-                handlers.add(createHandler(commandSpec, path.resolve(commandHandler), method));
+                handlers.add(createHandler(commandSpec, path.resolve(commandHandler), method,
+                        typeConditions, typeDecorators));
             }
 
             val subCommandHandlerName = annotationScanner.getSubCommandHandlerName(method);
@@ -263,7 +272,8 @@ public final class CommandSpecFactory {
                         .manual(ManualSpec.empty())
                         .build();
 
-                val subCommandHandlerSpec = createHandler(subCommandSpec, subCommandPath, method);
+                val subCommandHandlerSpec = createHandler(subCommandSpec, subCommandPath, method,
+                        typeConditions, typeDecorators);
                 subCommandSpec.setSubCommands(Collections.emptyList());
                 subCommandSpec.setSetupHandlers(setupHandlers);
                 subCommandSpec.setHandlers(Collections.singletonList(subCommandHandlerSpec));
