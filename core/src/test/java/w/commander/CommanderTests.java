@@ -16,24 +16,36 @@
 
 package w.commander;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import w.commander.annotation.Arg;
 import w.commander.annotation.Async;
 import w.commander.annotation.Attr;
 import w.commander.annotation.Command;
 import w.commander.annotation.CommandHandler;
 import w.commander.annotation.Cooldown;
+import w.commander.annotation.Join;
 import w.commander.annotation.SetupHandler;
+import w.commander.annotation.SubCommandHandler;
 import w.commander.attribute.AttributeStore;
 import w.commander.cooldown.CooldownResult;
 import w.commander.result.Result;
 import w.commander.result.Results;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static w.commander.RawArguments.fromArray;
 
 /**
  * @author whilein
@@ -97,6 +109,144 @@ class CommanderTests {
                 .get());
         assertTrue(result.isSuccess());
         assertEquals(Collections.singletonList(threadName), actor.getMessages());
+    }
+
+    @Test
+    void arguments() {
+        @Command("foo")
+        class Arguments {
+            @SubCommandHandler("bytep")
+            public Result number(@Arg byte v) {
+                return Results.ok("byte primitive: " + v);
+            }
+
+            @SubCommandHandler("bytew")
+            public Result number(@Arg Byte v) {
+                return Results.ok("byte wrapper: " + v);
+            }
+
+            @SubCommandHandler("shortp")
+            public Result number(@Arg short v) {
+                return Results.ok("short primitive: " + v);
+            }
+
+            @SubCommandHandler("shortw")
+            public Result number(@Arg Short v) {
+                return Results.ok("short wrapper: " + v);
+            }
+
+            @SubCommandHandler("intp")
+            public Result number(@Arg int v) {
+                return Results.ok("int primitive: " + v);
+            }
+
+            @SubCommandHandler("intw")
+            public Result number(@Arg Integer v) {
+                return Results.ok("int wrapper: " + v);
+            }
+
+            @SubCommandHandler("floatp")
+            public Result number(@Arg float v) {
+                return Results.ok("float primitive: " + v);
+            }
+
+            @SubCommandHandler("floatw")
+            public Result number(@Arg Float v) {
+                return Results.ok("float wrapper: " + v);
+            }
+
+            @SubCommandHandler("doublep")
+            public Result number(@Arg double v) {
+                return Results.ok("double primitive: " + v);
+            }
+
+            @SubCommandHandler("doublew")
+            public Result number(@Arg Double v) {
+                return Results.ok("double wrapper: " + v);
+            }
+
+            @SubCommandHandler("longp")
+            public Result number(@Arg long v) {
+                return Results.ok("long primitive: " + v);
+            }
+
+            @SubCommandHandler("longw")
+            public Result number(@Arg Long v) {
+                return Results.ok("long wrapper: " + v);
+            }
+
+            @SubCommandHandler("noop")
+            public Result noop(@Arg String v) {
+                return Results.ok("noop: " + v);
+            }
+
+            @SubCommandHandler("enum")
+            public Result enumeration(@Arg TimeUnit v) {
+                return Results.ok("enum: " + v);
+            }
+
+            @SubCommandHandler("join")
+            public Result join(@Join String s) {
+                return Results.ok("join: " + s);
+            }
+        }
+
+        @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+        @RequiredArgsConstructor
+        final class Test {
+            RawArguments input;
+            String expect;
+        }
+
+        val info = new CommandInfo(new Arguments());
+        val commander = new Commander();
+
+        val command = commander.register(info);
+
+        val tests = Arrays.asList(
+                new Test(fromArray("bytep", "123"), "byte primitive: 123"),
+                new Test(fromArray("bytew", "123"), "byte wrapper: 123"),
+                new Test(fromArray("shortp", "1234"), "short primitive: 1234"),
+                new Test(fromArray("shortw", "1234"), "short wrapper: 1234"),
+                new Test(fromArray("intp", "12345"), "int primitive: 12345"),
+                new Test(fromArray("intw", "12345"), "int wrapper: 12345"),
+                new Test(fromArray("longp", "1234567"), "long primitive: 1234567"),
+                new Test(fromArray("longw", "1234567"), "long wrapper: 1234567"),
+                new Test(fromArray("floatp", "123.123"), "float primitive: 123.123"),
+                new Test(fromArray("floatw", "123.123"), "float wrapper: 123.123"),
+                new Test(fromArray("doublep", "123123.123123"), "double primitive: 123123.123123"),
+                new Test(fromArray("doublew", "123123.123123"), "double wrapper: 123123.123123"),
+                new Test(fromArray("noop", "foobarbaz"), "noop: foobarbaz"),
+                new Test(fromArray("join", "foo", "bar", "baz"), "join: foo bar baz"),
+                new Test(fromArray("enum", "seconds"), "enum: SECONDS"),
+                new Test(fromArray("bytep", "foo"), null),
+                new Test(fromArray("bytew", "foo"), null),
+                new Test(fromArray("shortp", "foo"), null),
+                new Test(fromArray("shortw", "foo"), null),
+                new Test(fromArray("intp", "foo"), null),
+                new Test(fromArray("intw", "foo"), null),
+                new Test(fromArray("longp", "foo"), null),
+                new Test(fromArray("longw", "foo"), null),
+                new Test(fromArray("floatp", "foo.bar"), null),
+                new Test(fromArray("floatw", "foo.bar"), null),
+                new Test(fromArray("doublep", "foo.bar"), null),
+                new Test(fromArray("doublew", "foo.bar"), null),
+                new Test(fromArray("enum", "foo"), null)
+        );
+        
+        for (val test : tests) {
+            val actor = new TestCommandActor("foo");
+
+            val result = assertDoesNotThrow(() -> command.execute(actor, test.input)
+                    .get());
+            if (test.expect == null) {
+                assertFalse(result.isSuccess());
+            } else {
+                assertTrue(result.isSuccess());
+                val messages = actor.getMessages();
+                assertEquals(Collections.singletonList(test.expect), messages);
+            }
+        }
     }
 
     @Test
