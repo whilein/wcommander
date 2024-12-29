@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author whilein
  */
@@ -31,9 +34,11 @@ import org.jetbrains.annotations.NotNull;
 public final class TestCommandActor implements CommandActor {
 
     String name;
+    List<String> messages = new ArrayList<>();
 
     @Override
     public void sendMessage(@NotNull String text) {
-        System.out.println(text);
+        messages.add(text);
     }
+
 }
