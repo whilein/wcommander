@@ -98,6 +98,46 @@ public class Conditions {
         return from0(result.toArray(new Condition[0]));
     }
 
+    private static void testAnyRecursive(
+            ExecutionContext ctx,
+            Callback<Result> callback,
+            Condition[] conditions,
+            int index
+    ) {
+        if (conditions.length == index) {
+            callback.complete(Results.error());
+            return;
+        }
+
+        conditions[index].testAsync(ctx, Callback.of((result, cause) -> {
+            if (cause != null) {
+                callback.completeExceptionally(cause);
+            } else if (result != null && result.isSuccess()) {
+                callback.complete(result);
+            } else {
+                testAnyRecursive(ctx, callback, conditions, index + 1);
+            }
+        }));
+    }
+
+    public void testAny(ExecutionContext ctx, Callback<Result> callback) {
+        val conditions = this.conditions;
+        if (conditions.length == 0) {
+            callback.complete(Results.ok());
+            return;
+        }
+        testAnyRecursive(ctx, callback, conditions, 0);
+    }
+
+    public void testAnyVisibility(ExecutionContext ctx, Callback<Result> callback) {
+        val visibilityConditions = this.visibilityConditions;
+        if (visibilityConditions.length == 0) {
+            callback.complete(Results.ok());
+            return;
+        }
+        testAnyRecursive(ctx, callback, visibilityConditions, 0);
+    }
+
     private static void testRecursive(
             ExecutionContext ctx,
             Callback<Result> callback,
@@ -120,6 +160,14 @@ public class Conditions {
         }));
     }
 
+    public void test(ExecutionContext ctx, Callback<Result> callback) {
+        testRecursive(ctx, callback, conditions, 0);
+    }
+
+    public void testVisibility(ExecutionContext ctx, Callback<Result> callback) {
+        testRecursive(ctx, callback, visibilityConditions, 0);
+    }
+
     public int size() {
         return conditions.length;
     }
@@ -130,14 +178,6 @@ public class Conditions {
 
     public boolean isEmpty() {
         return size() == 0;
-    }
-
-    public void test(ExecutionContext ctx, Callback<Result> callback) {
-        testRecursive(ctx, callback, conditions, 0);
-    }
-
-    public void testVisibility(ExecutionContext ctx, Callback<Result> callback) {
-        testRecursive(ctx, callback, visibilityConditions, 0);
     }
 
 }

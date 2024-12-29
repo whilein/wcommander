@@ -281,7 +281,7 @@ final class CommandImpl implements Command {
         val context = createContext(actor, RawArguments.empty());
 
         val future = new CompletableFuture<Result>();
-        testConditions.testVisibility(context, Callback.ofFuture(future));
+        testConditions.testAnyVisibility(context, Callback.ofFuture(future));
         return future;
     }
 
