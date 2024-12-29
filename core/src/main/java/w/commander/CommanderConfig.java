@@ -25,6 +25,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import w.commander.attribute.AttributeStoreFactory;
+import w.commander.attribute.LazyAttributeStore;
 import w.commander.attribute.MapAttributeStore;
 import w.commander.condition.Condition;
 import w.commander.condition.ConditionFactory;
@@ -136,7 +137,7 @@ public class CommanderConfig {
         manualFactory = new SimpleManualFactory();
         manualFormatter = new SimpleManualFormatter();
         asyncExecutor = ForkJoinPool.commonPool();
-        attributeStoreFactory = MapAttributeStore::new;
+        attributeStoreFactory = () -> new LazyAttributeStore(MapAttributeStore::new);
 
         addCooldownManager(new InMemoryCooldownManager("default", new ConcurrentHashMap<>()));
 

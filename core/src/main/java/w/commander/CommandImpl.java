@@ -287,7 +287,7 @@ final class CommandImpl implements Command {
 
     private ExecutionContext createContext(CommandActor actor, RawArguments args) {
         return config.getExecutionContextFactory().create(actor, args,
-                new LazyAttributeStore(config.getAttributeStoreFactory()));
+                config.getAttributeStoreFactory().create());
     }
 
 }
