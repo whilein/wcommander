@@ -17,6 +17,7 @@
 package w.commander.executor;
 
 import org.jetbrains.annotations.NotNull;
+import w.commander.condition.Conditions;
 import w.commander.execution.ExecutionContext;
 import w.commander.result.Result;
 import w.commander.util.Callback;
@@ -35,10 +36,17 @@ public interface CommandExecutor {
             @NotNull Callback<@NotNull Result> callback
     );
 
-    void test(
+    default void test(
             @NotNull ExecutionContext context,
             @NotNull Callback<@NotNull Result> callback
-    );
+    ) {
+        getConditions().testVisibility(context, callback);
+    }
+
+    @NotNull
+    default Conditions getConditions() {
+        return Conditions.empty();
+    }
 
     default boolean isYielding() {
         return false;

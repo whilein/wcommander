@@ -24,6 +24,7 @@ import w.commander.condition.Condition;
 import w.commander.execution.ExecutionContext;
 import w.commander.minecraft.MinecraftCommandActor;
 import w.commander.minecraft.MinecraftCommanderConfig;
+import w.commander.minecraft.annotation.PlayerOnly;
 import w.commander.result.Result;
 import w.commander.result.Results;
 
@@ -43,4 +44,13 @@ public final class PlayerOnlyCondition implements Condition {
                 : Results.ok();
     }
 
+    @Override
+    public int hashCode() {
+        return PlayerOnly.class.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this || obj != null && obj.getClass() == PlayerOnlyCondition.class;
+    }
 }

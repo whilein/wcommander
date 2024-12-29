@@ -25,9 +25,13 @@ import w.commander.execution.ExecutionContext;
 import w.commander.result.Result;
 import w.commander.result.Results;
 import w.commander.util.Callback;
+import w.commander.util.Immutables;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author whilein
@@ -55,15 +59,41 @@ public class Conditions {
             return EMPTY;
         }
 
-        val copyConditions = Arrays.copyOf(conditions, conditions.length);
-        Arrays.sort(copyConditions, Comparator.naturalOrder());
+        return from0(Arrays.copyOf(conditions, conditions.length));
+    }
+
+    private static Conditions from0(Condition... conditions) {
+        Arrays.sort(conditions, Comparator.naturalOrder());
 
         return new Conditions(
-                copyConditions,
-                Arrays.stream(copyConditions)
+                conditions,
+                Arrays.stream(conditions)
                         .filter(Condition::shouldCheckForVisibility)
                         .toArray(Condition[]::new)
         );
+    }
+
+    public @NotNull List<@NotNull Condition> getConditions() {
+        return Immutables.immutableList(conditions);
+    }
+
+    public @NotNull List<@NotNull Condition> getVisibilityConditions() {
+        return Immutables.immutableList(visibilityConditions);
+    }
+
+    public @NotNull Conditions visibilityConditions() {
+        return new Conditions(visibilityConditions, visibilityConditions);
+    }
+
+    public @NotNull Conditions merge(@NotNull Conditions another) {
+        val conditions = this.conditions;
+        val anotherConditions = another.conditions;
+
+        val result = new HashSet<Condition>();
+        result.addAll(Arrays.asList(conditions));
+        result.addAll(Arrays.asList(anotherConditions));
+
+        return from0(result.toArray(new Condition[0]));
     }
 
     private static void testRecursive(

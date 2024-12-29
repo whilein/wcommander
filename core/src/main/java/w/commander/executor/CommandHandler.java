@@ -37,15 +37,4 @@ public interface CommandHandler extends CommandExecutor {
     @NotNull
     ManualEntry getManualEntry();
 
-    @NotNull
-    Conditions getConditions();
-
-    @Override
-    default void test(
-            @NotNull ExecutionContext context,
-            @NotNull Callback<@NotNull Result> callback
-    ) {
-        getConditions().testVisibility(context, callback);
-    }
-
 }

@@ -212,8 +212,8 @@ public final class CommandFactory {
                 spec.getName(),
                 spec.getAliases(),
                 createNode(spec),
-                config,
-                spec.getInfo()
+                spec.getInfo(),
+                config
         );
     }
 

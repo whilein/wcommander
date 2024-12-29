@@ -18,21 +18,17 @@ package w.commander;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import w.commander.attribute.LazyAttributeStore;
+import w.commander.condition.Conditions;
 import w.commander.execution.ExecutionContext;
 import w.commander.executor.CommandExecutor;
 import w.commander.executor.CommandHandler;
-import w.commander.manual.Manual;
 import w.commander.result.Result;
-import w.commander.result.Results;
 import w.commander.tabcomplete.Suggestions;
 import w.commander.util.Callback;
-import w.commander.util.CallbackArrayCollector;
 import w.commander.util.StringUtils;
 
 import java.util.ArrayList;
@@ -43,29 +39,52 @@ import java.util.concurrent.CompletableFuture;
 /**
  * @author whilein
  */
+@Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 final class CommandImpl implements Command {
 
     private static final RawArguments EMPTY_TABCOMPLETE = RawArguments.fromTrustedArray("");
 
-    @Getter
-    @NotNull
     String name;
+    List<String> aliases;
 
-    @Getter
-    @NotNull
-    List<@NotNull String> aliases;
-
-    @NotNull
+    @Getter(AccessLevel.NONE)
     CommandNode tree;
+    CommandInfo info;
 
-    @NotNull
+    @Getter(AccessLevel.NONE)
     CommanderConfig config;
 
-    @Getter
-    @NotNull
-    CommandInfo info;
+    Conditions testConditions;
+
+    public CommandImpl(
+            @NotNull String name,
+            @NotNull List<@NotNull String> aliases,
+            @NotNull CommandNode tree,
+            @NotNull CommandInfo info,
+            @NotNull CommanderConfig config
+    ) {
+        this.name = name;
+        this.aliases = aliases;
+        this.tree = tree;
+        this.info = info;
+        this.config = config;
+
+        val executors = new ArrayList<CommandExecutor>();
+        addExecutors(tree, executors);
+
+        Conditions testConditions = Conditions.empty();
+        for (val executor : executors) {
+            testConditions = testConditions.merge(executor.getConditions().visibilityConditions());
+        }
+        this.testConditions = testConditions;
+    }
+
+    private static void addExecutors(CommandNode node, List<CommandExecutor> executors) {
+        executors.add(node.executor(0));
+
+        node.forEach((name, subcommand) -> addExecutors(subcommand, executors));
+    }
 
     private void addSubCommandToSuggestions(
             ExecutionContext context,
@@ -252,41 +271,12 @@ final class CommandImpl implements Command {
         }
     }
 
-    private void addExecutors(CommandNode node, List<CommandExecutor> executors) {
-        executors.add(node.executor(0));
-
-        node.forEach((name, subcommand) -> addExecutors(subcommand, executors));
-    }
-
     @Override
     public @NotNull CompletableFuture<@NotNull Result> test(@NotNull CommandActor actor) {
         val context = createContext(actor, RawArguments.empty());
 
-        val executors = new ArrayList<CommandExecutor>();
-        addExecutors(tree, executors);
-
         val future = new CompletableFuture<Result>();
-
-        val arrayCollector = new CallbackArrayCollector<Result>(
-                Callback.of((results, cause) -> {
-                    if (cause != null) {
-                        future.completeExceptionally(cause);
-                    } else if (results != null) {
-                        for (val result : results) {
-                            if (result.isSuccess()) {
-                                future.complete(Results.ok());
-                                return;
-                            }
-                        }
-
-                        future.complete(Results.error());
-                    }
-                }), executors.size());
-
-        int i = 0;
-        for (val executor : executors) {
-            executor.test(context, arrayCollector.element(i++));
-        }
+        testConditions.testVisibility(context, Callback.ofFuture(future));
 
         return future;
     }

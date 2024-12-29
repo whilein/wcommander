@@ -18,9 +18,8 @@ package w.commander;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import w.commander.manual.Manual;
+import w.commander.condition.Conditions;
 import w.commander.result.Result;
 
 import javax.annotation.concurrent.Immutable;
@@ -53,6 +52,8 @@ public interface Command {
     @NotNull CompletableFuture<@NotNull Result> test(
             @NotNull CommandActor actor
     );
+
+    @NotNull Conditions getTestConditions();
 
     @Contract(pure = true)
     @NotNull CommandInfo getInfo();

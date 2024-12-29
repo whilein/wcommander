@@ -24,6 +24,7 @@ import w.commander.condition.Condition;
 import w.commander.execution.ExecutionContext;
 import w.commander.minecraft.MinecraftCommandActor;
 import w.commander.minecraft.MinecraftCommanderConfig;
+import w.commander.minecraft.annotation.ConsoleOnly;
 import w.commander.result.Result;
 import w.commander.result.Results;
 
@@ -41,6 +42,16 @@ public final class ConsoleOnlyCondition implements Condition {
         return !((MinecraftCommandActor) ctx.getActor()).isConsole()
                 ? config.getMinecraftErrorResultFactory().onFailConsoleOnlyCondition(ctx)
                 : Results.ok();
+    }
+
+    @Override
+    public int hashCode() {
+        return ConsoleOnly.class.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this || obj != null && obj.getClass() == ConsoleOnlyCondition.class;
     }
 
 }
