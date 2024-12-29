@@ -1,4 +1,4 @@
 name: wcommander-test-plugin
 version: '0.0.1'
 main: plugin.TestPlugin
-api-version: '1.16.5'
+api-version: '1.16'

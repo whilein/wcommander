@@ -35,19 +35,20 @@ public class PermissionCondition implements ConditionFactory<Permission> {
 
     @Override
     public @NotNull Condition create(@NotNull Permission annotation) {
-        return new Condition() {
-            @Override
-            public @NotNull Result test(@NotNull ExecutionContext ctx) {
-                return ((PaperCommandActor) ctx.getActor()).getSender()
-                        .hasPermission(annotation.value())
-                        ? Results.ok()
-                        : Results.error("no permission");
-            }
+        return new ConditionImpl(annotation.value());
+    }
 
-            @Override
-            public boolean shouldCheckForVisibility() {
-                return true;
-            }
-        };
+    private record ConditionImpl(@NotNull String value) implements Condition {
+        @Override
+        public @NotNull Result test(@NotNull ExecutionContext ctx) {
+            return ((PaperCommandActor) ctx.getActor()).getSender().hasPermission(value)
+                    ? Results.ok()
+                    : Results.error("no permission");
+        }
+
+        @Override
+        public boolean shouldCheckForVisibility() {
+            return true;
+        }
     }
 }

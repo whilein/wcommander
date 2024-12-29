@@ -27,6 +27,7 @@ import w.commander.execution.ExecutionContext;
 import w.commander.executor.CommandExecutor;
 import w.commander.executor.CommandHandler;
 import w.commander.result.Result;
+import w.commander.result.Results;
 import w.commander.tabcomplete.Suggestions;
 import w.commander.util.Callback;
 import w.commander.util.StringUtils;
@@ -273,11 +274,14 @@ final class CommandImpl implements Command {
 
     @Override
     public @NotNull CompletableFuture<@NotNull Result> test(@NotNull CommandActor actor) {
+        if (testConditions.isEmpty()) {
+            return Results.ok().asFuture();
+        }
+
         val context = createContext(actor, RawArguments.empty());
 
         val future = new CompletableFuture<Result>();
         testConditions.testVisibility(context, Callback.ofFuture(future));
-
         return future;
     }
 
