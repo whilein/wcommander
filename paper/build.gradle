@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    api project(':spigot')
-    api project(':adventure')
+    api project(':wcommander-spigot')
+    api project(':wcommander-adventure')
     compileOnly libs.paper.api
 }

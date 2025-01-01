@@ -20,7 +20,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(':core')
+    implementation project(':wcommander-core')
 
     compileOnlyApi platform(libs.adventure.bom)
     compileOnlyApi libs.adventure.api

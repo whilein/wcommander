@@ -47,7 +47,7 @@ tasks {
 }
 
 dependencies {
-    implementation project(':paper')
+    implementation project(':wcommander-paper')
     compileOnly libs.paper.api
 }
 

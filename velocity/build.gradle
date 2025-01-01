@@ -27,8 +27,8 @@ repositories {
 }
 
 dependencies {
-    api project(':minecraft-core')
-    api project(':adventure')
+    api project(':wcommander-minecraft-core')
+    api project(':wcommander-adventure')
     compileOnly libs.velocity.api
 }
 

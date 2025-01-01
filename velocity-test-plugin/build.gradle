@@ -47,7 +47,7 @@ tasks {
 }
 
 dependencies {
-    implementation project(':velocity')
+    implementation project(':wcommander-velocity')
     compileOnly libs.velocity.api
     annotationProcessor libs.velocity.api
 }
