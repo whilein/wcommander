@@ -22,13 +22,23 @@ import lombok.experimental.FieldDefaults;
 import org.bukkit.plugin.Plugin;
 import w.commander.CommandInfo;
 
+import javax.annotation.concurrent.Immutable;
+import java.lang.invoke.MethodHandles;
+
 /**
  * @author whilein
  */
 @Getter
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class SpigotCommandInfo extends CommandInfo {
     Plugin plugin;
+
+    public SpigotCommandInfo(Plugin plugin, MethodHandles.Lookup lookup, Object instance) {
+        super(instance, lookup);
+
+        this.plugin = plugin;
+    }
 
     public SpigotCommandInfo(Plugin plugin, Object instance) {
         super(instance);

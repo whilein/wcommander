@@ -245,7 +245,7 @@ public final class CommandSpecFactory {
 
         val annotationScanner = config.getAnnotationScanner();
 
-        for (val method : commandType.getMethods()) {
+        for (val method : commandType.getDeclaredMethods()) {
             if (annotationScanner.isSetupHandler(method)) {
                 setupHandlers.add(createSetupHandler(commandSpec, method));
             }

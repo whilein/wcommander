@@ -21,13 +21,23 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import w.commander.CommandInfo;
 
+import javax.annotation.concurrent.Immutable;
+import java.lang.invoke.MethodHandles;
+
 /**
  * @author whilein
  */
 @Getter
+@Immutable
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class VelocityCommandInfo extends CommandInfo {
     Object plugin;
+
+    public VelocityCommandInfo(Object plugin, MethodHandles.Lookup lookup, Object instance) {
+        super(instance, lookup);
+
+        this.plugin = plugin;
+    }
 
     public VelocityCommandInfo(Object plugin, Object instance) {
         super(instance);

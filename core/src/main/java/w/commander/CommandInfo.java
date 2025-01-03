@@ -23,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.concurrent.Immutable;
+import java.lang.invoke.MethodHandles;
 
 /**
  * @author whilein
@@ -35,12 +36,18 @@ public class CommandInfo {
 
     @NotNull Object instance;
 
+    @NotNull MethodHandles.Lookup lookup;
+
+    public CommandInfo(Object instance) {
+        this(instance, MethodHandles.lookup());
+    }
+
     public @NotNull Class<?> getInstanceType() {
         return getInstance().getClass();
     }
 
     public @NotNull CommandInfo withInstance(@NotNull Object instance) {
-        return new CommandInfo(instance);
+        return new CommandInfo(instance, lookup);
     }
 
     @Override

@@ -18,15 +18,18 @@ package plugin;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import w.commander.CommandInfo;
 import w.commander.error.ErrorResultFactory;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.Argument;
 import w.commander.platform.paper.PaperCommander;
+import w.commander.platform.spigot.SpigotCommandInfo;
 import w.commander.platform.spigot.SpigotErrorResultFactory;
 import w.commander.platform.spigot.SpigotExecutionContext;
 import w.commander.result.FailedResult;
 import w.commander.result.Results;
 
+import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -136,6 +139,7 @@ public class TestPlugin extends JavaPlugin {
 
         commander.register(this, new TestCommand());
         commander.register(this, new TestPermCommand());
+        commander.register(new SpigotCommandInfo(this, MethodHandles.lookup(), new TestProtectedCommand()));
     }
 
 }

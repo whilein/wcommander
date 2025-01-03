@@ -27,6 +27,7 @@ import lombok.experimental.NonFinal;
 import w.commander.CommandInfo;
 import w.commander.executor.HandlerPath;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -63,6 +64,10 @@ public class CommandSpec implements NameAwareSpec, PathAwareSpec {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     List<CommandSpec> subCommands;
+
+    public MethodHandles.Lookup getLookup() {
+        return info.getLookup();
+    }
 
     public Object getInstance() {
         return info.getInstance();

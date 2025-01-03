@@ -51,8 +51,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class CommandFactory {
 
-    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
-
     private static final CommandExecutor[] EMPTY = new CommandExecutor[]{
             CommandExecutor.empty()
     };
@@ -60,14 +58,14 @@ public final class CommandFactory {
     CommanderConfig config;
 
     @SneakyThrows
-    private MethodExecutor createExecutor(Method method, Object instance) {
-        return new MethodHandleExecutor(LOOKUP.unreflect(method)
+    private MethodExecutor createExecutor(Method method, MethodHandles.Lookup lookup, Object instance) {
+        return new MethodHandleExecutor(lookup.unreflect(method)
                 .bindTo(instance));
     }
 
     @SneakyThrows
     private CommandSetupHandler createSetupHandler(SetupHandlerSpec handler, CommandSpec command) {
-        val executor = createExecutor(handler.getMethod(), command.getInstance());
+        val executor = createExecutor(handler.getMethod(), command.getLookup(), command.getInstance());
 
         return new MethodCommandSetupHandler(
                 handler.getParameters(),
@@ -77,7 +75,7 @@ public final class CommandFactory {
 
     @SneakyThrows
     private CommandExecutor createExecutor(HandlerSpec handler, CommandSpec command) {
-        val executor = createExecutor(handler.getMethod(), command.getInstance());
+        val executor = createExecutor(handler.getMethod(), command.getLookup(), command.getInstance());
         val wrappedExecutor = handler.getDecorators().wrap(handler, executor);
 
         return new MethodCommandHandler(
