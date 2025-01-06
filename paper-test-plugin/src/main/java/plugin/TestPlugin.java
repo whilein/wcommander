@@ -139,6 +139,7 @@ public class TestPlugin extends JavaPlugin {
 
         commander.register(this, new TestCommand());
         commander.register(this, new TestPermCommand());
+        commander.register(this, new TestPerm2Command());
         commander.register(new SpigotCommandInfo(this, MethodHandles.lookup(), new TestProtectedCommand()));
     }
 

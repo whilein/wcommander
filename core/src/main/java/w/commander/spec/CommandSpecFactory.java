@@ -159,6 +159,11 @@ public final class CommandSpecFactory {
         return null;
     }
 
+    private Conditions createHandlerConditions(Method method, Conditions typeConditions) {
+        val conditions = createConditions(method).merge(typeConditions);
+        return conditions.isEmpty() ? Conditions.alwaysTrue() : conditions;
+    }
+
     private Conditions createConditions(AnnotatedElement element) {
         val result = new ArrayList<Condition>();
 
@@ -190,7 +195,7 @@ public final class CommandSpecFactory {
             Decorators typeDecorators
     ) {
         val parameters = getParameters(method);
-        val conditions = createConditions(method).merge(typeConditions);
+        val conditions = createHandlerConditions(method, typeConditions);
         val decorators = createDecorators(method).merge(typeDecorators);
 
         return HandlerSpec.builder()

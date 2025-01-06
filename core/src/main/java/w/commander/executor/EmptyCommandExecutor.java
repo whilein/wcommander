@@ -19,6 +19,7 @@ package w.commander.executor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import w.commander.condition.Conditions;
 import w.commander.execution.ExecutionContext;
 import w.commander.result.Result;
 import w.commander.result.Results;
@@ -45,6 +46,11 @@ final class EmptyCommandExecutor implements CommandExecutor {
     @Override
     public void test(@NotNull ExecutionContext context, @NotNull Callback<@NotNull Result> callback) {
         callback.complete(Results.error());
+    }
+
+    @Override
+    public @NotNull Conditions getConditions() {
+        return Conditions.empty();
     }
 
 }

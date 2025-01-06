@@ -17,6 +17,7 @@
 package w.commander.condition;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
@@ -27,7 +28,6 @@ import w.commander.result.Results;
 import w.commander.util.Callback;
 import w.commander.util.Immutables;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -42,11 +42,26 @@ public class Conditions {
 
     private static final Conditions EMPTY = new Conditions();
 
+    private static final Conditions ALWAYS_TRUE = new Conditions(AlwaysCondition.getInstance());
+
     Condition[] conditions;
     Condition[] visibilityConditions;
 
+    @Getter
+    boolean alwaysTrue;
+
     private Conditions() {
         conditions = visibilityConditions = new Condition[0];
+        alwaysTrue = false;
+    }
+
+    private Conditions(AlwaysCondition condition) {
+        conditions = visibilityConditions = new Condition[] { condition };
+        alwaysTrue = true;
+    }
+
+    public static @NotNull Conditions alwaysTrue() {
+        return ALWAYS_TRUE;
     }
 
     public static @NotNull Conditions empty() {
@@ -55,8 +70,13 @@ public class Conditions {
 
     public static @NotNull Conditions from(@NotNull Condition @NotNull ... conditions) {
         if (conditions.length == 0) {
-            // memory optimization :0
             return EMPTY;
+        }
+
+        val anyAlwaysTrue = Arrays.stream(conditions)
+                .anyMatch(AlwaysCondition.class::isInstance);
+        if (anyAlwaysTrue) {
+            return ALWAYS_TRUE;
         }
 
         return from0(Arrays.copyOf(conditions, conditions.length));
@@ -69,7 +89,8 @@ public class Conditions {
                 conditions,
                 Arrays.stream(conditions)
                         .filter(Condition::shouldCheckForVisibility)
-                        .toArray(Condition[]::new)
+                        .toArray(Condition[]::new),
+                false
         );
     }
 
@@ -82,11 +103,12 @@ public class Conditions {
     }
 
     public @NotNull Conditions visibilityConditions() {
-        return new Conditions(visibilityConditions, visibilityConditions);
+        return new Conditions(visibilityConditions, visibilityConditions, alwaysTrue);
     }
 
     public @NotNull Conditions merge(@NotNull Conditions another) {
         if (isEmpty() && another.isEmpty()) return EMPTY;
+        if (isAlwaysTrue() || another.isAlwaysTrue()) return ALWAYS_TRUE;
 
         val conditions = this.conditions;
         val anotherConditions = another.conditions;
@@ -122,7 +144,7 @@ public class Conditions {
 
     public void testAny(ExecutionContext ctx, Callback<Result> callback) {
         val conditions = this.conditions;
-        if (conditions.length == 0) {
+        if (conditions.length == 0 || alwaysTrue) {
             callback.complete(Results.ok());
             return;
         }
@@ -131,7 +153,7 @@ public class Conditions {
 
     public void testAnyVisibility(ExecutionContext ctx, Callback<Result> callback) {
         val visibilityConditions = this.visibilityConditions;
-        if (visibilityConditions.length == 0) {
+        if (visibilityConditions.length == 0 || alwaysTrue) {
             callback.complete(Results.ok());
             return;
         }
@@ -161,10 +183,18 @@ public class Conditions {
     }
 
     public void test(ExecutionContext ctx, Callback<Result> callback) {
+        if (alwaysTrue) {
+            callback.complete(Results.ok());
+            return;
+        }
         testRecursive(ctx, callback, conditions, 0);
     }
 
     public void testVisibility(ExecutionContext ctx, Callback<Result> callback) {
+        if (alwaysTrue) {
+            callback.complete(Results.ok());
+            return;
+        }
         testRecursive(ctx, callback, visibilityConditions, 0);
     }
 

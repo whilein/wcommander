@@ -46,7 +46,7 @@ public final class PlayerOnlyCondition implements Condition {
 
     @Override
     public int hashCode() {
-        return PlayerOnly.class.hashCode();
+        return PlayerOnlyCondition.class.hashCode();
     }
 
     @Override

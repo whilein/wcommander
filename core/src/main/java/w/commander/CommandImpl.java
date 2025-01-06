@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.attribute.LazyAttributeStore;
 import w.commander.condition.Conditions;
 import w.commander.execution.ExecutionContext;
 import w.commander.executor.CommandExecutor;
@@ -274,7 +273,7 @@ final class CommandImpl implements Command {
 
     @Override
     public @NotNull CompletableFuture<@NotNull Result> test(@NotNull CommandActor actor) {
-        if (testConditions.isEmpty()) {
+        if (testConditions.isEmpty() || testConditions.isAlwaysTrue()) {
             return Results.ok().asFuture();
         }
 

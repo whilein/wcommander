@@ -46,7 +46,7 @@ public final class ConsoleOnlyCondition implements Condition {
 
     @Override
     public int hashCode() {
-        return ConsoleOnly.class.hashCode();
+        return ConsoleOnlyCondition.class.hashCode();
     }
 
     @Override

@@ -45,7 +45,7 @@ public interface CommandExecutor {
 
     @NotNull
     default Conditions getConditions() {
-        return Conditions.empty();
+        return Conditions.alwaysTrue();
     }
 
     default boolean isYielding() {
