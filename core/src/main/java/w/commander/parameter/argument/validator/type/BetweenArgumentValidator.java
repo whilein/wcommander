@@ -41,7 +41,7 @@ public class BetweenArgumentValidator extends NumberArgumentValidator {
     public @NotNull Result validate(@NotNull Number value, @NotNull ExecutionContext ctx, @NotNull Argument argument) {
         double v;
         return (v = value.doubleValue()) < min || v > max
-                ? config.getErrorResultFactory().onFailBetweenValidation(ctx, argument, min, max)
+                ? config.getErrorResultFactory().onFailBetweenValidation(ctx, argument, v, min, max)
                 : Results.ok();
     }
 }

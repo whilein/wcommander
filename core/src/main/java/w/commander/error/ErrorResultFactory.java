@@ -78,6 +78,7 @@ public interface ErrorResultFactory {
     default @NotNull FailedResult onFailBetweenValidation(
             @NotNull ExecutionContext context,
             @NotNull Argument argument,
+            double inputValue,
             double min,
             double max
     ) {
@@ -87,7 +88,8 @@ public interface ErrorResultFactory {
     default @NotNull FailedResult onFailGreaterThanValidation(
             @NotNull ExecutionContext context,
             @NotNull Argument argument,
-            double value
+            double inputValue,
+            double minValue
     ) {
         return Results.error("Invalid number passed");
     }
@@ -95,7 +97,8 @@ public interface ErrorResultFactory {
     default @NotNull FailedResult onFailLowerThanValidation(
             @NotNull ExecutionContext context,
             @NotNull Argument argument,
-            double value
+            double inputValue,
+            double maxValue
     ) {
         return Results.error("Invalid number passed");
     }
