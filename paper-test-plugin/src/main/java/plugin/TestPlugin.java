@@ -31,6 +31,7 @@ import w.commander.result.Results;
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -99,7 +100,8 @@ public class TestPlugin extends JavaPlugin {
                     @NotNull ExecutionContext context,
                     @NotNull Argument argument,
                     @NotNull String value,
-                    @NotNull Pattern pattern
+                    @NotNull Pattern pattern,
+                    @NotNull Matcher matcher
             ) {
                 return Results.error("fail regex " + pattern + ", input " + value);
             }

@@ -28,6 +28,7 @@ import w.commander.parameter.argument.validator.ArgumentValidator;
 import w.commander.result.Result;
 import w.commander.result.Results;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -43,8 +44,9 @@ public class RegexArgumentValidator implements ArgumentValidator {
     @Override
     public @NotNull Result validate(@Nullable Object value, @NotNull ExecutionContext ctx, @NotNull Argument argument) {
         String v;
-        return value != null && !pattern.matcher((v = value.toString())).matches()
-                ? config.getErrorResultFactory().onFailRegexValidation(ctx, argument, v, pattern)
+        Matcher m;
+        return value != null && !(m = pattern.matcher((v = value.toString()))).matches()
+                ? config.getErrorResultFactory().onFailRegexValidation(ctx, argument, v, pattern, m)
                 : Results.ok();
     }
 }

@@ -26,6 +26,7 @@ import w.commander.result.Results;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -107,7 +108,8 @@ public interface ErrorResultFactory {
             @NotNull ExecutionContext context,
             @NotNull Argument argument,
             @NotNull String value,
-            @NotNull Pattern pattern
+            @NotNull Pattern pattern,
+            @NotNull Matcher matcher
     ) {
         return Results.error("Invalid value passed");
     }
