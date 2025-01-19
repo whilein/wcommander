@@ -106,6 +106,7 @@ public interface ErrorResultFactory {
     default @NotNull FailedResult onFailRegexValidation(
             @NotNull ExecutionContext context,
             @NotNull Argument argument,
+            @NotNull String value,
             @NotNull Pattern pattern
     ) {
         return Results.error("Invalid value passed");

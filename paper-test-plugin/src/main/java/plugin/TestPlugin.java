@@ -98,9 +98,10 @@ public class TestPlugin extends JavaPlugin {
             public @NotNull FailedResult onFailRegexValidation(
                     @NotNull ExecutionContext context,
                     @NotNull Argument argument,
+                    @NotNull String value,
                     @NotNull Pattern pattern
             ) {
-                return Results.error("fail regex " + pattern);
+                return Results.error("fail regex " + pattern + ", input " + value);
             }
         });
         commander.setSpigotErrorResultFactory(new SpigotErrorResultFactory() {

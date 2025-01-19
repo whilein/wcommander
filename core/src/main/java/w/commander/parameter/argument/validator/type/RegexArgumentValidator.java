@@ -42,8 +42,9 @@ public class RegexArgumentValidator implements ArgumentValidator {
 
     @Override
     public @NotNull Result validate(@Nullable Object value, @NotNull ExecutionContext ctx, @NotNull Argument argument) {
-        return value != null && !pattern.matcher(value.toString()).matches()
-                ? config.getErrorResultFactory().onFailRegexValidation(ctx, argument, pattern)
+        String v;
+        return value != null && !pattern.matcher((v = value.toString())).matches()
+                ? config.getErrorResultFactory().onFailRegexValidation(ctx, argument, v, pattern)
                 : Results.ok();
     }
 }
