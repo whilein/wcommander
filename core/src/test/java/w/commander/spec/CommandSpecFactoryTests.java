@@ -159,7 +159,7 @@ class CommandSpecFactoryTests {
         val handler = handlers.get(0);
         assertEquals("foo", handler.getPath().toString());
         assertSame(command, handler.getCommand());
-        assertTrue(handler.getConditions().isEmpty());
+        assertTrue(handler.getConditions().isAlwaysTrue());
         assertTrue(handler.getParameters().isEmpty());
 
         val decorators = handler.getDecorators();
@@ -320,7 +320,7 @@ class CommandSpecFactoryTests {
             val handlers = subCommand.getHandlers();
             assertEquals(1, handlers.size());
             val handler = handlers.get(0);
-            assertTrue(handler.getConditions().isEmpty());
+            assertTrue(handler.getConditions().isAlwaysTrue());
             assertTrue(handler.getDecorators().isEmpty());
             val parameters = handler.getParameters();
             assertEquals(1, parameters.getArgumentCount());
@@ -645,12 +645,12 @@ class CommandSpecFactoryTests {
             assertEquals(4, handlers.size());
             for (val handler : handlers) {
                 assertSame(command, handler.getCommand());
-                assertTrue(handler.getConditions().isEmpty());
+                assertTrue(handler.getConditions().isAlwaysTrue());
                 assertTrue(handler.getDecorators().isEmpty());
                 assertTrue(handler.getParameters().isEmpty());
 
                 val manualEntry = handler.getManualEntry();
-                assertTrue(manualEntry.getConditions().isEmpty());
+                assertTrue(manualEntry.getConditions().isAlwaysTrue());
 
                 assertEquals("foo", manualEntry.getUsage().format(context));
 
@@ -688,11 +688,11 @@ class CommandSpecFactoryTests {
             assertEquals(1, subCommandHandlers.size());
             val subCommandHandler = subCommandHandlers.get(0);
             assertSame(subCommand, subCommandHandler.getCommand());
-            assertTrue(subCommandHandler.getConditions().isEmpty());
+            assertTrue(subCommandHandler.getConditions().isAlwaysTrue());
             assertTrue(subCommandHandler.getDecorators().isEmpty());
             assertTrue(subCommandHandler.getParameters().isEmpty());
             val manualEntry = subCommandHandler.getManualEntry();
-            assertTrue(manualEntry.getConditions().isEmpty());
+            assertTrue(manualEntry.getConditions().isAlwaysTrue());
             assertEquals("foo foo", manualEntry.getUsage().format(context));
             assertFalse(manualEntry.isHidden());
             assertEquals("", manualEntry.getDescription().format(context));
