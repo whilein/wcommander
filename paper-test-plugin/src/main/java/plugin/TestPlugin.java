@@ -18,7 +18,6 @@ package plugin;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandInfo;
 import w.commander.error.ErrorResultFactory;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.argument.Argument;
@@ -68,28 +67,31 @@ public class TestPlugin extends JavaPlugin {
             public @NotNull FailedResult onFailBetweenValidation(
                     @NotNull ExecutionContext context,
                     @NotNull Argument argument,
+                    double input,
                     double min,
                     double max
             ) {
-                return Results.error("fail between " + min + " and " + max);
+                return Results.error("fail between, expected " + min + " and " + max + ", but was " + input);
             }
 
             @Override
             public @NotNull FailedResult onFailGreaterThanValidation(
                     @NotNull ExecutionContext context,
                     @NotNull Argument argument,
+                    double input,
                     double value
             ) {
-                return Results.error("fail greater than " + value);
+                return Results.error("fail greater than, expected " + value + ", but was " + input);
             }
 
             @Override
             public @NotNull FailedResult onFailLowerThanValidation(
                     @NotNull ExecutionContext context,
                     @NotNull Argument argument,
+                    double input,
                     double value
             ) {
-                return Results.error("fail lower than " + value);
+                return Results.error("fail lower than, expected " + value + ", but was " + input);
             }
 
             @Override
