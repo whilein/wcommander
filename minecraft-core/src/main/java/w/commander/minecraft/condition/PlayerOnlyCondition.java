@@ -24,7 +24,6 @@ import w.commander.condition.Condition;
 import w.commander.execution.ExecutionContext;
 import w.commander.minecraft.MinecraftCommandActor;
 import w.commander.minecraft.MinecraftCommanderConfig;
-import w.commander.minecraft.annotation.PlayerOnly;
 import w.commander.result.Result;
 import w.commander.result.Results;
 
@@ -36,6 +35,11 @@ import w.commander.result.Results;
 public final class PlayerOnlyCondition implements Condition {
 
     MinecraftCommanderConfig config;
+
+    @Override
+    public boolean shouldCheckForVisibility() {
+        return true;
+    }
 
     @Override
     public @NotNull Result test(@NotNull ExecutionContext ctx) {
