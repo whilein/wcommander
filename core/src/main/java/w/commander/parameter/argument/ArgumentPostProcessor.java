@@ -107,7 +107,9 @@ public final class ArgumentPostProcessor implements ParameterPostProcessor {
                 argumentInfo.setTabCompleter(tabCompleter);
             }
 
-            argumentInfo.setRequired(!parameter.isAnnotationPresent(NonRequired.class));
+            if (parameter.isAnnotationPresent(NonRequired.class)) {
+                argumentInfo.setRequired(false);
+            }
         }
 
         return handlerParameter;

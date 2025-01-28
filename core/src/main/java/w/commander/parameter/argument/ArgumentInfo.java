@@ -41,7 +41,7 @@ public class ArgumentInfo {
 
     public ArgumentInfo(String name) {
         this.name = name;
-        this.required = false;
+        this.required = true;
         this.validators = Collections.emptyList();
         this.tabCompleter = null;
     }
