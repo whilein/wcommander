@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import w.commander.condition.Conditions;
 import w.commander.executor.CommandExecutor;
 import w.commander.executor.CommandHandler;
 import w.commander.executor.CommandSetupHandler;
@@ -181,8 +182,15 @@ public final class CommandFactory {
 
         val manualSpec = spec.getManual();
         if (!manualSpec.isEmpty()) {
-            val manualExecutor = new ManualCommandExecutor(config.getManualFactory().create(spec),
-                    config.getManualFormatter(), config.getErrorResultFactory());
+            val manual = config.getManualFactory().create(spec);
+
+            Conditions conditions = Conditions.empty();
+            for (val entry : manual.entries()) {
+                conditions = conditions.merge(entry.getConditions());
+            }
+
+            val manualExecutor = new ManualCommandExecutor(manual, config.getManualFormatter(), conditions,
+                    config.getErrorResultFactory());
 
             if (manualSpec.isHasHandler()) {
                 commandExecutors.add(manualExecutor);
