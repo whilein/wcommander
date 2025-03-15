@@ -17,31 +17,30 @@
 package w.commander.decorator.type;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommanderConfig;
 import w.commander.annotation.Cooldown;
+import w.commander.decorator.AnnotationDecoratorFactory;
 import w.commander.decorator.Decorator;
-import w.commander.decorator.DecoratorFactory;
 
 /**
  * @author whilein
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
-public class CooldownDecoratorFactory implements DecoratorFactory<Cooldown> {
+public class CooldownDecoratorFactory extends AnnotationDecoratorFactory<Cooldown> {
 
     CommanderConfig config;
 
-    @Override
-    public @NotNull Class<? extends Cooldown> getAnnotation() {
-        return Cooldown.class;
+    public CooldownDecoratorFactory(CommanderConfig config) {
+        super(Cooldown.class);
+
+        this.config = config;
     }
 
     @Override
-    public @NotNull Decorator create(@NotNull Cooldown annotation) {
+    protected @NotNull Decorator create(@NotNull Cooldown annotation) {
         String customId = annotation.id();
         if (customId.isEmpty())
             customId = null;

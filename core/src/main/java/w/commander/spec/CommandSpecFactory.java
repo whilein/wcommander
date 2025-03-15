@@ -16,6 +16,14 @@
 
 package w.commander.spec;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +36,6 @@ import w.commander.condition.Condition;
 import w.commander.condition.ConditionFactory;
 import w.commander.condition.Conditions;
 import w.commander.decorator.Decorator;
-import w.commander.decorator.DecoratorFactory;
 import w.commander.decorator.Decorators;
 import w.commander.executor.HandlerPath;
 import w.commander.manual.FormattingText;
@@ -37,15 +44,6 @@ import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.HandlerParameters;
 import w.commander.parameter.ParameterParser;
 import w.commander.parameter.argument.Argument;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author whilein
@@ -123,25 +121,12 @@ public final class CommandSpecFactory {
         return config.getDescriptionFormatter().create(commandSpec, description);
     }
 
-    private static <A extends Annotation> Decorator tryCreateDecorator(
-            DecoratorFactory<A> factory,
-            AnnotatedElement element
-    ) {
-        val annotation = element.getDeclaredAnnotation(factory.getAnnotation());
-        if (annotation != null) {
-            return factory.create(annotation);
-        }
-
-        return null;
-    }
-
     private Decorators createDecorators(AnnotatedElement element) {
         val result = new ArrayList<Decorator>();
 
         for (val decoratorFactory : config.getDecoratorFactories()) {
-            val decorator = tryCreateDecorator(decoratorFactory, element);
-            if (decorator != null) {
-                result.add(decorator);
+            if (decoratorFactory.isSupported(element)) {
+                result.add(decoratorFactory.create(element));
             }
         }
 

@@ -1,5 +1,5 @@
 /*
- *    Copyright 2024 Whilein
+ *    Copyright 2025 Whilein
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,33 +14,34 @@
  *    limitations under the License.
  */
 
-package w.commander.decorator.type;
+package w.commander.decorator;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommanderConfig;
-import w.commander.annotation.Async;
-import w.commander.decorator.AnnotationDecoratorFactory;
-import w.commander.decorator.Decorator;
 
 /**
- * @author whilein
+ * @author _Novit_ (novitpw)
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AsyncDecoratorFactory extends AnnotationDecoratorFactory<Async> {
+@RequiredArgsConstructor
+public abstract class AnnotationDecoratorFactory<A extends Annotation> implements DecoratorFactory {
 
-    CommanderConfig config;
+    Class<? extends A> annotation;
 
-    public AsyncDecoratorFactory(CommanderConfig config) {
-        super(Async.class);
-
-        this.config = config;
+    @Override
+    public boolean isSupported(@NotNull AnnotatedElement annotatedElement) {
+        return annotatedElement.isAnnotationPresent(annotation);
     }
 
     @Override
-    protected @NotNull Decorator create(@NotNull Async annotation) {
-        return new AsyncDecorator(config);
+    public @NotNull Decorator create(@NotNull AnnotatedElement annotatedElement) {
+        return create(annotatedElement.getAnnotation(annotation));
     }
+
+    protected abstract @NotNull Decorator create(@NotNull A annotation);
 
 }

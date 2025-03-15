@@ -16,6 +16,21 @@
 
 package w.commander.spec;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -42,8 +57,8 @@ import w.commander.annotation.WithManualSubCommand;
 import w.commander.attribute.MapAttributeStore;
 import w.commander.condition.Condition;
 import w.commander.condition.ConditionFactory;
+import w.commander.decorator.AnnotationDecoratorFactory;
 import w.commander.decorator.Decorator;
-import w.commander.decorator.DecoratorFactory;
 import w.commander.executor.MethodExecutor;
 import w.commander.parameter.argument.parser.type.EnumArgumentParser;
 import w.commander.parameter.argument.parser.type.NoopArgumentParser;
@@ -52,22 +67,6 @@ import w.commander.parameter.argument.type.JoinArgument;
 import w.commander.parameter.argument.type.OrdinaryArgument;
 import w.commander.tabcomplete.ExplicitTabCompleter;
 import w.commander.tabcomplete.Suggestions;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author whilein
@@ -110,11 +109,10 @@ class CommandSpecFactoryTests {
         }
     }
 
-    static class NoopDecoratorFactory implements DecoratorFactory<Noop> {
+    static class NoopDecoratorFactory extends AnnotationDecoratorFactory<Noop> {
 
-        @Override
-        public @NotNull Class<? extends Noop> getAnnotation() {
-            return Noop.class;
+        public NoopDecoratorFactory() {
+            super(Noop.class);
         }
 
         @Override

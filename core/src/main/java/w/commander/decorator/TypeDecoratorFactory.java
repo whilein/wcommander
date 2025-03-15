@@ -1,5 +1,5 @@
 /*
- *    Copyright 2024 Whilein
+ *    Copyright 2025 Whilein
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,23 +16,26 @@
 
 package w.commander.decorator;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import org.jetbrains.annotations.NotNull;
 
-public interface DecoratorFactory {
+/**
+ * @author _Novit_ (novitpw)
+ */
+public abstract class TypeDecoratorFactory implements DecoratorFactory {
 
-    static <A extends Annotation> DecoratorFactory from(Class<A> annotation, Decorator decorator) {
-        return new AnnotationDecoratorFactory<A>(annotation) {
-            @Override
-            protected @NotNull Decorator create(@NotNull Annotation annotation) {
-                return decorator;
-            }
-        };
+    @Override
+    public boolean isSupported(@NotNull AnnotatedElement annotatedElement) {
+        return annotatedElement instanceof Class<?> && isSupported((Class<?>) annotatedElement);
     }
 
-    boolean isSupported(@NotNull AnnotatedElement annotatedElement);
+    @Override
+    public @NotNull Decorator create(@NotNull AnnotatedElement annotatedElement) {
+        return create((Class<?>) annotatedElement);
+    }
 
-    @NotNull Decorator create(@NotNull AnnotatedElement annotatedElement);
+    protected abstract boolean isSupported(@NotNull Class<?> type);
+
+    protected abstract @NotNull Decorator create(@NotNull Class<?> type);
 
 }

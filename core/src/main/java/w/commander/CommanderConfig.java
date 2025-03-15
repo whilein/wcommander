@@ -16,6 +16,15 @@
 
 package w.commander;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
+import javax.annotation.concurrent.NotThreadSafe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,16 +76,6 @@ import w.commander.parameter.type.CommandActorParameterParser;
 import w.commander.tabcomplete.NamedTabCompleter;
 import w.commander.tabcomplete.TabCompleter;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
-
 /**
  * @author whilein
  */
@@ -112,7 +111,7 @@ public class CommanderConfig {
     Map<String, TabCompleter> tabCompleters = new HashMap<>();
     Map<String, CooldownManager> cooldownManagers = new HashMap<>();
     List<ConditionFactory<?>> conditionFactories = new ArrayList<>();
-    List<DecoratorFactory<?>> decoratorFactories = new ArrayList<>();
+    List<DecoratorFactory> decoratorFactories = new ArrayList<>();
     List<ArgumentParserFactory> argumentParserFactories = new ArrayList<>();
     List<ArgumentValidatorFactory<?>> argumentValidatorFactories = new ArrayList<>();
     List<AnnotatedParameterParser<?>> annotatedParameterParsers = new ArrayList<>();
@@ -159,7 +158,7 @@ public class CommanderConfig {
         addDecorator(new CooldownDecoratorFactory(this));
     }
 
-    public <A extends Annotation> void addDecorator(@NotNull DecoratorFactory<A> decoratorFactory) {
+    public <A extends Annotation> void addDecorator(@NotNull DecoratorFactory decoratorFactory) {
         decoratorFactories.add(decoratorFactory);
     }
 
