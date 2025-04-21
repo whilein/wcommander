@@ -127,7 +127,7 @@ public interface Callback<T> {
 
         @Override
         public void completeExceptionally(@NotNull Throwable cause) {
-            failureCallback.accept(null);
+            failureCallback.accept(cause);
         }
     }
 
