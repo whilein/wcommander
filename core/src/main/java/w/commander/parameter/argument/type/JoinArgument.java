@@ -18,7 +18,6 @@ package w.commander.parameter.argument.type;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import w.commander.execution.ExecutionContext;
@@ -38,6 +37,11 @@ public class JoinArgument extends AbstractArgument {
         super(name);
 
         this.delimiter = delimiter;
+    }
+
+    @Override
+    public int getMinLength() {
+        return isRequired() ? 1 : 0;
     }
 
     @Override

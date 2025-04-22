@@ -64,7 +64,7 @@ public final class ManualCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public boolean isYielding() {
+    public boolean tryYield(CommandExecutor executor) {
         return true;
     }
 

@@ -68,9 +68,9 @@ public final class CommandNode {
                 val executor = executors[i];
                 val anotherExecutor = anotherExecutors[i];
 
-                if (executor.isYielding()) {
+                if (executor.tryYield(anotherExecutor)) {
                     newExecutors[i] = anotherExecutor;
-                } else if (anotherExecutor.isYielding()) {
+                } else if (anotherExecutor.tryYield(executor)) {
                     newExecutors[i] = executor;
                 } else {
                     throw new IllegalStateException("Merge conflict: " + executor + " and " + anotherExecutor);

@@ -16,9 +16,10 @@
 
 package w.commander.decorator;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import org.jetbrains.annotations.NotNull;
 
 public interface DecoratorFactory {
 

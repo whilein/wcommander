@@ -16,12 +16,13 @@
 
 package w.commander.decorator;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 
 /**
  * @author _Novit_ (novitpw)

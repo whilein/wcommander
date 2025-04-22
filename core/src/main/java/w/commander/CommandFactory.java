@@ -105,11 +105,7 @@ public final class CommandFactory {
                     trySetExecutor(executorByArgumentMap, executor, i);
                 }
             } else {
-                int i = 0;
-
-                while (!trySetExecutor(executorByArgumentMap, executor, i)) {
-                    i++;
-                }
+                trySetExecutor(executorByArgumentMap, executor, 0);
             }
         }
 
@@ -144,24 +140,22 @@ public final class CommandFactory {
         return executorByArgument;
     }
 
-    private static boolean trySetExecutor(
+    private static void trySetExecutor(
             Map<Integer, CommandExecutor> executors,
             CommandExecutor executor,
             int index
     ) {
         val existing = executors.get(index);
 
-        if (existing != null && !existing.isYielding()) {
-            if (executor.isYielding()) {
-                return false;
+        if (existing != null && !existing.tryYield(executor)) {
+            if (!executor.tryYield(existing)) {
+                throw new IllegalStateException("Executors conflict: " + executor + ", "
+                        + existing);
             }
-
-            throw new IllegalStateException("Executors conflict: " + executor + ", "
-                                            + existing);
+            return;
         }
 
         executors.put(index, executor);
-        return true;
     }
 
     private CommandNode createNode(CommandSpec spec) {

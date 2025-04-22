@@ -34,7 +34,7 @@ final class EmptyCommandExecutor implements CommandExecutor {
     public static final @NotNull CommandExecutor INSTANCE = new EmptyCommandExecutor();
 
     @Override
-    public boolean isYielding() {
+    public boolean tryYield(CommandExecutor executor) {
         return true;
     }
 

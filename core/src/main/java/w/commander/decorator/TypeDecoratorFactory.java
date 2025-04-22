@@ -16,8 +16,9 @@
 
 package w.commander.decorator;
 
-import java.lang.reflect.AnnotatedElement;
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.AnnotatedElement;
 
 /**
  * @author _Novit_ (novitpw)

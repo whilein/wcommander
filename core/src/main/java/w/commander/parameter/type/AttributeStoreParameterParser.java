@@ -17,7 +17,6 @@
 package w.commander.parameter.type;
 
 import org.jetbrains.annotations.NotNull;
-import w.commander.CommandActor;
 import w.commander.attribute.AttributeStore;
 import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.TypedParameterParser;

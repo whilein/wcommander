@@ -28,8 +28,10 @@ import w.commander.annotation.Command;
 import w.commander.annotation.CommandHandler;
 import w.commander.annotation.Cooldown;
 import w.commander.annotation.Join;
+import w.commander.annotation.NonRequired;
 import w.commander.annotation.SetupHandler;
 import w.commander.annotation.SubCommandHandler;
+import w.commander.annotation.WithManual;
 import w.commander.attribute.AttributeStore;
 import w.commander.cooldown.CooldownResult;
 import w.commander.result.Result;
@@ -189,6 +191,7 @@ class CommanderTests {
             public Result join(@Join String s) {
                 return Results.ok("join: " + s);
             }
+
         }
 
         @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -218,6 +221,8 @@ class CommanderTests {
                 new Test(fromArray("doublew", "123123.123123"), "double wrapper: 123123.123123"),
                 new Test(fromArray("noop", "foobarbaz"), "noop: foobarbaz"),
                 new Test(fromArray("join", "foo", "bar", "baz"), "join: foo bar baz"),
+                new Test(fromArray("join", "foo", "bar"), "join: foo bar"),
+                new Test(fromArray("join", "foo"), "join: foo"),
                 new Test(fromArray("enum", "seconds"), "enum: SECONDS"),
                 new Test(fromArray("bytep", "foo"), null),
                 new Test(fromArray("bytew", "foo"), null),
@@ -233,7 +238,7 @@ class CommanderTests {
                 new Test(fromArray("doublew", "foo.bar"), null),
                 new Test(fromArray("enum", "foo"), null)
         );
-        
+
         for (val test : tests) {
             val actor = new TestCommandActor("foo");
 
@@ -247,6 +252,42 @@ class CommanderTests {
                 assertEquals(Collections.singletonList(test.expect), messages);
             }
         }
+    }
+
+    @Test
+    void manualAndNonRequiredJoin() {
+        @Command("foo")
+        @WithManual
+        class Attributes {
+            @CommandHandler
+            public Result run(@NonRequired @Join String value) {
+                return Results.ok(value == null ? "" : value);
+            }
+        }
+
+        val info = new CommandInfo(new Attributes());
+        val commander = new Commander();
+        val command = commander.register(info);
+        val actor = new TestCommandActor("");
+
+        Result result;
+        result = assertDoesNotThrow(() -> command.execute(actor, RawArguments.empty())
+                .get());
+        assertTrue(result.isSuccess());
+
+        result = assertDoesNotThrow(() -> command.execute(actor, RawArguments.fromArray("foo"))
+                .get());
+        assertTrue(result.isSuccess());
+
+        result = assertDoesNotThrow(() -> command.execute(actor, RawArguments.fromArray("foo", "bar"))
+                .get());
+        assertTrue(result.isSuccess());
+
+        result = assertDoesNotThrow(() -> command.execute(actor, RawArguments.fromArray("foo", "bar", "baz"))
+                .get());
+        assertTrue(result.isSuccess());
+
+        assertEquals(Arrays.asList("", "foo", "foo bar", "foo bar baz"), actor.getMessages());
     }
 
     @Test

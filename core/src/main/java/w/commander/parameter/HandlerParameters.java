@@ -50,6 +50,10 @@ public final class HandlerParameters {
         this.requiredArgumentCount = argumentCount = 0;
     }
 
+    public static @NotNull HandlerParameters empty() {
+        return EMPTY;
+    }
+
     public static @NotNull HandlerParameters from(
             @NotNull HandlerParameter @NotNull ... parameters
     ) {
@@ -68,12 +72,12 @@ public final class HandlerParameters {
             }
 
             val argument = (Argument) parameter;
-            val argumentLength = argument.getMinLength();
+            val length = argument.getMinLength();
 
-            argumentCount += argumentLength;
+            argumentCount += length;
 
             if (argument.isRequired()) {
-                requiredArgumentCount += argumentLength;
+                requiredArgumentCount += length;
             }
 
             arguments.add((Argument) parameter);

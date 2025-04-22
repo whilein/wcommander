@@ -40,7 +40,7 @@ public final class NotEnoughArgumentsCommandHandler implements CommandHandler {
     CommanderConfig config;
 
     @Override
-    public boolean isYielding() {
+    public boolean tryYield(CommandExecutor executor) {
         return true;
     }
 

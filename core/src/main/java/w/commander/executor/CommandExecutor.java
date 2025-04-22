@@ -48,7 +48,7 @@ public interface CommandExecutor {
         return Conditions.alwaysTrue();
     }
 
-    default boolean isYielding() {
+    default boolean tryYield(CommandExecutor executor) {
         return false;
     }
 

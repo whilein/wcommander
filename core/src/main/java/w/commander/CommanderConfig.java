@@ -16,15 +16,6 @@
 
 package w.commander;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
-import javax.annotation.concurrent.NotThreadSafe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -75,6 +66,16 @@ import w.commander.parameter.type.AttributeStoreParameterParser;
 import w.commander.parameter.type.CommandActorParameterParser;
 import w.commander.tabcomplete.NamedTabCompleter;
 import w.commander.tabcomplete.TabCompleter;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * @author whilein

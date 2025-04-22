@@ -17,12 +17,8 @@
 package w.commander.executor;
 
 import org.jetbrains.annotations.NotNull;
-import w.commander.condition.Conditions;
-import w.commander.execution.ExecutionContext;
 import w.commander.manual.ManualEntry;
 import w.commander.parameter.HandlerParameters;
-import w.commander.result.Result;
-import w.commander.util.Callback;
 
 /**
  * @author whilein
