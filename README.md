@@ -24,7 +24,7 @@ Add this into your pom.xml:
 ```xml
 <dependency>
   <groupId>io.github.whilein.wcommander</groupId>
-  <artifactId>PLATFORM</artifactId>
+  <artifactId>wcommander-PLATFORM</artifactId>
   <version>VERSION</version>
 </dependency>
 ```
