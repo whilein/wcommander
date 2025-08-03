@@ -97,9 +97,13 @@ final class CommandImpl implements Command {
             return;
         }
 
+        val executor = subCommand.executor(0);
+        if (executor instanceof CommandHandler && ((CommandHandler) executor).getManualEntry().isHidden()) {
+            return;
+        }
+
         suggestions.retain();
 
-        val executor = subCommand.executor(0);
         executor.test(context, Callback.of((result, cause) -> {
             try {
                 if (cause != null) {

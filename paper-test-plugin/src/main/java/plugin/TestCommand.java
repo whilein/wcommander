@@ -16,7 +16,6 @@
 
 package plugin;
 
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,6 +25,7 @@ import w.commander.annotation.Attr;
 import w.commander.annotation.Command;
 import w.commander.annotation.CommandHandler;
 import w.commander.annotation.Cooldown;
+import w.commander.annotation.Hidden;
 import w.commander.annotation.NonRequired;
 import w.commander.annotation.SetupHandler;
 import w.commander.annotation.SubCommandHandler;
@@ -151,5 +151,11 @@ public class TestCommand {
     @SubCommandHandler("throw")
     public Result throwException(CommandSender sender) {
         throw Results.error("LOL").asException();
+    }
+
+    @Hidden
+    @SubCommandHandler("hidden")
+    public Result hidden() {
+        return Results.ok("Hidden");
     }
 }
