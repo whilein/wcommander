@@ -33,6 +33,8 @@ import w.commander.result.Result;
 import w.commander.spec.HandlerSpec;
 import w.commander.util.Callback;
 
+import java.time.Duration;
+
 /**
  * @author whilein
  */
@@ -61,28 +63,48 @@ public class CooldownDecorator implements Decorator {
         String id;
         MethodExecutor delegate;
 
+        private void processCooldown(
+                ExecutionContext context,
+                Callback<Result> callback,
+                Object[] args,
+                Duration r
+        ) {
+            if (r != null && !r.isNegative()) {
+                callback.complete(config.getErrorResultFactory().onCooldown(context, r));
+                return;
+            }
+
+            val newCallback = new CooldownCallback(
+                    id,
+                    context.getActor(),
+                    callback
+            );
+
+            delegate.execute(context, newCallback, args);
+        }
+
         @Override
         public void execute(ExecutionContext context, Callback<Result> callback, Object[] args) {
-            cooldownManager.getCooldownAsync(context.getActor(), id, config.getAsyncExecutor())
-                    .whenComplete((r, e) -> {
-                        if (e != null) {
-                            callback.completeExceptionally(e);
-                            return;
-                        }
+            val taskExecutor = config.getTaskExecutor();
 
-                        if (r != null && !r.isNegative()) {
-                            callback.complete(config.getErrorResultFactory().onCooldown(context, r));
-                            return;
-                        }
+            if (taskExecutor.isAsyncContext()) {
+                try {
+                    processCooldown(context, callback, args,
+                            cooldownManager.getCooldown(context.getActor(), id));
+                } catch (Exception e) {
+                    callback.completeExceptionally(e);
+                }
+            } else {
+                cooldownManager.getCooldownAsync(context.getActor(), id, taskExecutor.async())
+                        .whenCompleteAsync((r, e) -> {
+                            if (e != null) {
+                                callback.completeExceptionally(e);
+                                return;
+                            }
 
-                        val newCallback = new CooldownCallback(
-                                id,
-                                context.getActor(),
-                                callback
-                        );
-
-                        delegate.execute(context, newCallback, args);
-                    });
+                            processCooldown(context, callback, args, r);
+                        }, taskExecutor.main());
+            }
         }
     }
 
@@ -104,7 +126,7 @@ public class CooldownDecorator implements Decorator {
                         actor,
                         id,
                         duration,
-                        config.getAsyncExecutor()
+                        config.getTaskExecutor().async()
                 ).whenComplete((r, e) -> {
                     if (e != null) {
                         delegate.completeExceptionally(e);

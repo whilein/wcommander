@@ -19,6 +19,7 @@ package w.commander.decorator.type;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import w.commander.CommanderConfig;
 import w.commander.annotation.Async;
@@ -67,7 +68,13 @@ public class AsyncDecorator implements Decorator {
 
         @Override
         public void execute(ExecutionContext context, Callback<Result> callback, Object[] args) {
-            config.getAsyncExecutor().execute(() -> {
+            val taskExecutor = config.getTaskExecutor();
+            if (taskExecutor.isAsyncContext()) { // already in async
+                delegate.execute(context, callback, args);
+                return;
+            }
+
+            taskExecutor.runAsync(() -> {
                 try {
                     delegate.execute(context, callback, args);
                 } catch (Throwable e) {

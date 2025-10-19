@@ -105,9 +105,13 @@ public class CommanderConfig {
     @NonFinal
     ManualFormatter manualFormatter;
     @NonFinal
-    Executor asyncExecutor;
+    TaskExecutor taskExecutor;
     @NonFinal
     AttributeStoreFactory attributeStoreFactory;
+    @NonFinal
+    boolean syncTabCompletions;
+    @NonFinal
+    boolean syncExecutions;
 
     Map<String, TabCompleter> tabCompleters = new HashMap<>();
     Map<String, CooldownManager> cooldownManagers = new HashMap<>();
@@ -136,7 +140,7 @@ public class CommanderConfig {
         descriptionFormatter = DescriptionFormatter.RAW;
         manualFactory = new SimpleManualFactory();
         manualFormatter = new SimpleManualFormatter();
-        asyncExecutor = ForkJoinPool.commonPool();
+        taskExecutor = new DefaultTaskExecutor(true);
         attributeStoreFactory = () -> new LazyAttributeStore(MapAttributeStore::new);
 
         addCooldownManager(new InMemoryCooldownManager("default", new ConcurrentHashMap<>()));

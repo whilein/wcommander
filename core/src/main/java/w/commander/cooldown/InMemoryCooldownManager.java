@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class InMemoryCooldownManager implements CooldownManager {
+public class InMemoryCooldownManager implements CooldownManager {
 
     @Getter
     String id;

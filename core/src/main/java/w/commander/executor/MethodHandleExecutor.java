@@ -19,6 +19,7 @@ package w.commander.executor;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import w.commander.CommanderConfig;
 import w.commander.execution.ExecutionContext;
 import w.commander.result.Result;
 import w.commander.result.Results;
@@ -55,7 +56,6 @@ public class MethodHandleExecutor implements MethodExecutor {
             callback.completeExceptionally(e);
             return;
         }
-
         processReturnedValue(callback, result);
     }
 

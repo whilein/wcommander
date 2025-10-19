@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import w.commander.annotation.Arg;
 import w.commander.annotation.Async;
 import w.commander.annotation.Attr;
@@ -33,6 +34,7 @@ import w.commander.annotation.SetupHandler;
 import w.commander.annotation.SubCommandHandler;
 import w.commander.annotation.WithManual;
 import w.commander.attribute.AttributeStore;
+import w.commander.cooldown.CooldownManager;
 import w.commander.cooldown.CooldownResult;
 import w.commander.result.Result;
 import w.commander.result.Results;
@@ -47,6 +49,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.calls;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static w.commander.RawArguments.fromArray;
 
 /**
@@ -81,6 +86,41 @@ class CommanderTests {
     }
 
     @Test
+    void asyncCooldown() {
+        @Command("foo")
+        class AsyncCommand {
+            @Async
+            @Cooldown
+            @CommandHandler
+            public Result run() {
+                return Results.ok(Thread.currentThread().getName());
+            }
+        }
+
+        val info = new CommandInfo(new AsyncCommand());
+
+        val commander = new Commander();
+
+        CooldownManager cooldownManager = commander.getCooldownManager("default");
+        cooldownManager = spy(cooldownManager);
+        commander.addCooldownManager(cooldownManager);
+
+        val command = commander.register(info);
+        val actor = new TestCommandActor("");
+
+        val result = assertDoesNotThrow(() -> command.execute(actor, RawArguments.empty())
+                .get());
+        assertTrue(result.isSuccess());
+        assertEquals(Collections.singletonList("WCommander Async #1"), actor.getMessages());
+
+        verify(cooldownManager)
+                .getCooldown(Mockito.any(), Mockito.any());
+
+        verify(cooldownManager, Mockito.never())
+                .getCooldownAsync(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    @Test
     void async() {
         @Command("foo")
         class AsyncCommand {
@@ -91,18 +131,9 @@ class CommanderTests {
             }
         }
 
-        val threadName = "async test";
-
-        val executor = Executors.newSingleThreadExecutor(r -> {
-            val thread = new Thread(r);
-            thread.setName(threadName);
-            return thread;
-        });
-
         val info = new CommandInfo(new AsyncCommand());
 
         val commander = new Commander();
-        commander.setAsyncExecutor(executor);
 
         val command = commander.register(info);
         val actor = new TestCommandActor("");
@@ -110,7 +141,7 @@ class CommanderTests {
         val result = assertDoesNotThrow(() -> command.execute(actor, RawArguments.empty())
                 .get());
         assertTrue(result.isSuccess());
-        assertEquals(Collections.singletonList(threadName), actor.getMessages());
+        assertEquals(Collections.singletonList("WCommander Async #1"), actor.getMessages());
     }
 
     @Test

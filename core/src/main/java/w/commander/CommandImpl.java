@@ -151,7 +151,20 @@ final class CommandImpl implements Command {
     }
 
     @Override
-    public @NotNull CompletableFuture<@NotNull List<String>> tabComplete(@NotNull CommandActor actor, @NotNull RawArguments arguments) {
+    public @NotNull CompletableFuture<@NotNull List<String>> tabComplete(
+            @NotNull CommandActor actor,
+            @NotNull RawArguments arguments
+    ) {
+        val taskExecutor = config.getTaskExecutor();
+        if (!config.isSyncTabCompletions() || taskExecutor.isMainContext()) {
+            return tabComplete0(actor, arguments);
+        } else {
+            return taskExecutor.run(() -> tabComplete0(actor, arguments))
+                    .thenCompose(r -> r);
+        }
+    }
+
+    private CompletableFuture<List<String>> tabComplete0(CommandActor actor, RawArguments arguments)  {
         val context = createContext(actor, arguments);
 
         if (arguments.isEmpty()) {
@@ -214,11 +227,23 @@ final class CommandImpl implements Command {
         return CompletableFuture.completedFuture(Collections.emptyList());
     }
 
-
     @Override
     public @NotNull CompletableFuture<@NotNull Result> execute(
             @NotNull CommandActor actor,
             @NotNull RawArguments arguments
+    ) {
+        val taskExecutor = config.getTaskExecutor();
+        if (!config.isSyncExecutions() || taskExecutor.isMainContext()) {
+            return execute0(actor, arguments);
+        } else {
+            return taskExecutor.run(() -> execute0(actor, arguments))
+                    .thenCompose(r -> r);
+        }
+    }
+
+    private CompletableFuture<Result> execute0(
+            CommandActor actor,
+            RawArguments arguments
     ) {
         CommandNode tree = this.tree;
         int offset = 0;
@@ -253,7 +278,6 @@ final class CommandImpl implements Command {
                 },
                 cause -> fromCause(context, cause)
         ));
-
         return future;
     }
 
