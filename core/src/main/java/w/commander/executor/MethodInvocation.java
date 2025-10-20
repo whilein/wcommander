@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.val;
+import w.commander.TaskExecutor;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.HandlerParameter;
 import w.commander.parameter.HandlerParameters;
@@ -46,6 +47,7 @@ public final class MethodInvocation {
     HandlerParameters handlerParameters;
 
     MethodExecutor methodExecutor;
+    TaskExecutor taskExecutor;
 
     ExecutionContext context;
 
@@ -223,6 +225,8 @@ public final class MethodInvocation {
                 );
             }
 
+            val isMainThread = taskExecutor.isMainContext();
+
             awaitFutureCompletion(futures, () -> {
                 val failure = this.failure;
                 if (failure != null) {
@@ -236,7 +240,11 @@ public final class MethodInvocation {
                     return;
                 }
 
-                invoke();
+                if (isMainThread && !taskExecutor.isMainContext()) {
+                    taskExecutor.run(this::process);
+                } else {
+                    invoke();
+                }
             });
 
             return;

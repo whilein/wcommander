@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import w.commander.TaskExecutor;
 import w.commander.execution.ExecutionContext;
 import w.commander.parameter.HandlerParameters;
 import w.commander.result.Result;
@@ -38,12 +39,14 @@ public final class MethodCommandSetupHandler implements CommandSetupHandler {
     HandlerParameters parameters;
 
     MethodExecutor methodExecutor;
+    TaskExecutor taskExecutor;
 
     @Override
     public void execute(@NotNull ExecutionContext context, @NotNull Callback<@NotNull Result> callback) {
         val invocation = new MethodInvocation(
                 parameters,
                 methodExecutor,
+                taskExecutor,
                 context,
                 callback
         );

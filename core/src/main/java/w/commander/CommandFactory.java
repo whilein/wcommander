@@ -70,7 +70,8 @@ public final class CommandFactory {
 
         return new MethodCommandSetupHandler(
                 handler.getParameters(),
-                executor
+                executor,
+                config.getTaskExecutor()
         );
     }
 
@@ -84,7 +85,8 @@ public final class CommandFactory {
                 handler.getManualEntry(),
                 handler.getParameters(),
                 handler.getConditions(),
-                wrappedExecutor
+                wrappedExecutor,
+                config.getTaskExecutor()
         );
     }
 

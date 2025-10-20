@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import w.commander.TaskExecutor;
 import w.commander.condition.Conditions;
 import w.commander.execution.ExecutionContext;
 import w.commander.manual.ManualEntry;
@@ -34,17 +35,20 @@ import w.commander.util.Callback;
 public final class MethodCommandHandler extends AbstractCommandHandler {
 
     MethodExecutor methodExecutor;
+    TaskExecutor taskExecutor;
 
     public MethodCommandHandler(
             HandlerPath path,
             ManualEntry manualEntry,
             HandlerParameters parameters,
             Conditions conditions,
-            MethodExecutor methodExecutor
+            MethodExecutor methodExecutor,
+            TaskExecutor taskExecutor
     ) {
         super(path, parameters, manualEntry, conditions);
 
         this.methodExecutor = methodExecutor;
+        this.taskExecutor = taskExecutor;
     }
 
     @Override
@@ -63,6 +67,7 @@ public final class MethodCommandHandler extends AbstractCommandHandler {
                 val invocation = new MethodInvocation(
                         parameters,
                         methodExecutor,
+                        taskExecutor,
                         context,
                         callback
                 );
