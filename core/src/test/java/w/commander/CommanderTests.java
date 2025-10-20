@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import w.commander.annotation.Arg;
@@ -36,20 +37,22 @@ import w.commander.annotation.WithManual;
 import w.commander.attribute.AttributeStore;
 import w.commander.cooldown.CooldownManager;
 import w.commander.cooldown.CooldownResult;
+import w.commander.parameter.HandlerParameter;
+import w.commander.parameter.TypedParameterParser;
 import w.commander.result.Result;
 import w.commander.result.Results;
 
+import java.lang.reflect.Parameter;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.calls;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static w.commander.RawArguments.fromArray;
@@ -83,6 +86,43 @@ class CommanderTests {
                 .get());
         assertTrue(result.isSuccess());
         assertEquals(Collections.singletonList("foo"), actor.getMessages());
+    }
+
+    @Test
+    void asyncParameter() {
+        @Command("foo")
+        class AsyncParameterCommand {
+            @CommandHandler
+            public Result run(String parameter) {
+                return Results.ok(parameter + " " + Thread.currentThread().getName());
+            }
+        }
+        val info = new CommandInfo(new AsyncParameterCommand());
+
+        class AsyncParameter extends TypedParameterParser<String> {
+
+            public AsyncParameter() {
+                super(String.class);
+            }
+
+            @Override
+            public @NotNull HandlerParameter parse(@NotNull Parameter parameter) {
+                return (context, cursor) ->
+                        CompletableFuture.supplyAsync(() -> "Hello world!");
+            }
+        }
+
+        val commander = new Commander();
+        commander.setSyncExecutions(true);
+        commander.getTypedParameterParsers().add(new AsyncParameter());
+
+        val command = commander.register(info);
+        val actor = new TestCommandActor("");
+
+        val result = assertDoesNotThrow(() -> command.execute(actor, RawArguments.empty())
+                .get());
+        assertTrue(result.isSuccess());
+        assertEquals(Collections.singletonList("Hello world! WCommander Main"), actor.getMessages());
     }
 
     @Test
