@@ -52,7 +52,7 @@ public final class ManualCommandExecutor implements CommandExecutor {
     ) {
         val manual = this.manual;
 
-        conditions.test(context, Callback.of((result, cause) -> {
+        conditions.testAnyVisibility(context, Callback.of((result, cause) -> {
             if (cause != null) {
                 callback.completeExceptionally(cause);
             } else if (result != null && !result.isSuccess()) {
