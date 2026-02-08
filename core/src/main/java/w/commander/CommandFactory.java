@@ -182,7 +182,10 @@ public final class CommandFactory {
 
             Conditions conditions = Conditions.empty();
             for (val entry : manual.entries()) {
-                conditions = conditions.merge(entry.getConditions());
+                Conditions entryConditions = entry.getVisibilityConditions();
+                if (entryConditions.isEmpty())
+                    entryConditions = Conditions.alwaysTrue();
+                conditions = conditions.merge(entryConditions);
             }
 
             val manualExecutor = new ManualCommandExecutor(manual, config.getManualFormatter(), conditions,

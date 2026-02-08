@@ -648,7 +648,7 @@ class CommandSpecFactoryTests {
                 assertTrue(handler.getParameters().isEmpty());
 
                 val manualEntry = handler.getManualEntry();
-                assertTrue(manualEntry.getConditions().isAlwaysTrue());
+                assertTrue(manualEntry.getVisibilityConditions().isAlwaysTrue());
 
                 assertEquals("foo", manualEntry.getUsage().format(context));
 
@@ -690,7 +690,7 @@ class CommandSpecFactoryTests {
             assertTrue(subCommandHandler.getDecorators().isEmpty());
             assertTrue(subCommandHandler.getParameters().isEmpty());
             val manualEntry = subCommandHandler.getManualEntry();
-            assertTrue(manualEntry.getConditions().isAlwaysTrue());
+            assertTrue(manualEntry.getVisibilityConditions().isAlwaysTrue());
             assertEquals("foo foo", manualEntry.getUsage().format(context));
             assertFalse(manualEntry.isHidden());
             assertEquals("", manualEntry.getDescription().format(context));
