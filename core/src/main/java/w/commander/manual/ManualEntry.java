@@ -26,7 +26,7 @@ import w.commander.condition.Conditions;
 public class ManualEntry {
 
     FormattingText usage, description;
-    Conditions visibilityConditions;
+    Conditions conditions;
 
     public boolean isHidden() {
         return description == null;

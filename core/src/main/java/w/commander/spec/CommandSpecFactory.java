@@ -191,7 +191,7 @@ public final class CommandSpecFactory {
                 .manualEntry(new ManualEntry(
                         getUsage(commandSpec, parameters.getArguments()),
                         config.getAnnotationScanner().isHidden(method) ? null : getDescription(commandSpec, method),
-                        conditions.visibilityConditions()
+                        conditions
                 ))
                 .method(method)
                 .conditions(conditions)

@@ -1,5 +1,5 @@
 /*
- *    Copyright 2025 Whilein
+ *    Copyright 2024 Whilein
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,18 +17,21 @@
 package w.commander.executor;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import w.commander.condition.Conditions;
 import w.commander.error.ErrorResultFactory;
 import w.commander.execution.ExecutionContext;
 import w.commander.manual.Manual;
+import w.commander.manual.ManualEntry;
 import w.commander.manual.ManualFormatter;
 import w.commander.result.Result;
+import w.commander.result.Results;
 import w.commander.util.Callback;
+import w.commander.util.CallbackArrayCollector;
+
+import java.util.stream.Collectors;
 
 /**
  * @author whilein
@@ -40,9 +43,6 @@ public final class ManualCommandExecutor implements CommandExecutor {
     Manual manual;
     ManualFormatter manualFormatter;
 
-    @Getter
-    Conditions conditions;
-
     ErrorResultFactory errorResultFactory;
 
     @Override
@@ -52,20 +52,68 @@ public final class ManualCommandExecutor implements CommandExecutor {
     ) {
         val manual = this.manual;
 
-        conditions.testAnyVisibility(context, Callback.of((result, cause) -> {
-            if (cause != null) {
-                callback.completeExceptionally(cause);
-            } else if (result != null && !result.isSuccess()) {
-                callback.complete(errorResultFactory.onManualUnavailable(context, manual));
-            } else {
-                callback.complete(manualFormatter.format(context, new Manual(manual.name(), manual.entries())));
-            }
-        }));
+        val name = manual.name();
+        val entries = manual.entries();
+        val entryCount = entries.size();
+
+        val arrayCollector = new CallbackArrayCollector<ManualEntryResult>(
+                callback.map(results -> {
+                    val newEntries = results.stream()
+                            .filter(r -> r.result.isSuccess())
+                            .map(r -> r.entry)
+                            .collect(Collectors.toList());
+
+                    if (newEntries.isEmpty()) {
+                        return errorResultFactory.onManualUnavailable(context, manual);
+                    }
+
+                    return manualFormatter.format(context, new Manual(name, newEntries));
+                }), entryCount);
+
+        int i = 0;
+        for (val entry : entries) {
+            entry.getConditions().testVisibility(context, arrayCollector.element(i++)
+                    .map(result -> new ManualEntryResult(entry, result)));
+        }
+    }
+
+    @Override
+    public void test(
+            @NotNull ExecutionContext context,
+            @NotNull Callback<@NotNull Result> callback
+    ) {
+        val manual = this.manual;
+
+        val entries = manual.entries();
+        val entryCount = entries.size();
+
+        val arrayCollector = new CallbackArrayCollector<Result>(
+                callback.map(results -> {
+                    for (val result : results) {
+                        if (result.isSuccess()) {
+                            return Results.ok();
+                        }
+                    }
+
+                    return Results.error();
+                }), entryCount);
+
+        int i = 0;
+        for (val entry : manual.entries()) {
+            entry.getConditions().testVisibility(context, arrayCollector.element(i++));
+        }
     }
 
     @Override
     public boolean tryYield(CommandExecutor executor) {
         return true;
+    }
+
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    @RequiredArgsConstructor
+    private static final class ManualEntryResult {
+        ManualEntry entry;
+        Result result;
     }
 
 }
