@@ -16,20 +16,20 @@
 
 package w.commander.platform.paper;
 
-import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import org.jetbrains.annotations.NotNull;
 import w.commander.platform.adventure.AdventureCommandActor;
 import w.commander.platform.spigot.SpigotCommandActor;
 
+import java.util.Collections;
+
 /**
  * @author whilein
  */
-public interface PaperCommandActor extends SpigotCommandActor, AdventureCommandActor {
+public interface PaperCommandActor extends SpigotCommandActor, AdventureCommandActor, ForwardingAudience {
     @Override
-    @SuppressWarnings("UnstableApiUsage")
-    default void sendMessage(@NotNull Identity source, @NotNull Component message, @NotNull MessageType type) {
-        getSender().sendMessage(source, message, type);
+    default @NotNull Iterable<? extends Audience> audiences() {
+        return Collections.singleton(getSender());
     }
 }

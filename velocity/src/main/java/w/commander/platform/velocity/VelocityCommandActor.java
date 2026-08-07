@@ -19,9 +19,8 @@ package w.commander.platform.velocity;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
-import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,21 +28,21 @@ import w.commander.minecraft.MinecraftCommandActor;
 import w.commander.platform.adventure.AdventureCommandActor;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.List;
 
 /**
  * @author whilein
  */
 @Immutable
-public interface VelocityCommandActor extends MinecraftCommandActor, AdventureCommandActor {
+public interface VelocityCommandActor extends MinecraftCommandActor, AdventureCommandActor, ForwardingAudience {
 
     @NotNull
     @Contract(pure = true)
     CommandSource getSource();
 
     @Override
-    @SuppressWarnings("UnstableApiUsage")
-    default void sendMessage(@NotNull Identity source, @NotNull Component message, @NotNull MessageType type) {
-        getSource().sendMessage(source, message, type);
+    default @NotNull Iterable<? extends Audience> audiences() {
+        return List.of(getSource());
     }
 
     @Override
